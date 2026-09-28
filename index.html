@@ -7,32 +7,7 @@
 <link href="assets/fonts/fonts.css" rel="stylesheet"/>
 <!-- Tailwind CSS -->
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<script>
-    tailwind.config = {
-      darkMode: "class",
-      theme: {
-        extend: {
-          colors: {
-            brand: {
-              dark: "#0a0c10",
-              surface: "#111317",
-              card: "rgba(19, 23, 29, 0.7)",
-              border: "rgba(255, 255, 255, 0.08)",
-              borderLight: "rgba(255, 255, 255, 0.14)",
-              cyan: "#00F2FE",
-              violet: "#7928CA",
-              emerald: "#10B981"
-            }
-          },
-          fontFamily: {
-            sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
-            display: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
-            mono: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
-          }
-        }
-      }
-    };
-  </script>
+<script src="assets/js/tailwind-index.js"></script>
 <style>
     body {
       background-color: #090a0d;
@@ -58,6 +33,118 @@
     }
     .subtle-glow {
       box-shadow: 0 0 60px -15px rgba(0, 242, 254, 0.18);
+    }
+    .hero-visual {
+      position: relative;
+      width: min(100%, 960px);
+      aspect-ratio: 16 / 7;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 24px;
+      isolation: isolate;
+      background: #10151b;
+      box-shadow: 0 28px 90px -38px rgba(0, 242, 254, 0.28);
+      animation: hero-reveal 900ms cubic-bezier(0.2, 0.75, 0.25, 1) both;
+    }
+    .hero-visual img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 54%;
+      animation: hero-image-drift 24s ease-in-out infinite alternate;
+    }
+    .hero-visual::after {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      background: linear-gradient(90deg, rgba(5, 8, 12, 0.54), transparent 60%), linear-gradient(0deg, rgba(5, 8, 12, 0.55), transparent 48%);
+      content: "";
+      pointer-events: none;
+    }
+    .hero-visual-scan {
+      position: absolute;
+      top: -35%;
+      left: 0;
+      z-index: 2;
+      width: 100%;
+      height: 24%;
+      background: linear-gradient(180deg, transparent, rgba(0, 242, 254, 0.12), transparent);
+      animation: hero-scan 8s ease-in-out infinite;
+      pointer-events: none;
+    }
+    .hero-visual-caption,
+    .hero-visual-index {
+      position: absolute;
+      z-index: 3;
+      bottom: 22px;
+      color: rgba(255, 255, 255, 0.82);
+      font: 500 10px/1 'Inter', sans-serif;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+    .hero-visual-caption {
+      left: 24px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .hero-visual-index {
+      right: 24px;
+      color: rgba(255, 255, 255, 0.58);
+    }
+    .hero-visual-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #00f2fe;
+      box-shadow: 0 0 14px rgba(0, 242, 254, 0.8);
+      animation: hero-status-pulse 2.2s ease-in-out infinite;
+    }
+    .hero-copy {
+      animation: hero-copy-reveal 750ms 180ms cubic-bezier(0.2, 0.75, 0.25, 1) both;
+    }
+    @keyframes hero-reveal {
+      from { opacity: 0; transform: translateY(24px) scale(0.985); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    @keyframes hero-copy-reveal {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes hero-image-drift {
+      from { transform: scale(1.02) translate3d(-0.4%, 0, 0); }
+      to { transform: scale(1.1) translate3d(0.4%, -1.2%, 0); }
+    }
+    @keyframes hero-scan {
+      0%, 12% { transform: translateY(0); opacity: 0; }
+      24% { opacity: 1; }
+      76% { opacity: 0.65; }
+      90%, 100% { transform: translateY(620%); opacity: 0; }
+    }
+    @keyframes hero-status-pulse {
+      50% { opacity: 0.45; box-shadow: 0 0 5px rgba(0, 242, 254, 0.45); }
+    }
+    @media (max-width: 640px) {
+      .hero-visual {
+        aspect-ratio: 1.35 / 1;
+        border-radius: 18px;
+      }
+      .hero-visual-caption,
+      .hero-visual-index {
+        bottom: 16px;
+        font-size: 9px;
+      }
+      .hero-visual-caption { left: 16px; }
+      .hero-visual-index { right: 16px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .hero-visual,
+      .hero-visual img,
+      .hero-visual-scan,
+      .hero-visual-dot,
+      .hero-copy {
+        animation: none;
+      }
     }
     ::-webkit-scrollbar {
       width: 6px;
@@ -115,7 +202,7 @@
 <a aria-label="LinkedIn Profile" class="p-2 rounded-xl text-gray-400 hover:text-white hover:bg-white/[0.06] transition-colors flex items-center justify-center" href="https://linkedin.com" rel="noreferrer" target="_blank">
 <span class="material-symbols-outlined text-[20px]">share</span>
 </a>
-<button aria-label="Toggle Theme" class="p-2 rounded-xl text-gray-400 hover:text-[#00F2FE] hover:bg-white/[0.06] transition-colors flex items-center justify-center" onclick="document.documentElement.classList.toggle('dark');" type="button">
+<button aria-label="Toggle Theme" class="p-2 rounded-xl text-gray-400 hover:text-[#00F2FE] hover:bg-white/[0.06] transition-colors flex items-center justify-center" id="theme-toggle" type="button">
 <span class="material-symbols-outlined text-[20px]">dark_mode</span>
 </button>
 </div>
@@ -145,8 +232,14 @@
           Status: Available for entry-level roles • Fall 2025
         </span>
 </div>
+<div class="hero-visual" role="img" aria-label="Macro photograph of a circuit board with chips and illuminated traces">
+<img alt="" fetchpriority="high" src="assets/images/hero-circuit-board.jpg"/>
+<span class="hero-visual-scan" aria-hidden="true"></span>
+<div class="hero-visual-caption" aria-hidden="true"><span class="hero-visual-dot"></span><span>Engineering / In Motion</span></div>
+<span class="hero-visual-index" aria-hidden="true">01 — 03</span>
+</div>
 <!-- Hero Typography -->
-<div class="flex flex-col gap-6 max-w-4xl mx-auto">
+<div class="hero-copy flex flex-col gap-6 max-w-4xl mx-auto">
 <h1 class="font-display text-5xl sm:text-6xl lg:text-7xl font-bold text-white tracking-tight leading-[1.08]">
           Crafting performant web experiences from 
           <span class="bg-gradient-to-r from-[#00F2FE] via-[#a855f7] to-[#e0fdff] text-transparent bg-clip-text">
@@ -436,18 +529,18 @@
 </div>
 <!-- Snippet Tabs -->
 <div class="flex items-center gap-1.5 p-1 rounded-xl bg-white/[0.03] border border-white/[0.06]">
-<button class="px-4 py-1.5 rounded-lg text-xs font-mono font-medium text-[#00F2FE] bg-white/[0.08] border border-white/[0.08] transition-all" id="tab-queue" onclick="switchSnippet('queue')">
+<button class="px-4 py-1.5 rounded-lg text-xs font-mono font-medium text-[#00F2FE] bg-white/[0.08] border border-white/[0.08] transition-all" id="tab-queue" data-snippet="queue">
               useAsyncQueue.ts
             </button>
-<button class="px-4 py-1.5 rounded-lg text-xs font-mono font-medium text-gray-400 hover:text-white transition-all" id="tab-rate" onclick="switchSnippet('rate')">
+<button class="px-4 py-1.5 rounded-lg text-xs font-mono font-medium text-gray-400 hover:text-white transition-all" id="tab-rate" data-snippet="rate">
               RateLimiter.js
             </button>
-<button class="px-4 py-1.5 rounded-lg text-xs font-mono font-medium text-gray-400 hover:text-white transition-all" id="tab-hook" onclick="switchSnippet('hook')">
+<button class="px-4 py-1.5 rounded-lg text-xs font-mono font-medium text-gray-400 hover:text-white transition-all" id="tab-hook" data-snippet="hook">
               ThemeHook.tsx
             </button>
 </div>
 <!-- Copy Button -->
-<button class="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-white/[0.04] border border-white/[0.08] hover:bg-white/[0.08] text-gray-300 font-mono text-xs transition-colors" id="copy-code-btn" onclick="copySnippetCode()">
+<button class="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-white/[0.04] border border-white/[0.08] hover:bg-white/[0.08] text-gray-300 font-mono text-xs transition-colors" id="copy-code-btn">
 <span class="material-symbols-outlined text-[15px]">content_copy</span>
 <span id="copy-text">Copy</span>
 </button>
@@ -530,7 +623,7 @@
 </div>
 <!-- Right: Inquiry Form -->
 <div class="lg:col-span-7 bg-white/[0.02] border border-white/[0.08] p-8 sm:p-10 rounded-2xl">
-<form class="flex flex-col gap-6" onsubmit="handleContactSubmit(event)">
+<form class="flex flex-col gap-6" id="contact-form">
 <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
 <div class="flex flex-col gap-2">
 <label class="font-mono text-xs uppercase tracking-wider text-gray-400 font-medium" for="contact-name">Your Name</label>
@@ -580,133 +673,5 @@
 </div>
 </footer>
 <!-- SCRIPT -->
-<script>
-    const snippets = {
-      queue: `// useAsyncQueue: Manages concurrency-bounded asynchronous job executions
-import { useState, useEffect, useRef } from 'react';
-
-export function useAsyncQueue<T>(concurrency = 2) {
-  const [pending, setPending] = useState<number>(0);
-  const queueRef = useRef<(() => Promise<T>)[]>([]);
-  const activeCount = useRef(0);
-
-  const next = () => {
-    if (activeCount.current >= concurrency || queueRef.current.length === 0) return;
-    const task = queueRef.current.shift();
-    if (!task) return;
-    
-    activeCount.current += 1;
-    task().finally(() => {
-      activeCount.current -= 1;
-      setPending(queueRef.current.length);
-      next();
-    });
-  };
-
-  const enqueue = (task: () => Promise<T>) => {
-    queueRef.current.push(task);
-    setPending(queueRef.current.length);
-    next();
-  };
-
-  return { enqueue, pending };
-}`,
-      rate: `// RateLimiter.js: Token Bucket implementation for Edge Functions
-class TokenBucket {
-  constructor(capacity, refillRatePerSec) {
-    this.capacity = capacity;
-    this.tokens = capacity;
-    this.refillRate = refillRatePerSec;
-    this.lastRefill = Date.now();
-  }
-
-  refill() {
-    const now = Date.now();
-    const elapsed = (now - this.lastRefill) / 1000;
-    this.tokens = Math.min(this.capacity, this.tokens + elapsed * this.refillRate);
-    this.lastRefill = now;
-  }
-
-  consume(tokens = 1) {
-    this.refill();
-    if (this.tokens >= tokens) {
-      this.tokens -= tokens;
-      return { allowed: true, remaining: Math.floor(this.tokens) };
-    }
-    return { allowed: false, remaining: 0 };
-  }
-}
-
-export const limiter = new TokenBucket(60, 10);`,
-      hook: `// ThemeHook.tsx: System-aware dark/light context synchronizer
-import React, { createContext, useContext, useEffect, useState } from 'react';
-
-type Theme = 'dark' | 'light';
-const ThemeContext = createContext<{ theme: Theme; toggle: () => void }>({
-  theme: 'dark',
-  toggle: () => {},
-});
-
-export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [theme, setTheme] = useState<Theme>('dark');
-
-  const toggle = () => {
-    const next = theme === 'dark' ? 'light' : 'dark';
-    setTheme(next);
-    document.documentElement.classList.toggle('dark', next === 'dark');
-  };
-
-  return (
-    <ThemeContext.Provider value={{ theme, toggle }}>
-      {children}
-    </ThemeContext.Provider>
-  );
-};`
-    };
-
-    let currentKey = 'queue';
-
-    function switchSnippet(key) {
-      currentKey = key;
-      const display = document.getElementById('code-display');
-      const tabs = ['queue', 'rate', 'hook'];
-      
-      tabs.forEach(t => {
-        const btn = document.getElementById(`tab-${t}`);
-        if (t === key) {
-          btn.className = "px-4 py-1.5 rounded-lg text-xs font-mono font-medium text-[#00F2FE] bg-white/[0.08] border border-white/[0.08] transition-all";
-        } else {
-          btn.className = "px-4 py-1.5 rounded-lg text-xs font-mono font-medium text-gray-400 hover:text-white transition-all";
-        }
-      });
-
-      display.textContent = snippets[key];
-    }
-
-    function copySnippetCode() {
-      const textToCopy = snippets[currentKey];
-      navigator.clipboard.writeText(textToCopy).then(() => {
-        const copyText = document.getElementById('copy-text');
-        copyText.textContent = 'Copied!';
-        setTimeout(() => {
-          copyText.textContent = 'Copy';
-        }, 2000);
-      });
-    }
-
-    function handleContactSubmit(e) {
-      e.preventDefault();
-      const feedback = document.getElementById('form-feedback');
-      const btn = document.getElementById('submit-btn');
-      
-      btn.disabled = true;
-      btn.classList.add('opacity-70');
-      
-      setTimeout(() => {
-        feedback.classList.remove('hidden');
-        btn.innerHTML = `<span>Sent</span><span class="material-symbols-outlined text-[18px]">done</span>`;
-        e.target.reset();
-      }, 500);
-    }
-  </script>
+<script src="assets/js/index.js"></script>
 </body></html>

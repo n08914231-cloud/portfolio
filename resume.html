@@ -8,32 +8,7 @@
 <link href="assets/fonts/fonts.css" rel="stylesheet"/>
 <!-- Tailwind CSS CDN with Plugins -->
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<script id="tailwind-config">
-    tailwind.config = {
-      darkMode: "class",
-      theme: {
-        extend: {
-          colors: {
-            brand: {
-              bg: "#0B0C0E",
-              surface: "#111317",
-              card: "#16181D",
-              border: "#23262D",
-              cyan: "#00f2fe",
-              violet: "#8b5cf6",
-              text: "#F1F5F9",
-              muted: "#94A3B8"
-            }
-          },
-          fontFamily: {
-            sans: ["Inter", "sans-serif"],
-            display: ["Inter", "sans-serif"],
-            mono: ["Inter", "sans-serif"]
-          }
-        }
-      }
-    };
-  </script>
+<script src="assets/js/tailwind-resume.js"></script>
 <style>
     @layer base {
       html, body {
@@ -171,15 +146,15 @@
 </div>
 <!-- Header Action Buttons -->
 <div class="flex flex-col sm:flex-row lg:flex-col gap-3 shrink-0 w-full sm:w-auto">
-<a class="px-6 py-3 rounded-full bg-white text-black hover:bg-slate-200 transition-all font-sans font-medium text-xs tracking-wide flex items-center justify-center gap-2 shadow-lg shadow-white/10 active:scale-95" href="#download" onclick="alert('Preparing verified PDF CV compilation bundle...'); return false;">
+<a class="px-6 py-3 rounded-full bg-white text-black hover:bg-slate-200 transition-all font-sans font-medium text-xs tracking-wide flex items-center justify-center gap-2 shadow-lg shadow-white/10 active:scale-95" data-action="download-cv" href="#download">
 <span class="material-symbols-outlined text-[18px]">download</span>
 <span>Download CV (PDF)</span>
 </a>
-<button class="px-5 py-3 rounded-full glass-pill hover:bg-white/[0.08] text-slate-200 transition-all font-mono text-xs flex items-center justify-center gap-2 active:scale-95" id="copy-summary-btn" onclick="navigator.clipboard.writeText('Alex Chen: Full-Stack Engineer proficient in TypeScript, React, Node.js, and Cloud Infrastructure. 6+ production web applications deployed with 400+ hours of architectural focus.'); const orig = this.innerHTML; this.innerHTML='&lt;span class=\'material-symbols-outlined text-[16px] text-emerald-400\'&gt;check&lt;/span&gt;&lt;span&gt;Copied!&lt;/span&gt;'; setTimeout(()=&gt;this.innerHTML=orig, 2000);">
+<button class="px-5 py-3 rounded-full glass-pill hover:bg-white/[0.08] text-slate-200 transition-all font-mono text-xs flex items-center justify-center gap-2 active:scale-95" id="copy-summary-btn">
 <span class="material-symbols-outlined text-[16px] text-slate-400">content_copy</span>
 <span>Copy Summary</span>
 </button>
-<button class="px-5 py-3 rounded-full glass-pill hover:bg-white/[0.08] text-slate-400 hover:text-white transition-all font-mono text-xs flex items-center justify-center gap-2 active:scale-95" onclick="window.print()">
+<button class="px-5 py-3 rounded-full glass-pill hover:bg-white/[0.08] text-slate-400 hover:text-white transition-all font-mono text-xs flex items-center justify-center gap-2 active:scale-95" id="print-view-btn">
 <span class="material-symbols-outlined text-[16px]">print</span>
 <span>Print View</span>
 </button>
@@ -709,4 +684,5 @@
 </div>
 </div>
 </footer>
+<script src="assets/js/resume.js"></script>
 </body></html>
