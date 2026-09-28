@@ -14,6 +14,37 @@
       color: #e2e8f0;
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     }
+    html {
+      scroll-behavior: smooth;
+    }
+    #primary-navigation {
+      position: relative;
+      isolation: isolate;
+    }
+    #primary-navigation .nav-indicator {
+      position: absolute;
+      z-index: 0;
+      top: 4px;
+      bottom: 4px;
+      left: 0;
+      border-radius: 9999px;
+      background: rgba(255, 255, 255, 0.12);
+      box-shadow: 0 1px 8px rgba(0, 0, 0, 0.16);
+      pointer-events: none;
+      transition: width 360ms cubic-bezier(0.2, 0.75, 0.25, 1), transform 360ms cubic-bezier(0.2, 0.75, 0.25, 1);
+    }
+    #primary-navigation a {
+      position: relative;
+      z-index: 1;
+      transition: color 180ms ease, background-color 180ms ease;
+    }
+    #primary-navigation a[aria-current="page"] {
+      color: #fff;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      #primary-navigation .nav-indicator { transition: none; }
+    }
     .apple-glass {
       background: rgba(18, 21, 27, 0.65);
       backdrop-filter: blur(24px);
@@ -162,7 +193,7 @@
     }
   </style>
 </head>
-<body class="bg-[#090a0d] text-[#E2E8F0] antialiased selection:bg-[#00F2FE]/20 selection:text-[#00F2FE] min-h-screen flex flex-col font-sans">
+<body id="top" class="bg-[#090a0d] text-[#E2E8F0] antialiased selection:bg-[#00F2FE]/20 selection:text-[#00F2FE] min-h-screen flex flex-col font-sans">
 <!-- TOP NAVIGATION HEADER -->
 <header class="fixed top-0 left-0 w-full z-50 bg-[#090a0d]/75 backdrop-blur-2xl border-b border-white/[0.06] transition-all">
 <div class="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 h-20 flex items-center justify-between">
@@ -178,11 +209,13 @@
 </div>
 </a>
 <!-- Center Pill Navigation -->
-<nav class="hidden md:flex items-center gap-1.5 p-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] backdrop-blur-xl shadow-inner">
-<a class="px-5 py-2 rounded-full text-xs font-medium text-white bg-white/10 shadow-sm transition-all" href="#">Overview</a>
-<a class="px-5 py-2 rounded-full text-xs font-medium text-gray-400 hover:text-white hover:bg-white/[0.06] transition-all" href="#featured-work">Work &amp; Architecture</a>
-<a class="px-5 py-2 rounded-full text-xs font-medium text-gray-400 hover:text-white hover:bg-white/[0.06] transition-all" href="#code-lab">Lab / Snippets</a>
-<a class="px-5 py-2 rounded-full text-xs font-medium text-gray-400 hover:text-white hover:bg-white/[0.06] transition-all" href="#contact">Contact</a>
+<nav id="primary-navigation" aria-label="Primary navigation" class="hidden md:flex shrink-0 items-center gap-0.5 p-1 rounded-full bg-white/[0.04] border border-white/[0.08] backdrop-blur-xl shadow-inner">
+<span class="nav-indicator" aria-hidden="true"></span>
+<a aria-current="page" data-scroll-target="top" class="whitespace-nowrap px-3 py-2 rounded-full text-[11px] font-medium text-gray-400" href="#top">Overview</a>
+<a data-scroll-target="featured-work" class="whitespace-nowrap px-3 py-2 rounded-full text-[11px] font-medium text-gray-400 hover:text-white" href="#featured-work">Work &amp; Architecture</a>
+<a data-scroll-target="code-lab" class="whitespace-nowrap px-3 py-2 rounded-full text-[11px] font-medium text-gray-400 hover:text-white" href="#code-lab">Lab / Snippets</a>
+<a class="whitespace-nowrap px-3 py-2 rounded-full text-[11px] font-medium text-gray-400 hover:text-white" href="mini-game.html">Mini Game</a>
+<a data-scroll-target="contact" class="whitespace-nowrap px-3 py-2 rounded-full text-[11px] font-medium text-gray-400 hover:text-white" href="#contact">Contact</a>
 </nav>
 <!-- Status & Fast Actions -->
 <div class="flex items-center gap-4">

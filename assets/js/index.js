@@ -136,3 +136,60 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
     document.getElementById('copy-code-btn')?.addEventListener('click', copySnippetCode);
     document.getElementById('contact-form')?.addEventListener('submit', handleContactSubmit);
+
+    const primaryNavigation = document.getElementById('primary-navigation');
+    const navigationIndicator = primaryNavigation?.querySelector('.nav-indicator');
+    const sectionLinks = [...(primaryNavigation?.querySelectorAll('[data-scroll-target]') ?? [])];
+    const observedSections = sectionLinks
+      .map((link) => document.getElementById(link.dataset.scrollTarget))
+      .filter((section) => section && section.id !== 'top');
+
+    function setActiveNavigation(target) {
+      const activeLink = sectionLinks.find((link) => link.dataset.scrollTarget === target);
+      if (!activeLink) return;
+
+      sectionLinks.forEach((link) => {
+        if (link === activeLink) {
+          link.setAttribute('aria-current', 'page');
+        } else {
+          link.removeAttribute('aria-current');
+        }
+      });
+
+      if (!navigationIndicator || primaryNavigation.offsetParent === null) return;
+      navigationIndicator.style.width = `${activeLink.offsetWidth}px`;
+      navigationIndicator.style.transform = `translateX(${activeLink.offsetLeft}px)`;
+    }
+
+    function updateNavigationFromScroll() {
+      const scrollMarker = window.scrollY + window.innerHeight * 0.3;
+      let currentTarget = 'top';
+
+      observedSections.forEach((section) => {
+        if (section.offsetTop <= scrollMarker) currentTarget = section.id;
+      });
+      setActiveNavigation(currentTarget);
+    }
+
+    sectionLinks.forEach((link) => {
+      link.addEventListener('click', (event) => {
+        const target = link.dataset.scrollTarget;
+        const targetSection = document.getElementById(target);
+        setActiveNavigation(target);
+
+        event.preventDefault();
+        if (window.location.hash !== link.hash) {
+          window.history.pushState(null, '', link.hash);
+        }
+        if (target === 'top') {
+          window.scrollTo({ top: 0, behavior: 'instant' });
+        } else if (targetSection) {
+          window.scrollTo({ top: targetSection.offsetTop, behavior: 'instant' });
+        }
+      });
+    });
+    window.addEventListener('scroll', updateNavigationFromScroll, { passive: true });
+    window.addEventListener('resize', updateNavigationFromScroll);
+    window.addEventListener('load', updateNavigationFromScroll, { once: true });
+    setActiveNavigation('top');
+    updateNavigationFromScroll();
