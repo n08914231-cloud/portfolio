@@ -45,6 +45,22 @@
       border: 1px solid rgba(255, 255, 255, 0.08);
       backdrop-filter: blur(12px);
     }
+    @media (max-width: 767px) {
+      #resume-navigation {
+        display: flex;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        justify-content: center;
+        border-top: 0;
+        border-radius: 0 0 14px 14px;
+        padding: 6px 12px;
+        background: rgba(11, 12, 14, 0.96);
+      }
+      #resume-navigation a { min-height: 40px; padding-inline: 16px; }
+      .resume-portrait .glass-pill { right: 0; padding-inline: 8px; font-size: 10px; }
+    }
   </style>
 </head>
 <body class="bg-[#0B0C0E] text-slate-200 font-sans antialiased selection:bg-[#00f2fe]/20 selection:text-[#00f2fe] min-h-screen flex flex-col">
@@ -63,7 +79,7 @@
 </a>
 </div>
 <!-- Navigation Tabs (Sleek Apple Segmented Pill) -->
-<nav class="hidden md:flex items-center gap-1 p-1 rounded-full bg-white/[0.04] border border-white/[0.08]">
+<nav id="resume-navigation" class="hidden md:flex items-center gap-1 p-1 rounded-full bg-white/[0.04] border border-white/[0.08]" aria-label="Main navigation">
 <a class="whitespace-nowrap px-4 py-2 rounded-full font-sans text-xs text-slate-400 transition-all duration-200 hover:bg-white/[0.06] hover:text-white" data-path="home" href="index.html">Home</a>
 <a class="whitespace-nowrap px-4 py-2 rounded-full font-sans text-xs text-slate-400 transition-all duration-200 hover:bg-white/[0.06] hover:text-white" data-path="lab-game" href="mini-game.html">Mini Game</a>
 </nav>
@@ -99,14 +115,14 @@
 </div>
 </header>
 <!-- Main Content Area with Generous Apple Spacing -->
-<main class="w-full pt-28 pb-32 flex-grow">
+<main class="w-full pt-40 sm:pt-28 pb-32 flex-grow">
 <div class="max-w-6xl mx-auto px-6 sm:px-8 lg:px-12 flex flex-col gap-24 sm:gap-32">
 <!-- Editorial Hero Profile Card with Developer Portrait https://lh3.googleusercontent.com/aida/AEtjO1WCTk2NQqUcknP0PrTOV16hl1N1K2kzEpZet4V7rQ1ivDEh_9aVhqDfsSyOiTYDfwwNLYZoLpT-MU1CB5G66q43xt1jesWf9ATND6E1JH7mwskD_sYE9FnJ7QvlfYXhu1sU7I9Qf0Qhl4wKnlf4sEZMdngqCYOzCFMEa0A7EgyIYGnOO3s2yPyPnFo6SL1EhciYtfx5QrZDuBP7C6ULFg7sAuLF2nd-YyQ8NHcFNHi-22TtP_CvrIOu2RJt -->
 <section class="relative rounded-3xl glass-apple overflow-hidden border border-white/[0.08] p-8 sm:p-12 lg:p-14 shadow-2xl">
 <div class="absolute -top-36 -right-36 w-96 h-96 bg-gradient-to-br from-[#00f2fe]/10 to-violet-600/10 rounded-full blur-3xl pointer-events-none"></div>
 <div class="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-10 lg:gap-14">
 <!-- Headshot Editorial Portrait Container -->
-<div class="relative shrink-0 group">
+<div class="resume-portrait relative shrink-0 group">
 <div class="w-44 h-44 sm:w-52 sm:h-52 lg:w-56 lg:h-56 rounded-2xl overflow-hidden ring-1 ring-white/15 shadow-2xl relative">
 <img alt="Alex Chen Headshot Portrait" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src="https://lh3.googleusercontent.com/aida/AEtjO1WCTk2NQqUcknP0PrTOV16hl1N1K2kzEpZet4V7rQ1ivDEh_9aVhqDfsSyOiTYDfwwNLYZoLpT-MU1CB5G66q43xt1jesWf9ATND6E1JH7mwskD_sYE9FnJ7QvlfYXhu1sU7I9Qf0Qhl4wKnlf4sEZMdngqCYOzCFMEa0A7EgyIYGnOO3s2yPyPnFo6SL1EhciYtfx5QrZDuBP7C6ULFg7sAuLF2nd-YyQ8NHcFNHi-22TtP_CvrIOu2RJt"/>
 <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>

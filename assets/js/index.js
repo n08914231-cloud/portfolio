@@ -143,10 +143,13 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const observedSections = sectionLinks
       .map((link) => document.getElementById(link.dataset.scrollTarget))
       .filter((section) => section && section.id !== 'top');
+    let activeNavigationTarget = null;
+    let navigationFramePending = false;
 
     function setActiveNavigation(target) {
       const activeLink = sectionLinks.find((link) => link.dataset.scrollTarget === target);
-      if (!activeLink) return;
+      if (!activeLink || target === activeNavigationTarget) return;
+      activeNavigationTarget = target;
 
       sectionLinks.forEach((link) => {
         if (link === activeLink) {
@@ -159,6 +162,16 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       if (!navigationIndicator || primaryNavigation.offsetParent === null) return;
       navigationIndicator.style.width = `${activeLink.offsetWidth}px`;
       navigationIndicator.style.transform = `translateX(${activeLink.offsetLeft}px)`;
+
+      if (primaryNavigation.scrollWidth > primaryNavigation.clientWidth) {
+        const navigationBounds = primaryNavigation.getBoundingClientRect();
+        const linkBounds = activeLink.getBoundingClientRect();
+        if (linkBounds.left < navigationBounds.left + 8) {
+          primaryNavigation.scrollLeft -= navigationBounds.left + 8 - linkBounds.left;
+        } else if (linkBounds.right > navigationBounds.right - 8) {
+          primaryNavigation.scrollLeft += linkBounds.right - navigationBounds.right + 8;
+        }
+      }
     }
 
     function updateNavigationFromScroll() {
@@ -171,25 +184,31 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       setActiveNavigation(currentTarget);
     }
 
-    sectionLinks.forEach((link) => {
-      link.addEventListener('click', (event) => {
-        const target = link.dataset.scrollTarget;
-        const targetSection = document.getElementById(target);
-        setActiveNavigation(target);
+    function scheduleNavigationUpdate() {
+      if (navigationFramePending) return;
+      navigationFramePending = true;
+      window.requestAnimationFrame(() => {
+        navigationFramePending = false;
+        updateNavigationFromScroll();
+      });
+    }
 
-        event.preventDefault();
-        if (window.location.hash !== link.hash) {
-          window.history.pushState(null, '', link.hash);
-        }
-        if (target === 'top') {
-          window.scrollTo({ top: 0, behavior: 'instant' });
-        } else if (targetSection) {
-          window.scrollTo({ top: targetSection.offsetTop, behavior: 'instant' });
-        }
+    sectionLinks.forEach((link) => {
+      link.addEventListener('click', () => {
+        setActiveNavigation(link.dataset.scrollTarget);
       });
     });
-    window.addEventListener('scroll', updateNavigationFromScroll, { passive: true });
-    window.addEventListener('resize', updateNavigationFromScroll);
+    window.addEventListener('scroll', scheduleNavigationUpdate, { passive: true });
+    window.addEventListener('resize', () => {
+      updateNavigationFromScroll();
+      if (activeNavigationTarget) {
+        const activeLink = sectionLinks.find((link) => link.dataset.scrollTarget === activeNavigationTarget);
+        if (activeLink && navigationIndicator && primaryNavigation.offsetParent !== null) {
+          navigationIndicator.style.width = `${activeLink.offsetWidth}px`;
+          navigationIndicator.style.transform = `translateX(${activeLink.offsetLeft}px)`;
+        }
+      }
+    });
     window.addEventListener('load', updateNavigationFromScroll, { once: true });
     setActiveNavigation('top');
     updateNavigationFromScroll();

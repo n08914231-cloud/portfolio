@@ -100,6 +100,22 @@
         display: none;
       }
     }
+    @media (max-width: 639px) {
+      #game-navigation {
+        display: flex;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        justify-content: center;
+        border-top: 0;
+        border-radius: 0 0 14px 14px;
+        padding: 6px 12px;
+        background: rgba(9, 10, 13, 0.96);
+      }
+      #game-navigation a { min-height: 40px; padding-inline: 16px; }
+      #game-back-link { display: none; }
+    }
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after { scroll-behavior: auto !important; }
     }
@@ -112,11 +128,11 @@
         <span class="flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 bg-white/[0.04] font-mono text-xs font-semibold text-[#00f2fe]">&lt;/&gt;</span>
         <span class="text-base font-semibold">Alex<span class="font-mono text-xs text-[#00f2fe]">.dev</span></span>
       </a>
-      <nav class="hidden items-center gap-1 rounded-full border border-white/[0.08] bg-white/[0.04] p-1 sm:flex" aria-label="Main navigation">
+      <nav id="game-navigation" class="hidden items-center gap-1 rounded-full border border-white/[0.08] bg-white/[0.04] p-1 sm:flex" aria-label="Main navigation">
         <a class="whitespace-nowrap rounded-full px-4 py-2 text-xs text-gray-400 transition-all duration-200 hover:bg-white/[0.06] hover:text-white" href="index.html">Overview</a>
         <a class="whitespace-nowrap rounded-full bg-white/[0.12] px-4 py-2 text-xs font-medium text-white shadow-sm transition-all duration-200" href="mini-game.html" aria-current="page">Mini Game</a>
       </nav>
-      <a class="inline-flex items-center gap-2 rounded-full border border-white/[0.1] bg-white/[0.04] px-3 py-2 text-xs text-gray-300 transition-colors hover:border-[#00f2fe]/40 hover:text-white" href="index.html">
+      <a id="game-back-link" class="inline-flex items-center gap-2 rounded-full border border-white/[0.1] bg-white/[0.04] px-3 py-2 text-xs text-gray-300 transition-colors hover:border-[#00f2fe]/40 hover:text-white" href="index.html">
         <span class="material-symbols-outlined text-[17px]" aria-hidden="true">arrow_back</span>
         <span class="hidden sm:inline">Zur Startseite</span>
         <span class="sm:hidden">Zurück</span>
@@ -124,7 +140,7 @@
     </div>
   </header>
 
-  <main class="mx-auto w-full max-w-7xl px-4 pb-8 pt-24 sm:px-8 sm:pt-28">
+  <main class="mx-auto w-full max-w-7xl px-4 pb-8 pt-32 sm:px-8 sm:pt-28">
     <section class="mb-5 flex flex-col justify-between gap-4 sm:mb-7 sm:flex-row sm:items-end">
       <div>
         <p class="mb-2 font-mono text-[10px] font-medium uppercase tracking-[0.18em] text-[#00f2fe]">Interactive Lab / 01</p>
