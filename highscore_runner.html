@@ -329,6 +329,36 @@
       color: #ffcc00;
       letter-spacing: 1px;
     }
+    .leaderboard-form {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .leaderboard-form input {
+      min-width: 0;
+      flex: 1;
+      padding: 8px;
+      border: 2px solid #00ffff;
+      border-radius: 2px;
+      background: #111;
+      color: #fff;
+      font-family: inherit;
+      font-size: 0.65rem;
+      user-select: text;
+      -webkit-user-select: text;
+    }
+    .leaderboard-form .btn {
+      padding: 8px;
+      font-size: 0.58rem;
+    }
+    #leaderboard-status {
+      min-height: 1.2em;
+      margin-bottom: 8px;
+      color: #ffcc00;
+      font-size: 0.5rem;
+      line-height: 1.5;
+      overflow-wrap: anywhere;
+    }
     table {
       width: 100%;
       border-collapse: collapse;
@@ -451,10 +481,16 @@
       
       <div class="highscore-card">
         <h3>ARCADE LEADERBOARD</h3>
+        <form class="leaderboard-form" id="leaderboard-form">
+          <input id="player-name" name="player-name" type="text" maxlength="16" minlength="2" placeholder="YOUR NAME" autocomplete="nickname" required aria-label="Dein Name für das Leaderboard">
+          <button class="btn" id="submit-score-btn" type="submit">EINTRAGEN</button>
+        </form>
+        <div id="leaderboard-status" role="status" aria-live="polite"></div>
         <table>
           <thead>
             <tr>
               <th>RANK</th>
+              <th>PLAYER</th>
               <th>SCORE</th>
               <th>DATE</th>
             </tr>
@@ -474,6 +510,7 @@
 
   <!-- Three.js CDN -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="assets/js/supabase-config.js"></script>
 
   <script>
     /* =========================================================================
@@ -670,7 +707,7 @@
       getScores() {
         try {
           const raw = localStorage.getItem(this.storageKey);
-          return raw ? JSON.parse(raw) : [];
+          return raw ? JSON.parse(raw).slice(0, 50) : [];
         } catch (e) {
           return [];
         }
@@ -680,32 +717,100 @@
         if (score <= 0) return;
         const scores = this.getScores();
         const dateStr = new Date().toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: '2-digit' });
-        scores.push({ score: Math.floor(score), date: dateStr });
+        scores.push({ player_name: 'YOU', score: Math.floor(score), date: dateStr });
         scores.sort((a, b) => b.score - a.score);
-        const top = scores.slice(0, 10);
+        const top = scores.slice(0, 50);
         localStorage.setItem(this.storageKey, JSON.stringify(top));
         return top;
       },
 
-      renderTable(currentScore) {
-        const body = document.getElementById('highscore-body');
-        const scores = this.getScores();
-        body.innerHTML = '';
-        if (scores.length === 0) {
-          body.innerHTML = '<tr><td colspan="3">NO RECORDS</td></tr>';
+      isConfigured() {
+        const config = window.SUPABASE_CONFIG || {};
+        return Boolean(config.url && config.anonKey && !config.url.includes('YOUR_') && !config.anonKey.includes('YOUR_'));
+      },
+
+      async loadLeaderboard(currentScore) {
+        if (!this.isConfigured()) {
+          document.getElementById('leaderboard-status').textContent = 'SUPABASE SETUP NEEDED - LOCAL SCORES';
+          this.renderTable(this.getScores(), currentScore);
           return;
         }
 
-        scores.slice(0, 5).forEach((item, index) => {
+        const config = window.SUPABASE_CONFIG;
+        const url = `${config.url.replace(/\/$/, '')}/rest/v1/arcade_leaderboard?select=player_name,score,created_at&order=score.desc,created_at.asc&limit=50`;
+        try {
+          const response = await fetch(url, {
+            headers: {
+              apikey: config.anonKey
+            }
+          });
+          if (!response.ok) throw new Error('Leaderboard konnte nicht geladen werden.');
+          const rows = await response.json();
+          document.getElementById('leaderboard-status').textContent = 'GLOBAL TOP 50';
+          this.renderTable(rows.map(row => ({
+            player_name: row.player_name,
+            score: row.score,
+            date: new Date(row.created_at).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: '2-digit' })
+          })), currentScore);
+        } catch (error) {
+          document.getElementById('leaderboard-status').textContent = 'OFFLINE - LOCAL SCORES';
+          this.renderTable(this.getScores(), currentScore);
+        }
+      },
+
+      async submitScore(score, playerName) {
+        if (!this.isConfigured()) throw new Error('Supabase ist noch nicht konfiguriert.');
+        const config = window.SUPABASE_CONFIG;
+        const response = await fetch(`${config.url.replace(/\/$/, '')}/rest/v1/rpc/submit_arcade_score`, {
+          method: 'POST',
+          headers: {
+            apikey: config.anonKey,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ p_player_name: playerName, p_score: Math.floor(score) })
+        });
+        if (!response.ok) {
+          let details = '';
+          try {
+            const error = await response.json();
+            details = error.message || error.details || error.hint || '';
+          } catch (error) {
+            details = response.statusText;
+          }
+          throw new Error(details || `HTTP ${response.status}`);
+        }
+        const rows = await response.json();
+        document.getElementById('leaderboard-status').textContent = 'SCORE ONLINE GESPEICHERT';
+        this.renderTable(rows.map(row => ({
+          player_name: row.player_name,
+          score: row.score,
+          date: new Date(row.created_at).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: '2-digit' })
+        })), score);
+      },
+
+      renderTable(scores, currentScore) {
+        const body = document.getElementById('highscore-body');
+        body.innerHTML = '';
+        if (scores.length === 0) {
+          body.innerHTML = '<tr><td colspan="4">NO RECORDS</td></tr>';
+          return;
+        }
+
+        scores.slice(0, 50).forEach((item, index) => {
           const isLatest = Math.floor(currentScore) === item.score;
           const tr = document.createElement('tr');
           if (isLatest) tr.style.color = '#ffcc00';
           const scorePad = String(item.score).padStart(6, '0');
-          tr.innerHTML = `
-            <td>#${index + 1}</td>
-            <td>${scorePad}</td>
-            <td>${item.date}</td>
-          `;
+          [
+            `#${index + 1}`,
+            item.player_name || 'PLAYER',
+            scorePad,
+            item.date || new Date(item.created_at).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: '2-digit' })
+          ].forEach(value => {
+            const cell = document.createElement('td');
+            cell.textContent = value;
+            tr.appendChild(cell);
+          });
           body.appendChild(tr);
         });
       },
@@ -753,6 +858,11 @@
     const overlay = document.getElementById('overlay');
     const restartBtn = document.getElementById('restart-btn');
     const exportTxtBtn = document.getElementById('export-txt-btn');
+    const leaderboardForm = document.getElementById('leaderboard-form');
+    const playerNameInput = document.getElementById('player-name');
+    const leaderboardStatus = document.getElementById('leaderboard-status');
+    const submitScoreBtn = document.getElementById('submit-score-btn');
+    let completedScore = 0;
 
     const zoneBanner = document.getElementById('zone-banner');
     const bannerTitle = document.getElementById('banner-title');
@@ -1410,17 +1520,39 @@
 
     restartBtn.addEventListener('click', restartGame);
     exportTxtBtn.addEventListener('click', () => HighscoreManager.exportAsTxtFile());
+    leaderboardForm.addEventListener('submit', async event => {
+      event.preventDefault();
+      const playerName = playerNameInput.value.trim();
+      if (playerName.length < 2 || playerName.length > 16) {
+        leaderboardStatus.textContent = 'NAME MUST BE 2-16 CHARACTERS';
+        return;
+      }
+
+      submitScoreBtn.disabled = true;
+      leaderboardStatus.textContent = 'SENDING SCORE...';
+      try {
+        localStorage.setItem('pixel_protocol_player_name', playerName);
+        await HighscoreManager.submitScore(completedScore, playerName);
+      } catch (error) {
+        console.error('Leaderboard upload failed:', error);
+        leaderboardStatus.textContent = `UPLOAD FAILED - LOCAL SCORE KEPT: ${error.message}`;
+      } finally {
+        submitScoreBtn.disabled = false;
+      }
+    });
+    playerNameInput.value = localStorage.getItem('pixel_protocol_player_name') || '';
 
     function triggerGameOver() {
       if (isGameOver) return;
       isGameOver = true;
       AudioFX.crash();
 
-      const finalScore = Math.floor(distance);
-      finalScoreDisplay.innerText = String(finalScore).padStart(6, '0');
+      completedScore = Math.floor(distance);
+      finalScoreDisplay.innerText = String(completedScore).padStart(6, '0');
       finalCoinsDisplay.innerText = coinCount;
-      HighscoreManager.addScore(finalScore);
-      HighscoreManager.renderTable(finalScore);
+      HighscoreManager.addScore(completedScore);
+      HighscoreManager.renderTable(HighscoreManager.getScores(), completedScore);
+      HighscoreManager.loadLeaderboard(completedScore);
 
       overlay.classList.add('active');
     }
