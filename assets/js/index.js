@@ -145,6 +145,8 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       .filter((section) => section && section.id !== 'top');
     let activeNavigationTarget = null;
     let navigationFramePending = false;
+    let pendingNavigationTarget = null;
+    let scrollSettleTimer = null;
 
     function setActiveNavigation(target) {
       const activeLink = sectionLinks.find((link) => link.dataset.scrollTarget === target);
@@ -161,7 +163,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
       if (!navigationIndicator || primaryNavigation.offsetParent === null) return;
       navigationIndicator.style.width = `${activeLink.offsetWidth}px`;
-      navigationIndicator.style.transform = `translateX(${activeLink.offsetLeft}px)`;
+      navigationIndicator.style.transform = `translate3d(${activeLink.offsetLeft}px, 0, 0)`;
 
       if (primaryNavigation.scrollWidth > primaryNavigation.clientWidth) {
         const navigationBounds = primaryNavigation.getBoundingClientRect();
@@ -175,6 +177,8 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
 
     function updateNavigationFromScroll() {
+      if (pendingNavigationTarget) return;
+
       const scrollMarker = window.scrollY + window.innerHeight * 0.3;
       let currentTarget = 'top';
 
@@ -185,6 +189,11 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
 
     function scheduleNavigationUpdate() {
+      if (pendingNavigationTarget) {
+        window.clearTimeout(scrollSettleTimer);
+        scrollSettleTimer = window.setTimeout(finishNavigationScroll, 180);
+        return;
+      }
       if (navigationFramePending) return;
       navigationFramePending = true;
       window.requestAnimationFrame(() => {
@@ -193,19 +202,29 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       });
     }
 
+    function finishNavigationScroll() {
+      window.clearTimeout(scrollSettleTimer);
+      pendingNavigationTarget = null;
+      updateNavigationFromScroll();
+    }
+
     sectionLinks.forEach((link) => {
       link.addEventListener('click', () => {
-        setActiveNavigation(link.dataset.scrollTarget);
+        pendingNavigationTarget = link.dataset.scrollTarget;
+        setActiveNavigation(pendingNavigationTarget);
+        window.clearTimeout(scrollSettleTimer);
+        scrollSettleTimer = window.setTimeout(finishNavigationScroll, 180);
       });
     });
     window.addEventListener('scroll', scheduleNavigationUpdate, { passive: true });
+    window.addEventListener('scrollend', finishNavigationScroll);
     window.addEventListener('resize', () => {
       updateNavigationFromScroll();
       if (activeNavigationTarget) {
         const activeLink = sectionLinks.find((link) => link.dataset.scrollTarget === activeNavigationTarget);
         if (activeLink && navigationIndicator && primaryNavigation.offsetParent !== null) {
           navigationIndicator.style.width = `${activeLink.offsetWidth}px`;
-          navigationIndicator.style.transform = `translateX(${activeLink.offsetLeft}px)`;
+          navigationIndicator.style.transform = `translate3d(${activeLink.offsetLeft}px, 0, 0)`;
         }
       }
     });

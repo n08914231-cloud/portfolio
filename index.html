@@ -31,7 +31,8 @@
       background: rgba(255, 255, 255, 0.12);
       box-shadow: 0 1px 8px rgba(0, 0, 0, 0.16);
       pointer-events: none;
-      transition: width 360ms cubic-bezier(0.2, 0.75, 0.25, 1), transform 360ms cubic-bezier(0.2, 0.75, 0.25, 1);
+      will-change: width, transform;
+      transition: width 460ms cubic-bezier(0.22, 1, 0.36, 1), transform 460ms cubic-bezier(0.22, 1, 0.36, 1);
     }
     #primary-navigation a {
       position: relative;
