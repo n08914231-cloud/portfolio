@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta content="web_standard" name="shell-type"/>
+<title>Alex.dev | Developer Portfolio &amp; Resume</title>
+<link href="assets/fonts/fonts.css" rel="stylesheet"/>
+<!-- Tailwind CSS CDN with Plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              bg: "#0B0C0E",
+              surface: "#111317",
+              card: "#16181D",
+              border: "#23262D",
+              cyan: "#00f2fe",
+              violet: "#8b5cf6",
+              text: "#F1F5F9",
+              muted: "#94A3B8"
+            }
+          },
+          fontFamily: {
+            sans: ["Inter", "sans-serif"],
+            display: ["Inter", "sans-serif"],
+            mono: ["Inter", "sans-serif"]
+          }
+        }
+      }
+    };
+  </script>
+<style>
+    @layer base {
+      html, body {
+        margin: 0;
+        padding: 0;
+        background-color: #0B0C0E;
+        color: #E2E8F0;
+        font-family: 'Inter', sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+    }
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0B0C0E;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #23262D;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #333842;
+    }
+    .glass-apple {
+      background: rgba(18, 20, 26, 0.72);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+    }
+    .glass-pill {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(12px);
+    }
+  </style>
+</head>
+<body class="bg-[#0B0C0E] text-slate-200 font-sans antialiased selection:bg-[#00f2fe]/20 selection:text-[#00f2fe] min-h-screen flex flex-col">
+<!-- Fixed Minimalist Apple Navigation Header -->
+<header class="fixed top-0 left-0 w-full z-50 bg-[#0B0C0E]/75 backdrop-blur-xl border-b border-white/[0.06] transition-all duration-300">
+<div class="h-16 max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 flex items-center justify-between gap-4">
+<!-- Brand Logo -->
+<div class="flex items-center gap-3">
+<a class="flex items-center gap-2.5 text-white font-display text-base tracking-tight group" data-path="home" href="#">
+<div class="w-7 h-7 rounded-xl bg-gradient-to-tr from-violet-600 to-[#00f2fe] p-[1.5px] flex items-center justify-center">
+<div class="w-full h-full bg-[#0B0C0E] rounded-[10px] flex items-center justify-center text-[10px] font-mono font-bold text-[#00f2fe]">
+              &lt;/&gt;
+            </div>
+</div>
+<span class="font-semibold tracking-tight text-white group-hover:text-slate-100">Alex<span class="text-[#00f2fe] font-mono text-xs">.dev</span></span>
+</a>
+</div>
+<!-- Navigation Tabs (Sleek Apple Segmented Pill) -->
+<nav class="hidden md:flex items-center gap-1 p-1 rounded-full bg-white/[0.04] border border-white/[0.08]">
+<a class="px-4 py-1 rounded-full font-sans text-xs text-slate-400 hover:text-white transition-colors" data-path="home" href="#">Home</a>
+<a aria-current="page" class="px-4 py-1 rounded-full text-xs font-medium bg-white/[0.12] text-white shadow-sm" data-path="resume" href="#">Resume</a>
+<a class="px-4 py-1 rounded-full font-sans text-xs text-slate-400 hover:text-white transition-colors" data-path="lab-game" href="#">Lab / Game</a>
+</nav>
+<!-- Right Action Group -->
+<div class="flex items-center gap-4">
+<!-- Status Indicator -->
+<div class="hidden sm:flex items-center gap-2 h-7 px-3.5 rounded-full bg-white/[0.03] border border-emerald-500/20">
+<span class="relative flex h-2 w-2">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+</span>
+<span class="font-mono text-[11px] tracking-wide uppercase text-emerald-400 font-medium">Available</span>
+</div>
+<!-- Social & Actions -->
+<div class="flex items-center gap-1.5 border-l border-white/[0.08] pl-3.5">
+<a aria-label="GitHub Profile" class="p-1.5 rounded-full text-slate-400 hover:text-white hover:bg-white/[0.06] transition-colors" href="https://github.com" rel="noreferrer" target="_blank">
+<span class="material-symbols-outlined text-[19px]">terminal</span>
+</a>
+<a aria-label="LinkedIn Profile" class="p-1.5 rounded-full text-slate-400 hover:text-white hover:bg-white/[0.06] transition-colors" href="https://linkedin.com" rel="noreferrer" target="_blank">
+<span class="material-symbols-outlined text-[19px]">share</span>
+</a>
+<button aria-label="Toggle Light and Dark Theme" class="p-1.5 rounded-full text-slate-400 hover:text-white hover:bg-white/[0.06] transition-colors flex items-center justify-center" id="theme-switcher" type="button">
+<span class="material-symbols-outlined text-[19px]">dark_mode</span>
+</button>
+</div>
+<!-- Profile Thumbnail -->
+<div class="pl-0.5">
+<div class="w-8 h-8 rounded-full ring-1 ring-white/20 overflow-hidden bg-slate-800">
+<img alt="Alex Profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida/AEtjO1WCTk2NQqUcknP0PrTOV16hl1N1K2kzEpZet4V7rQ1ivDEh_9aVhqDfsSyOiTYDfwwNLYZoLpT-MU1CB5G66q43xt1jesWf9ATND6E1JH7mwskD_sYE9FnJ7QvlfYXhu1sU7I9Qf0Qhl4wKnlf4sEZMdngqCYOzCFMEa0A7EgyIYGnOO3s2yPyPnFo6SL1EhciYtfx5QrZDuBP7C6ULFg7sAuLF2nd-YyQ8NHcFNHi-22TtP_CvrIOu2RJt"/>
+</div>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Content Area with Generous Apple Spacing -->
+<main class="w-full pt-28 pb-32 flex-grow">
+<div class="max-w-6xl mx-auto px-6 sm:px-8 lg:px-12 flex flex-col gap-24 sm:gap-32">
+<!-- Editorial Hero Profile Card with Developer Portrait https://lh3.googleusercontent.com/aida/AEtjO1WCTk2NQqUcknP0PrTOV16hl1N1K2kzEpZet4V7rQ1ivDEh_9aVhqDfsSyOiTYDfwwNLYZoLpT-MU1CB5G66q43xt1jesWf9ATND6E1JH7mwskD_sYE9FnJ7QvlfYXhu1sU7I9Qf0Qhl4wKnlf4sEZMdngqCYOzCFMEa0A7EgyIYGnOO3s2yPyPnFo6SL1EhciYtfx5QrZDuBP7C6ULFg7sAuLF2nd-YyQ8NHcFNHi-22TtP_CvrIOu2RJt -->
+<section class="relative rounded-3xl glass-apple overflow-hidden border border-white/[0.08] p-8 sm:p-12 lg:p-14 shadow-2xl">
+<div class="absolute -top-36 -right-36 w-96 h-96 bg-gradient-to-br from-[#00f2fe]/10 to-violet-600/10 rounded-full blur-3xl pointer-events-none"></div>
+<div class="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-10 lg:gap-14">
+<!-- Headshot Editorial Portrait Container -->
+<div class="relative shrink-0 group">
+<div class="w-44 h-44 sm:w-52 sm:h-52 lg:w-56 lg:h-56 rounded-2xl overflow-hidden ring-1 ring-white/15 shadow-2xl relative">
+<img alt="Alex Chen Headshot Portrait" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src="https://lh3.googleusercontent.com/aida/AEtjO1WCTk2NQqUcknP0PrTOV16hl1N1K2kzEpZet4V7rQ1ivDEh_9aVhqDfsSyOiTYDfwwNLYZoLpT-MU1CB5G66q43xt1jesWf9ATND6E1JH7mwskD_sYE9FnJ7QvlfYXhu1sU7I9Qf0Qhl4wKnlf4sEZMdngqCYOzCFMEa0A7EgyIYGnOO3s2yPyPnFo6SL1EhciYtfx5QrZDuBP7C6ULFg7sAuLF2nd-YyQ8NHcFNHi-22TtP_CvrIOu2RJt"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
+</div>
+<div class="absolute -bottom-3 -right-3 px-3 py-1 rounded-full glass-pill text-[11px] font-mono text-emerald-400 font-medium flex items-center gap-1.5 shadow-lg border border-emerald-500/30">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+<span>SF Bay Area / Remote</span>
+</div>
+</div>
+<!-- Profile Info & Meta -->
+<div class="flex flex-col gap-4 text-center lg:text-left flex-grow">
+<div class="flex flex-wrap items-center justify-center lg:justify-start gap-2.5">
+<span class="px-3 py-1 rounded-full bg-white/[0.05] border border-white/10 text-xs font-mono tracking-wider uppercase text-[#00f2fe] font-medium">
+              Staff Full-Stack Apprentice
+            </span>
+<span class="text-xs font-mono text-slate-400 px-2 py-0.5 rounded-full bg-white/[0.03]">v4.2 Manifest</span>
+</div>
+<h1 class="text-3xl sm:text-4xl lg:text-5xl font-display font-semibold text-white tracking-tight">
+            Alex Chen
+          </h1>
+<p class="text-slate-300 text-base sm:text-lg leading-relaxed max-w-2xl font-light">
+            Crafting responsive, high-throughput cloud architectures and ultra-refined user interfaces. Building at the intersection of aesthetic restraint and rigorous systems performance.
+          </p>
+<!-- Quick Badges -->
+<div class="flex flex-wrap items-center justify-center lg:justify-start gap-3 pt-2">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-white/[0.03] border border-white/[0.07] text-xs text-slate-300">
+<span class="material-symbols-outlined text-[16px] text-[#00f2fe]">verified</span> Meta Certified Frontend
+            </span>
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-white/[0.03] border border-white/[0.07] text-xs text-slate-300">
+<span class="material-symbols-outlined text-[16px] text-purple-400">cloud</span> AWS Certified
+            </span>
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-white/[0.03] border border-white/[0.07] text-xs text-slate-300">
+<span class="material-symbols-outlined text-[16px] text-emerald-400">school</span> B.S. Info Systems
+            </span>
+</div>
+</div>
+<!-- Header Action Buttons -->
+<div class="flex flex-col sm:flex-row lg:flex-col gap-3 shrink-0 w-full sm:w-auto">
+<a class="px-6 py-3 rounded-full bg-white text-black hover:bg-slate-200 transition-all font-sans font-medium text-xs tracking-wide flex items-center justify-center gap-2 shadow-lg shadow-white/10 active:scale-95" href="#download" onclick="alert('Preparing verified PDF CV compilation bundle...'); return false;">
+<span class="material-symbols-outlined text-[18px]">download</span>
+<span>Download CV (PDF)</span>
+</a>
+<button class="px-5 py-3 rounded-full glass-pill hover:bg-white/[0.08] text-slate-200 transition-all font-mono text-xs flex items-center justify-center gap-2 active:scale-95" id="copy-summary-btn" onclick="navigator.clipboard.writeText('Alex Chen: Full-Stack Engineer proficient in TypeScript, React, Node.js, and Cloud Infrastructure. 6+ production web applications deployed with 400+ hours of architectural focus.'); const orig = this.innerHTML; this.innerHTML='&lt;span class=\'material-symbols-outlined text-[16px] text-emerald-400\'&gt;check&lt;/span&gt;&lt;span&gt;Copied!&lt;/span&gt;'; setTimeout(()=&gt;this.innerHTML=orig, 2000);">
+<span class="material-symbols-outlined text-[16px] text-slate-400">content_copy</span>
+<span>Copy Summary</span>
+</button>
+<button class="px-5 py-3 rounded-full glass-pill hover:bg-white/[0.08] text-slate-400 hover:text-white transition-all font-mono text-xs flex items-center justify-center gap-2 active:scale-95" onclick="window.print()">
+<span class="material-symbols-outlined text-[16px]">print</span>
+<span>Print View</span>
+</button>
+</div>
+</div>
+</section>
+<!-- Sleek Metric Ribbon (Subtle, Spacious, High-Contrast Typography) -->
+<section class="grid grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
+<div class="p-8 rounded-3xl glass-apple border border-white/[0.06] flex flex-col gap-2">
+<span class="text-xs font-mono tracking-wider text-slate-400 uppercase">Commits Shipped</span>
+<div class="text-3xl sm:text-4xl font-display font-light text-white tracking-tight">1,420<span class="text-[#00f2fe] text-2xl font-mono">+</span></div>
+<p class="text-xs text-slate-400 font-light mt-1">Across 18 public &amp; private repos in 2024</p>
+</div>
+<div class="p-8 rounded-3xl glass-apple border border-white/[0.06] flex flex-col gap-2">
+<span class="text-xs font-mono tracking-wider text-slate-400 uppercase">System Focus</span>
+<div class="text-3xl sm:text-4xl font-display font-light text-white tracking-tight">400<span class="text-violet-400 text-2xl font-mono">+</span></div>
+<p class="text-xs text-slate-400 font-light mt-1">Hours dedicated to systems architecture</p>
+</div>
+<div class="p-8 rounded-3xl glass-apple border border-white/[0.06] flex flex-col gap-2">
+<span class="text-xs font-mono tracking-wider text-slate-400 uppercase">Test Coverage</span>
+<div class="text-3xl sm:text-4xl font-display font-light text-emerald-400 tracking-tight">94.8<span class="text-slate-400 text-xl font-mono">%</span></div>
+<p class="text-xs text-slate-400 font-light mt-1">Jest &amp; Playwright end-to-end integration</p>
+</div>
+<div class="p-8 rounded-3xl glass-apple border border-white/[0.06] flex flex-col gap-2">
+<span class="text-xs font-mono tracking-wider text-slate-400 uppercase">Live Edge Apps</span>
+<div class="text-3xl sm:text-4xl font-display font-light text-white tracking-tight">06<span class="text-[#00f2fe] text-xs font-mono ml-2 px-2 py-0.5 rounded-full bg-[#00f2fe]/10 border border-[#00f2fe]/20">PROD</span></div>
+<p class="text-xs text-slate-400 font-light mt-1">Deployed globally on AWS &amp; Vercel Edge</p>
+</div>
+</section>
+<!-- Visual Craft Showcase Card with Workspace Image https://lh3.googleusercontent.com/aida-public/AB6AXuCAjzYpVkDagaxSGwEF7m9Qsdv7YPnccHU2Ms95ckYlY2-mDI13wLCL1wLxye5gHD8PMHd5bGVjGd3RyW4uR3fosO5V6ThZ3Lxvxa2agZzBqcZ0VQRYsAVJ9cL9MZvKq4y7UmxuzEd5F9tR9ZbVTPFvwV1FJK1I6TeKAgHiE-FGhwzoHYjzN1yvrFsddRqaWKgvHJhpCXQbSrbhRfzN5hLxYpEFQhH6DsZBKi69Ezt5vi_FHMSc6zjudQ -->
+<section class="rounded-3xl glass-apple border border-white/[0.08] overflow-hidden flex flex-col lg:flex-row items-stretch">
+<div class="lg:w-7/12 relative min-h-[300px] sm:min-h-[380px] overflow-hidden">
+<img alt="Minimalist developer workspace" class="w-full h-full object-cover transition-transform duration-700 hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCAjzYpVkDagaxSGwEF7m9Qsdv7YPnccHU2Ms95ckYlY2-mDI13wLCL1wLxye5gHD8PMHd5bGVjGd3RyW4uR3fosO5V6ThZ3Lxvxa2agZzBqcZ0VQRYsAVJ9cL9MZvKq4y7UmxuzEd5F9tR9ZbVTPFvwV1FJK1I6TeKAgHiE-FGhwzoHYjzN1yvrFsddRqaWKgvHJhpCXQbSrbhRfzN5hLxYpEFQhH6DsZBKi69Ezt5vi_FHMSc6zjudQ"/>
+<div class="absolute inset-0 bg-gradient-to-t lg:bg-gradient-to-r from-transparent via-[#0B0C0E]/40 to-[#111317]"></div>
+</div>
+<div class="lg:w-5/12 p-8 sm:p-12 flex flex-col justify-between gap-6 bg-[#111317]/90 backdrop-blur-xl">
+<div class="flex flex-col gap-4">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-[#00f2fe]"></span>
+<span class="text-xs font-mono uppercase tracking-widest text-[#00f2fe]">Craft &amp; Ergonomics</span>
+</div>
+<h2 class="text-2xl sm:text-3xl font-display font-medium text-white tracking-tight">The Studio Environment</h2>
+<p class="text-slate-300 text-sm leading-relaxed font-light">
+          Deliberate simplicity enables deep conceptual clarity. Every software module is engineered in an environment engineered for zero friction, high focus, and meticulous refinement.
+        </p>
+</div>
+<div class="grid grid-cols-2 gap-4 pt-4 border-t border-white/[0.06]">
+<div>
+<div class="text-xs font-mono text-slate-400 uppercase">Setup</div>
+<div class="text-sm font-medium text-white mt-1">Apple Studio Display</div>
+</div>
+<div>
+<div class="text-xs font-mono text-slate-400 uppercase">Editor</div>
+<div class="text-sm font-medium text-white mt-1">VS Code + Neovim</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Career Progression Timeline (Apple Minimalist Aesthetic) -->
+<section class="flex flex-col gap-12 sm:gap-16">
+<div class="flex flex-col gap-3">
+<div class="flex items-center gap-2 font-mono text-xs text-[#00f2fe] tracking-widest uppercase">
+<span class="w-1.5 h-1.5 rounded-full bg-[#00f2fe]"></span>
+<span>Trajectory 2020 — 2025</span>
+</div>
+<h2 class="text-3xl sm:text-4xl font-display font-semibold text-white tracking-tight">Career &amp; Engineering Milestones</h2>
+<p class="text-slate-400 text-base font-light max-w-2xl">
+        Systematic progression through foundational computing, accredited cloud proficiency, and full-stack software delivery.
+      </p>
+</div>
+<div class="flex flex-col gap-8 relative">
+<!-- Milestone 1 -->
+<div class="p-8 sm:p-10 rounded-3xl glass-apple border border-white/[0.08] hover:border-white/20 transition-all flex flex-col gap-6">
+<div class="flex flex-wrap items-center justify-between gap-4">
+<div class="flex items-center gap-3">
+<span class="px-3.5 py-1 rounded-full bg-[#00f2fe]/10 text-[#00f2fe] border border-[#00f2fe]/30 font-mono text-xs font-semibold">
+              2024 — PRESENT
+            </span>
+<span class="flex items-center gap-1.5 text-xs font-mono text-emerald-400">
+<span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              Active Intensive
+            </span>
+</div>
+<span class="text-xs font-mono text-slate-400">High-Output Production</span>
+</div>
+<div class="flex flex-col gap-2">
+<h3 class="text-2xl font-display font-medium text-white tracking-tight">Full-Stack Software Engineering Apprentice</h3>
+<span class="text-sm font-mono text-[#00f2fe]">Self-Directed Intensive // Full Scale Applications</span>
+</div>
+<p class="text-slate-300 text-sm sm:text-base leading-relaxed font-light">
+          Architected and deployed 6+ full-stack production web applications. Mastered enterprise-grade TypeScript 5, React 19 concurrent patterns, reactive state synchronization, and robust Node.js microservice architecture with PostgreSQL.
+        </p>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+<div class="p-4 rounded-2xl bg-white/[0.02] border border-white/[0.06] flex items-start gap-3.5">
+<span class="material-symbols-outlined text-[#00f2fe] text-[20px] mt-0.5 shrink-0">check_circle</span>
+<div>
+<div class="text-xs font-medium text-white">System Architecture &amp; Indexing</div>
+<div class="text-xs text-slate-400 mt-1 font-light">Over 400 hours dedicated to relational database schema design, index optimization, and distributed state.</div>
+</div>
+</div>
+<div class="p-4 rounded-2xl bg-white/[0.02] border border-white/[0.06] flex items-start gap-3.5">
+<span class="material-symbols-outlined text-[#00f2fe] text-[20px] mt-0.5 shrink-0">check_circle</span>
+<div>
+<div class="text-xs font-medium text-white">Automated Edge Pipelines</div>
+<div class="text-xs text-slate-400 mt-1 font-light">End-to-end GitHub Actions continuous delivery, linting, test suites, and zero-downtime edge deployments.</div>
+</div>
+</div>
+</div>
+<div class="flex flex-wrap gap-2 pt-2 border-t border-white/[0.06]">
+<span class="px-3 py-1 rounded-full bg-white/[0.03] text-xs font-mono text-slate-300 border border-white/[0.06]">TypeScript 5</span>
+<span class="px-3 py-1 rounded-full bg-white/[0.03] text-xs font-mono text-slate-300 border border-white/[0.06]">Next.js 15</span>
+<span class="px-3 py-1 rounded-full bg-white/[0.03] text-xs font-mono text-slate-300 border border-white/[0.06]">PostgreSQL</span>
+<span class="px-3 py-1 rounded-full bg-white/[0.03] text-xs font-mono text-slate-300 border border-white/[0.06]">Docker</span>
+<span class="px-3 py-1 rounded-full bg-white/[0.03] text-xs font-mono text-slate-300 border border-white/[0.06]">Tailwind CSS</span>
+</div>
+</div>
+<!-- Milestone 2 -->
+<div class="p-8 sm:p-10 rounded-3xl glass-apple border border-white/[0.08] hover:border-white/20 transition-all flex flex-col gap-6">
+<div class="flex flex-wrap items-center justify-between gap-4">
+<div class="flex items-center gap-3">
+<span class="px-3.5 py-1 rounded-full bg-violet-500/10 text-violet-300 border border-violet-500/30 font-mono text-xs font-semibold">
+              2023 — 2024
+            </span>
+<span class="flex items-center gap-1.5 text-xs font-mono text-violet-300">
+<span class="material-symbols-outlined text-[16px]">verified</span>
+              Dual Certified
+            </span>
+</div>
+<span class="text-xs font-mono text-slate-400">Industry Credentials</span>
+</div>
+<div class="flex flex-col gap-2">
+<h3 class="text-2xl font-display font-medium text-white tracking-tight">Meta Certified Frontend Developer &amp; AWS Cloud Practitioner</h3>
+<span class="text-sm font-mono text-violet-300">Meta Professional Credential // AWS Infrastructure</span>
+</div>
+<p class="text-slate-300 text-sm sm:text-base leading-relaxed font-light">
+          Rigorously validated modern frontend craft and global cloud architecture. Focused on WCAG 2.1 accessibility mandates, reactive UI states, Web Vitals, and foundational AWS infrastructure (S3, CloudFront, Lambda, IAM).
+        </p>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+<div class="p-4 rounded-2xl bg-white/[0.02] border border-white/[0.06] flex flex-col gap-1.5">
+<div class="flex items-center justify-between">
+<span class="text-sm font-medium text-white">Meta Frontend Specialization</span>
+<span class="text-[10px] font-mono text-[#00f2fe] bg-[#00f2fe]/10 px-2 py-0.5 rounded-full border border-[#00f2fe]/20">ID: MF-99824</span>
+</div>
+<p class="text-xs text-slate-400 font-light mt-1">9-course series covering React component architecture, UX guidelines, test-driven dev, and DOM optimizations.</p>
+</div>
+<div class="p-4 rounded-2xl bg-white/[0.02] border border-white/[0.06] flex flex-col gap-1.5">
+<div class="flex items-center justify-between">
+<span class="text-sm font-medium text-white">AWS Cloud Practitioner</span>
+<span class="text-[10px] font-mono text-violet-300 bg-violet-500/10 px-2 py-0.5 rounded-full border border-violet-500/20">ID: AWS-00412</span>
+</div>
+<p class="text-xs text-slate-400 font-light mt-1">Foundational proficiency in global infrastructure, virtual private clouds (VPC), serverless scaling, and cloud security.</p>
+</div>
+</div>
+</div>
+<!-- Milestone 3 -->
+<div class="p-8 sm:p-10 rounded-3xl glass-apple border border-white/[0.08] hover:border-white/20 transition-all flex flex-col gap-6">
+<div class="flex flex-wrap items-center justify-between gap-4">
+<span class="px-3.5 py-1 rounded-full bg-white/[0.05] text-slate-300 border border-white/10 font-mono text-xs font-semibold">
+            2020 — 2023
+          </span>
+<span class="text-xs font-mono text-emerald-400">Dean's Honor Roll (Top 5%)</span>
+</div>
+<div class="flex flex-col gap-2">
+<h3 class="text-2xl font-display font-medium text-white tracking-tight">B.S. in Information Systems &amp; Technology</h3>
+<span class="text-sm font-mono text-slate-400">Foundational Computer Science &amp; Systems Analysis</span>
+</div>
+<p class="text-slate-300 text-sm sm:text-base leading-relaxed font-light">
+          Graduated magna cum laude. Deep theoretical grounding in algorithmic time complexities (Big-O), relational database normalizations (3NF/BCNF), memory management, concurrency models, and network protocol stacks (TCP/IP, HTTP/3).
+        </p>
+<div class="flex flex-wrap gap-2 pt-2 border-t border-white/[0.06]">
+<span class="px-3 py-1 rounded-full bg-white/[0.03] text-xs font-mono text-slate-400 border border-white/[0.06]">Data Structures &amp; Algorithms</span>
+<span class="px-3 py-1 rounded-full bg-white/[0.03] text-xs font-mono text-slate-400 border border-white/[0.06]">Database Engineering (SQL)</span>
+<span class="px-3 py-1 rounded-full bg-white/[0.03] text-xs font-mono text-slate-400 border border-white/[0.06]">Operating Systems &amp; POSIX</span>
+<span class="px-3 py-1 rounded-full bg-white/[0.03] text-xs font-mono text-slate-400 border border-white/[0.06]">Software Design Patterns</span>
+<span class="px-3 py-1 rounded-full bg-white/[0.03] text-xs font-mono text-slate-400 border border-white/[0.06]">Network Security</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Categorized Skills Matrix (Daily Drivers, Comfortable With, Exploring) -->
+<section class="flex flex-col gap-12 sm:gap-16">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+<div class="flex flex-col gap-3">
+<div class="flex items-center gap-2 font-mono text-xs text-emerald-400 tracking-widest uppercase">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+<span>Technical Proficiencies</span>
+</div>
+<h2 class="text-3xl sm:text-4xl font-display font-semibold text-white tracking-tight">Skills &amp; Capabilities</h2>
+<p class="text-slate-400 text-base font-light">Tiered categorization reflecting real-world shipping experience.</p>
+</div>
+<div class="flex items-center gap-4 font-mono text-xs text-slate-400">
+<span class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-[#00f2fe]"></span> Daily</span>
+<span class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-violet-400"></span> Solid</span>
+<span class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span> Research</span>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+<!-- Column 1: Daily Drivers -->
+<div class="p-8 rounded-3xl glass-apple border border-white/[0.08] flex flex-col gap-6">
+<div class="flex items-center justify-between pb-4 border-b border-white/[0.06]">
+<div class="flex items-center gap-2.5">
+<span class="w-2.5 h-2.5 rounded-full bg-[#00f2fe]"></span>
+<h3 class="text-lg font-display font-medium text-white">Daily Drivers</h3>
+</div>
+<span class="text-[10px] font-mono uppercase tracking-wider text-[#00f2fe] bg-[#00f2fe]/10 px-2.5 py-0.5 rounded-full border border-[#00f2fe]/20">Core</span>
+</div>
+<p class="text-xs text-slate-400 font-light leading-relaxed">
+            Zero-friction languages and frameworks used in production on a daily basis.
+          </p>
+<div class="flex flex-col gap-3">
+<div class="p-3.5 rounded-2xl bg-white/[0.02] border border-white/[0.06] flex items-center justify-between hover:bg-white/[0.04] transition-colors">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-[#00f2fe] text-[20px]">code</span>
+<div class="flex flex-col">
+<span class="text-xs font-mono font-medium text-white">TypeScript</span>
+<span class="text-[11px] text-slate-400">Generics, infer, AST types</span>
+</div>
+</div>
+<span class="text-xs font-mono text-[#00f2fe]">2+ Yrs</span>
+</div>
+<div class="p-3.5 rounded-2xl bg-white/[0.02] border border-white/[0.06] flex items-center justify-between hover:bg-white/[0.04] transition-colors">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-[#00f2fe] text-[20px]">javascript</span>
+<div class="flex flex-col">
+<span class="text-xs font-mono font-medium text-white">JavaScript (ES6+)</span>
+<span class="text-[11px] text-slate-400">Async/await, Event Loop</span>
+</div>
+</div>
+<span class="text-xs font-mono text-[#00f2fe]">4+ Yrs</span>
+</div>
+<div class="p-3.5 rounded-2xl bg-white/[0.02] border border-white/[0.06] flex items-center justify-between hover:bg-white/[0.04] transition-colors">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-[#00f2fe] text-[20px]">widgets</span>
+<div class="flex flex-col">
+<span class="text-xs font-mono font-medium text-white">React.js</span>
+<span class="text-[11px] text-slate-400">Custom hooks, Server Comps</span>
+</div>
+</div>
+<span class="text-xs font-mono text-[#00f2fe]">3+ Yrs</span>
+</div>
+<div class="p-3.5 rounded-2xl bg-white/[0.02] border border-white/[0.06] flex items-center justify-between hover:bg-white/[0.04] transition-colors">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-[#00f2fe] text-[20px]">css</span>
+<div class="flex flex-col">
+<span class="text-xs font-mono font-medium text-white">Tailwind CSS</span>
+<span class="text-[11px] text-slate-400">Custom design tokens, JIT</span>
+</div>
+</div>
+<span class="text-xs font-mono text-[#00f2fe]">3+ Yrs</span>
+</div>
+<div class="p-3.5 rounded-2xl bg-white/[0.02] border border-white/[0.06] flex items-center justify-between hover:bg-white/[0.04] transition-colors">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-[#00f2fe] text-[20px]">hub</span>
+<div class="flex flex-col">
+<span class="text-xs font-mono font-medium text-white">Git &amp; GitHub</span>
+<span class="text-[11px] text-slate-400">Interactive rebase, bisect</span>
+</div>
+</div>
+<span class="text-xs font-mono text-[#00f2fe]">4+ Yrs</span>
+</div>
+<div class="p-3.5 rounded-2xl bg-white/[0.02] border border-white/[0.06] flex items-center justify-between hover:bg-white/[0.04] transition-colors">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-[#00f2fe] text-[20px]">api</span>
+<div class="flex flex-col">
+<span class="text-xs font-mono font-medium text-white">RESTful APIs</span>
+<span class="text-[11px] text-slate-400">OpenAPI, JWT, rate limits</span>
+</div>
+</div>
+<span class="text-xs font-mono text-[#00f2fe]">3+ Yrs</span>
+</div>
+</div>
+</div>
+<!-- Column 2: Comfortable With -->
+<div class="p-8 rounded-3xl glass-apple border border-white/[0.08] flex flex-col gap-6">
+<div class="flex items-center justify-between pb-4 border-b border-white/[0.06]">
+<div class="flex items-center gap-2.5">
+<span class="w-2.5 h-2.5 rounded-full bg-violet-400"></span>
+<h3 class="text-lg font-display font-medium text-white">Comfortable With</h3>
+</div>
+<span class="text-[10px] font-mono uppercase tracking-wider text-violet-300 bg-violet-500/10 px-2.5 py-0.5 rounded-full border border-violet-500/20">Working</span>
+</div>
+<p class="text-xs text-slate-400 font-light leading-relaxed">
+            Strong applied engineering depth for backends, stores, and test automation.
+          </p>
+<div class="flex flex-col gap-3">
+<div class="p-3.5 rounded-2xl bg-white/[0.02] border border-white/[0.06] flex items-center justify-between hover:bg-white/[0.04] transition-colors">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-violet-400 text-[20px]">dns</span>
+<div class="flex flex-col">
+<span class="text-xs font-mono font-medium text-white">Node.js &amp; Express</span>
+<span class="text-[11px] text-slate-400">Middleware, streams, cluster</span>
+</div>
+</div>
+<span class="text-xs font-mono text-violet-300">2 Yrs</span>
+</div>
+<div class="p-3.5 rounded-2xl bg-white/[0.02] border border-white/[0.06] flex items-center justify-between hover:bg-white/[0.04] transition-colors">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-violet-400 text-[20px]">database</span>
+<div class="flex flex-col">
+<span class="text-xs font-mono font-medium text-white">PostgreSQL</span>
+<span class="text-[11px] text-slate-400">Complex joins, JSONB, index</span>
+</div>
+</div>
+<span class="text-xs font-mono text-violet-300">2 Yrs</span>
+</div>
+<div class="p-3.5 rounded-2xl bg-white/[0.02] border border-white/[0.06] flex items-center justify-between hover:bg-white/[0.04] transition-colors">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-violet-400 text-[20px]">layers</span>
+<div class="flex flex-col">
+<span class="text-xs font-mono font-medium text-white">Next.js 14/15</span>
+<span class="text-[11px] text-slate-400">App Router, SSR, Actions</span>
+</div>
+</div>
+<span class="text-xs font-mono text-violet-300">1.5 Yrs</span>
+</div>
+<div class="p-3.5 rounded-2xl bg-white/[0.02] border border-white/[0.06] flex items-center justify-between hover:bg-white/[0.04] transition-colors">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-violet-400 text-[20px]">sync_saved_locally</span>
+<div class="flex flex-col">
+<span class="text-xs font-mono font-medium text-white">Redux Toolkit / RTK</span>
+<span class="text-[11px] text-slate-400">Cache invalidation, slices</span>
+</div>
+</div>
+<span class="text-xs font-mono text-violet-300">2 Yrs</span>
+</div>
+<div class="p-3.5 rounded-2xl bg-white/[0.02] border border-white/[0.06] flex items-center justify-between hover:bg-white/[0.04] transition-colors">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-violet-400 text-[20px]">cloud_sync</span>
+<div class="flex flex-col">
+<span class="text-xs font-mono font-medium text-white">Supabase &amp; RLS</span>
+<span class="text-[11px] text-slate-400">Row Level Security</span>
+</div>
+</div>
+<span class="text-xs font-mono text-violet-300">1 Yr</span>
+</div>
+<div class="p-3.5 rounded-2xl bg-white/[0.02] border border-white/[0.06] flex items-center justify-between hover:bg-white/[0.04] transition-colors">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-violet-400 text-[20px]">fact_check</span>
+<div class="flex flex-col">
+<span class="text-xs font-mono font-medium text-white">Jest &amp; Testing Library</span>
+<span class="text-[11px] text-slate-400">Unit, integration, mocking</span>
+</div>
+</div>
+<span class="text-xs font-mono text-violet-300">2 Yrs</span>
+</div>
+</div>
+</div>
+<!-- Column 3: Exploring / Learning -->
+<div class="p-8 rounded-3xl glass-apple border border-white/[0.08] flex flex-col gap-6">
+<div class="flex items-center justify-between pb-4 border-b border-white/[0.06]">
+<div class="flex items-center gap-2.5">
+<span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+<h3 class="text-lg font-display font-medium text-white">Exploring</h3>
+</div>
+<span class="text-[10px] font-mono uppercase tracking-wider text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/20">R&amp;D</span>
+</div>
+<p class="text-xs text-slate-400 font-light leading-relaxed">
+            Active exploration, technical whitepapers, and early prototype builds.
+          </p>
+<div class="flex flex-col gap-3">
+<div class="p-3.5 rounded-2xl bg-white/[0.02] border border-white/[0.06] flex items-center justify-between hover:bg-white/[0.04] transition-colors">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-emerald-400 text-[20px]">deployed_code</span>
+<div class="flex flex-col">
+<span class="text-xs font-mono font-medium text-white">Docker</span>
+<span class="text-[11px] text-slate-400">Multi-stage builds, compose</span>
+</div>
+</div>
+<span class="text-xs font-mono text-emerald-400">Active</span>
+</div>
+<div class="p-3.5 rounded-2xl bg-white/[0.02] border border-white/[0.06] flex items-center justify-between hover:bg-white/[0.04] transition-colors">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-emerald-400 text-[20px]">schema</span>
+<div class="flex flex-col">
+<span class="text-xs font-mono font-medium text-white">GraphQL</span>
+<span class="text-[11px] text-slate-400">Resolvers, Apollo Client</span>
+</div>
+</div>
+<span class="text-xs font-mono text-emerald-400">Active</span>
+</div>
+<div class="p-3.5 rounded-2xl bg-white/[0.02] border border-white/[0.06] flex items-center justify-between hover:bg-white/[0.04] transition-colors">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-emerald-400 text-[20px]">lan</span>
+<div class="flex flex-col">
+<span class="text-xs font-mono font-medium text-white">Distributed Systems</span>
+<span class="text-[11px] text-slate-400">CAP theorem, event streams</span>
+</div>
+</div>
+<span class="text-xs font-mono text-emerald-400">Study</span>
+</div>
+<div class="p-3.5 rounded-2xl bg-white/[0.02] border border-white/[0.06] flex items-center justify-between hover:bg-white/[0.04] transition-colors">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-emerald-400 text-[20px]">bolt</span>
+<div class="flex flex-col">
+<span class="text-xs font-mono font-medium text-white">Go / Golang</span>
+<span class="text-[11px] text-slate-400">Goroutines, channels</span>
+</div>
+</div>
+<span class="text-xs font-mono text-emerald-400">Exploring</span>
+</div>
+</div>
+<div class="mt-auto p-4 rounded-2xl bg-white/[0.02] border border-white/[0.06] flex flex-col gap-1.5">
+<div class="text-xs font-mono text-slate-300 flex items-center gap-2">
+<span class="material-symbols-outlined text-emerald-400 text-[16px]">menu_book</span>
+              Current Reading
+            </div>
+<p class="text-xs text-slate-400 font-light leading-relaxed">
+              "Designing Data-Intensive Applications" by Martin Kleppmann.
+            </p>
+</div>
+</div>
+</div>
+</section>
+<!-- Engineering Principles Bento Grid -->
+<section class="flex flex-col gap-12 sm:gap-16">
+<div class="flex flex-col gap-3">
+<div class="flex items-center gap-2 font-mono text-xs text-purple-400 tracking-widest uppercase">
+<span class="w-1.5 h-1.5 rounded-full bg-violet-400"></span>
+<span>Engineering Philosophy</span>
+</div>
+<h2 class="text-3xl sm:text-4xl font-display font-semibold text-white tracking-tight">Principles &amp; Mindset</h2>
+<p class="text-slate-400 text-base font-light max-w-2xl">
+        How I structure software systems, navigate trade-offs, and communicate asynchronously within high-caliber teams.
+      </p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8">
+<!-- Bento 1: Clean Code -->
+<div class="lg:col-span-6 p-8 rounded-3xl glass-apple border border-white/[0.08] flex flex-col justify-between gap-6 hover:border-white/20 transition-all">
+<div class="flex flex-col gap-4">
+<div class="w-12 h-12 rounded-2xl bg-[#00f2fe]/10 border border-[#00f2fe]/20 flex items-center justify-center text-[#00f2fe]">
+<span class="material-symbols-outlined text-[24px]">terminal</span>
+</div>
+<h3 class="text-xl font-display font-medium text-white">Clean Code &amp; Maintainability</h3>
+<p class="text-slate-300 text-sm leading-relaxed font-light">
+            Code is read ten times more often than it is written. I prioritize explicit, self-documenting APIs, concise modular components, and strict compiler enforcement across every repository.
+          </p>
+</div>
+<div class="p-3.5 rounded-2xl bg-white/[0.02] border border-white/[0.06] flex items-center justify-between text-xs font-mono">
+<span class="text-slate-400">Rule of Thumb</span>
+<span class="text-[#00f2fe]">Strict TypeScript + Zero Warnings</span>
+</div>
+</div>
+<!-- Bento 2: Problem Solving -->
+<div class="lg:col-span-6 p-8 rounded-3xl glass-apple border border-white/[0.08] flex flex-col justify-between gap-6 hover:border-white/20 transition-all">
+<div class="flex flex-col gap-4">
+<div class="w-12 h-12 rounded-2xl bg-violet-500/10 border border-violet-500/20 flex items-center justify-center text-violet-400">
+<span class="material-symbols-outlined text-[24px]">troubleshoot</span>
+</div>
+<h3 class="text-xl font-display font-medium text-white">Tenacious Problem Solving</h3>
+<p class="text-slate-300 text-sm leading-relaxed font-light">
+            I embrace complex, ambiguous bugs with systematic deduction. From binary git bisects to browser performance flame charts, finding root cause takes precedence over temporary patches.
+          </p>
+</div>
+<div class="p-3.5 rounded-2xl bg-white/[0.02] border border-white/[0.06] flex items-center justify-between text-xs font-mono">
+<span class="text-slate-400">Approach</span>
+<span class="text-violet-300">Hypothesis-Driven Diagnostics</span>
+</div>
+</div>
+<!-- Bento 3: Asynchronous Communication -->
+<div class="lg:col-span-7 p-8 rounded-3xl glass-apple border border-white/[0.08] flex flex-col justify-between gap-6 hover:border-white/20 transition-all">
+<div class="flex flex-col gap-4">
+<div class="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+<span class="material-symbols-outlined text-[24px]">forum</span>
+</div>
+<h3 class="text-xl font-display font-medium text-white">Asynchronous Clarity</h3>
+<p class="text-slate-300 text-sm leading-relaxed font-light">
+            High-velocity engineering thrives on crisp documentation. I author comprehensive pull request manifests with visual screen recordings, maintain concise Architectural Decision Records (ADRs), and give respectful code reviews.
+          </p>
+</div>
+<div class="flex flex-wrap gap-2">
+<span class="px-3 py-1 rounded-full bg-white/[0.03] text-xs font-mono text-slate-300 border border-white/[0.06]">RFC Documents</span>
+<span class="px-3 py-1 rounded-full bg-white/[0.03] text-xs font-mono text-slate-300 border border-white/[0.06]">Loom Demos</span>
+<span class="px-3 py-1 rounded-full bg-white/[0.03] text-xs font-mono text-slate-300 border border-white/[0.06]">Atomic Commits</span>
+</div>
+</div>
+<!-- Bento 4: Rapid Learner -->
+<div class="lg:col-span-5 p-8 rounded-3xl glass-apple border border-white/[0.08] flex flex-col justify-between gap-6 hover:border-white/20 transition-all">
+<div class="flex flex-col gap-4">
+<div class="w-12 h-12 rounded-2xl bg-white/[0.06] border border-white/10 flex items-center justify-center text-white">
+<span class="material-symbols-outlined text-[24px]">speed</span>
+</div>
+<h3 class="text-xl font-display font-medium text-white">Rapid Adaptation</h3>
+<p class="text-slate-300 text-sm leading-relaxed font-light">
+            Software frameworks evolve continuously. I translate newly released specs into working sandbox demonstrations within 48 hours.
+          </p>
+</div>
+<div class="p-3.5 rounded-2xl bg-white/[0.02] border border-white/[0.06] flex items-center justify-between text-xs font-mono">
+<span class="text-slate-400">Cadence</span>
+<span class="text-emerald-400">&lt; 48hr Zero-to-PR</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Call to Action Banner (Clean Frosted Glass) -->
+<section class="rounded-3xl glass-apple border border-white/[0.08] p-10 sm:p-14 flex flex-col md:flex-row items-center justify-between gap-8 relative overflow-hidden">
+<div class="flex flex-col gap-3 text-center md:text-left">
+<span class="text-xs font-mono uppercase tracking-widest text-[#00f2fe] font-semibold">Ready to Build</span>
+<h2 class="text-2xl sm:text-3xl font-display font-medium text-white tracking-tight">Looking for an exceptional engineer?</h2>
+<p class="text-slate-400 text-sm sm:text-base font-light max-w-xl">
+          Available for full-time software engineering roles, high-impact contract builds, or technical performance reviews.
+        </p>
+</div>
+<div class="flex flex-wrap items-center justify-center gap-3 shrink-0">
+<a class="px-7 py-3 rounded-full bg-white text-black hover:bg-slate-200 transition-all font-sans font-medium text-xs tracking-wide shadow-lg shadow-white/10 active:scale-95" href="mailto:alex.dev.hire@example.com">
+          Initiate Contact
+        </a>
+<a class="px-6 py-3 rounded-full glass-pill hover:bg-white/[0.08] text-slate-300 transition-all font-mono text-xs shadow-sm active:scale-95" data-path="lab-game" href="#">
+          Test Lab Sandbox
+        </a>
+</div>
+</section>
+</div>
+</main>
+<!-- Apple-inspired Minimalist Footer -->
+<footer class="w-full border-t border-white/[0.06] py-10 bg-[#0B0C0E]/80 backdrop-blur-md">
+<div class="max-w-6xl mx-auto px-6 sm:px-8 lg:px-12 flex flex-col sm:flex-row items-center justify-between gap-6 text-xs text-slate-400">
+<div class="flex items-center gap-3">
+<span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+<span class="font-mono">Alex Chen // 2025</span>
+<span class="text-slate-600">|</span>
+<span class="font-light">Crafted with precision &amp; Tailwind CSS</span>
+</div>
+<div class="flex items-center gap-6 font-mono text-xs">
+<a class="text-slate-400 hover:text-white transition-colors" data-path="home" href="#">Home</a>
+<a class="text-[#00f2fe] font-medium" data-path="resume" href="#">Resume</a>
+<a class="text-slate-400 hover:text-white transition-colors" data-path="lab-game" href="#">Lab</a>
+</div>
+</div>
+</footer>
+</body></html>

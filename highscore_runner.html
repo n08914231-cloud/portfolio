@@ -1,0 +1,1642 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>PIXEL PROTOCOL 198X - Retro Arcade Runner</title>
+  <link rel="stylesheet" href="assets/fonts/fonts.css">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-touch-callout: none;
+    }
+    body, html {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #2b5c8f;
+      font-family: 'Press Start 2P', monospace;
+      color: #fff;
+      touch-action: none;
+      overscroll-behavior: none;
+    }
+    #canvas-container {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 1;
+    }
+
+    .scanlines {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      pointer-events: none;
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.22) 50%);
+      background-size: 100% 4px;
+      z-index: 5;
+      opacity: 0.4;
+    }
+
+    /* =========================================================================
+       RETRO ARCADE TOP-HUD (STABIL & ZITTERFREI)
+       ========================================================================= */
+    #hud {
+      position: absolute;
+      top: max(14px, env(safe-area-inset-top));
+      left: max(14px, env(safe-area-inset-left));
+      right: max(14px, env(safe-area-inset-right));
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      z-index: 10;
+      pointer-events: none;
+    }
+    .hud-col {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      text-align: center;
+    }
+    .hud-col:first-child { text-align: left; }
+    .hud-col:last-child { text-align: right; }
+
+    .hud-label {
+      font-size: clamp(0.52rem, 1.8vw, 0.72rem);
+      color: #ffcc00;
+      text-shadow: 2px 2px 0px #000, 3px 3px 0px #000;
+      letter-spacing: 1px;
+    }
+    .hud-val {
+      font-size: clamp(0.68rem, 2.4vw, 0.92rem);
+      color: #ffffff;
+      text-shadow: 2px 2px 0px #000, 3px 3px 0px #000;
+      letter-spacing: 1.5px;
+      font-variant-numeric: tabular-nums;
+      display: inline-block;
+      min-width: 6ch;
+    }
+    .val-sector { color: #00ffff; }
+    .val-speed { color: #ff3366; }
+    .val-bits { color: #ffd700; }
+
+    /* Zonen-Benachrichtigung (kompakt, verdeckt nichts) */
+    #zone-banner {
+      position: absolute;
+      top: clamp(62px, 11vh, 74px);
+      left: 50%;
+      transform: translateX(-50%) translateY(-15px);
+      background: #000;
+      border: 2px solid #00ffff;
+      border-radius: 4px;
+      padding: 5px 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      z-index: 12;
+      opacity: 0;
+      pointer-events: none;
+      transition: transform 0.25s ease, opacity 0.25s ease;
+      white-space: nowrap;
+      box-shadow: 3px 3px 0px #000;
+    }
+    #zone-banner.active {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+    #zone-banner h2 {
+      font-size: clamp(0.62rem, 2.2vw, 0.76rem);
+      font-weight: 400;
+      color: #00ffff;
+      margin: 0;
+    }
+    #zone-banner span {
+      font-size: clamp(0.52rem, 1.8vw, 0.65rem);
+      color: #fffa65;
+    }
+
+    /* PowerUp Badges */
+    #powerup-bar {
+      position: absolute;
+      top: clamp(62px, 11vh, 74px);
+      left: max(14px, env(safe-area-inset-left));
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      z-index: 10;
+      pointer-events: none;
+    }
+    .p-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: clamp(0.52rem, 1.8vw, 0.68rem);
+      padding: 4px 8px;
+      border-radius: 4px;
+      opacity: 0;
+      transform: translateX(-30px);
+      transition: all 0.2s ease;
+      background: rgba(0, 0, 0, 0.9);
+      border: 2px solid transparent;
+      box-shadow: 2px 2px 0px #000;
+    }
+    .p-badge.active {
+      opacity: 1;
+      transform: translateX(0);
+    }
+    .badge-shield { border-color: #00ffff; color: #00ffff; }
+    .badge-multiplier { border-color: #ffd700; color: #ffd700; }
+    .badge-slowmo { border-color: #ff3366; color: #ff88a3; }
+
+    /* Desktop Controls Hint */
+    #controls-hint {
+      position: absolute;
+      bottom: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.85);
+      border: 2px solid #fff;
+      border-radius: 4px;
+      padding: 6px 12px;
+      font-size: 0.62rem;
+      color: #fff;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      z-index: 10;
+      pointer-events: none;
+      white-space: nowrap;
+      box-shadow: 2px 2px 0px #000;
+    }
+    .key-badge {
+      display: inline-block;
+      padding: 2px 4px;
+      background: #00ffff;
+      color: #000;
+      border-radius: 2px;
+    }
+
+    /* Mobile Touch Buttons */
+    #touch-controls {
+      display: none;
+      position: absolute;
+      bottom: max(16px, env(safe-area-inset-bottom));
+      left: 0;
+      width: 100%;
+      padding: 0 16px;
+      justify-content: space-between;
+      align-items: flex-end;
+      z-index: 15;
+      pointer-events: none;
+    }
+    .touch-btn-group {
+      display: flex;
+      gap: 12px;
+      pointer-events: auto;
+    }
+    .t-btn {
+      width: 66px;
+      height: 66px;
+      border-radius: 8px;
+      background: rgba(0, 0, 0, 0.8);
+      border: 3px solid #00ffff;
+      color: #00ffff;
+      font-size: 1.2rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 3px 3px 0px #000;
+      cursor: pointer;
+      touch-action: manipulation;
+    }
+    .t-btn:active {
+      transform: translate(2px, 2px);
+      box-shadow: 1px 1px 0px #000;
+      background: rgba(0, 255, 255, 0.4);
+    }
+    .t-action-group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      pointer-events: auto;
+    }
+    .t-btn-jump {
+      width: 72px;
+      height: 72px;
+      border-color: #ff3366;
+      color: #fff;
+      background: rgba(255, 51, 102, 0.35);
+      font-size: 0.65rem;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .t-btn-jump:active {
+      transform: translate(2px, 2px);
+      box-shadow: 1px 1px 0px #000;
+      background: rgba(255, 51, 102, 0.7);
+    }
+    .t-btn-slide {
+      width: 72px;
+      height: 72px;
+      border-color: #ffcc00;
+      color: #ffcc00;
+      background: rgba(255, 204, 0, 0.25);
+      font-size: 0.65rem;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .t-btn-slide:active {
+      transform: translate(2px, 2px);
+      box-shadow: 1px 1px 0px #000;
+      background: rgba(255, 204, 0, 0.6);
+    }
+
+    @media (hover: none) and (pointer: coarse) {
+      #touch-controls { display: flex; }
+      #controls-hint { display: none; }
+    }
+
+    /* Game Over Modal */
+    #overlay {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.94);
+      backdrop-filter: blur(6px);
+      z-index: 30;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+      padding: 16px;
+    }
+    #overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-box {
+      width: 100%;
+      max-width: 480px;
+      background: #000;
+      border: 4px solid #00ffff;
+      border-radius: 4px;
+      padding: clamp(20px, 4vw, 28px);
+      text-align: center;
+      box-shadow: 6px 6px 0px #ff3366;
+    }
+    .title-large {
+      font-size: clamp(1.2rem, 4vw, 1.6rem);
+      color: #ff3366;
+      text-shadow: 3px 3px 0 #000;
+      margin-bottom: 12px;
+      letter-spacing: 2px;
+    }
+    .score-summary {
+      font-size: clamp(0.72rem, 2.4vw, 0.88rem);
+      color: #fff;
+      margin-bottom: 18px;
+      letter-spacing: 1px;
+    }
+    .score-summary span {
+      color: #00ffff;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .highscore-card {
+      background: rgba(18, 18, 22, 0.95);
+      border: 2px solid #fff;
+      border-radius: 2px;
+      padding: 10px 12px;
+      margin-bottom: 18px;
+      max-height: 160px;
+      overflow-y: auto;
+    }
+    .highscore-card h3 {
+      font-size: 0.65rem;
+      margin-bottom: 10px;
+      color: #ffcc00;
+      letter-spacing: 1px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: clamp(0.55rem, 1.8vw, 0.65rem);
+    }
+    th {
+      color: #00ffff;
+      padding-bottom: 6px;
+      border-bottom: 1px dashed rgba(255, 255, 255, 0.4);
+    }
+    td {
+      padding: 6px 2px;
+      text-align: center;
+      font-variant-numeric: tabular-nums;
+    }
+    tr:first-child td { color: #ffcc00; }
+
+    .btn-group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      justify-content: center;
+    }
+    .btn {
+      background: #000;
+      border: 2px solid #00ffff;
+      color: #00ffff;
+      padding: 12px 14px;
+      font-family: 'Press Start 2P', monospace;
+      font-size: clamp(0.62rem, 2vw, 0.75rem);
+      text-transform: uppercase;
+      border-radius: 2px;
+      cursor: pointer;
+      box-shadow: 3px 3px 0px #000;
+      transition: all 0.1s ease;
+    }
+    .btn:hover, .btn:active {
+      background: #00ffff;
+      color: #000;
+      transform: translate(2px, 2px);
+      box-shadow: 1px 1px 0px #000;
+    }
+    .btn-pink {
+      border-color: #ff3366;
+      color: #ff3366;
+    }
+    .btn-pink:hover, .btn-pink:active {
+      background: #ff3366;
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+  <div class="scanlines"></div>
+
+  <!-- ARCADE HUD -->
+  <div id="hud">
+    <div class="hud-col">
+      <div class="hud-label">SCORE</div>
+      <div class="hud-val" id="score-display">000000</div>
+    </div>
+    <div class="hud-col">
+      <div class="hud-label">BITS</div>
+      <div class="hud-val val-bits" id="coin-display">x00</div>
+    </div>
+    <div class="hud-col">
+      <div class="hud-label">SECTOR</div>
+      <div class="hud-val val-sector" id="zone-display">1-1</div>
+    </div>
+    <div class="hud-col">
+      <div class="hud-label">WARP</div>
+      <div class="hud-val val-speed" id="speed-display">1.0X</div>
+    </div>
+  </div>
+
+  <!-- Dezent animierte Zonen-Benachrichtigung -->
+  <div id="zone-banner">
+    <h2 id="banner-title">SECTOR 1-2</h2>
+    <span id="banner-sub">AMBER DUNES</span>
+  </div>
+
+  <!-- PowerUp Badges -->
+  <div id="powerup-bar">
+    <div id="badge-shield" class="p-badge badge-shield">🛡️ NANO-SCHILD</div>
+    <div id="badge-mult" class="p-badge badge-multiplier">⭐ 2X BOOST: <span id="mult-timer">8.0s</span></div>
+    <div id="badge-slowmo" class="p-badge badge-slowmo">⏱️ TIME-WARP: <span id="slowmo-timer">5.0s</span></div>
+  </div>
+
+  <!-- Desktop Controls -->
+  <div id="controls-hint">
+    <span>SPUR:</span> <span class="key-badge">A</span>/<span class="key-badge">D</span>
+    <span>JUMP:</span> <span class="key-badge">SPACE</span>
+    <span>SLIDE:</span> <span class="key-badge">S</span>/<span class="key-badge">▼</span>
+  </div>
+
+  <!-- Mobile Touch Controls -->
+  <div id="touch-controls">
+    <div class="touch-btn-group">
+      <div class="t-btn" id="t-btn-left">◄</div>
+      <div class="t-btn" id="t-btn-right">►</div>
+    </div>
+    <div class="t-action-group">
+      <div class="t-btn t-btn-jump" id="t-btn-jump">
+        <span>▲</span>
+        <span>JUMP</span>
+      </div>
+      <div class="t-btn t-btn-slide" id="t-btn-slide">
+        <span>▼</span>
+        <span>SLIDE</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Game Over Modal -->
+  <div id="overlay">
+    <div class="modal-box">
+      <h1 class="title-large">MISSION FAILED</h1>
+      <div class="score-summary">DISTANCE: <span id="final-score">000000</span> M</div>
+      <div class="score-summary" style="margin-bottom:12px; font-size:0.75rem;">BITS COLLECTED: <span id="final-coins">0</span></div>
+      
+      <div class="highscore-card">
+        <h3>ARCADE LEADERBOARD</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>RANK</th>
+              <th>SCORE</th>
+              <th>DATE</th>
+            </tr>
+          </thead>
+          <tbody id="highscore-body"></tbody>
+        </table>
+      </div>
+
+      <div class="btn-group">
+        <button class="btn btn-pink" id="restart-btn">RETRY RUN</button>
+        <button class="btn" id="export-txt-btn">EXPORT TXT (.TXT)</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="canvas-container"></div>
+
+  <!-- Three.js CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+  <script>
+    /* =========================================================================
+       8-BIT RETRO SOUND SYNTHESIZER
+       ========================================================================= */
+    const AudioFX = {
+      ctx: null,
+      init() {
+        if (!this.ctx) {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          this.ctx = new AudioContext();
+        }
+        if (this.ctx && this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+      },
+      jump() {
+        if (!this.ctx) return;
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(160, now);
+        osc.frequency.exponentialRampToValueAtTime(600, now + 0.15);
+        gain.gain.setValueAtTime(0.2, now);
+        gain.gain.linearRampToValueAtTime(0.01, now + 0.15);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.15);
+      },
+      coin() {
+        if (!this.ctx) return;
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(880, now);
+        osc.frequency.setValueAtTime(1320, now + 0.08);
+        gain.gain.setValueAtTime(0.25, now);
+        gain.gain.linearRampToValueAtTime(0.01, now + 0.32);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.32);
+      },
+      slide() {
+        if (!this.ctx) return;
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(340, now);
+        osc.frequency.exponentialRampToValueAtTime(80, now + 0.28);
+        gain.gain.setValueAtTime(0.18, now);
+        gain.gain.linearRampToValueAtTime(0.01, now + 0.28);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.28);
+      },
+      switchLane() {
+        if (!this.ctx) return;
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(360, now);
+        osc.frequency.exponentialRampToValueAtTime(200, now + 0.07);
+        gain.gain.setValueAtTime(0.18, now);
+        gain.gain.linearRampToValueAtTime(0.01, now + 0.07);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.07);
+      },
+      powerup() {
+        if (!this.ctx) return;
+        const now = this.ctx.currentTime;
+        const notes = [293, 370, 440, 587, 740];
+        notes.forEach((freq, idx) => {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'square';
+          osc.frequency.setValueAtTime(freq, now + idx * 0.06);
+          gain.gain.setValueAtTime(0.18, now + idx * 0.06);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + idx * 0.06 + 0.16);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(now + idx * 0.06);
+          osc.stop(now + idx * 0.06 + 0.16);
+        });
+      },
+      shieldBreak() {
+        if (!this.ctx) return;
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(540, now);
+        osc.frequency.exponentialRampToValueAtTime(110, now + 0.3);
+        gain.gain.setValueAtTime(0.35, now);
+        gain.gain.linearRampToValueAtTime(0.01, now + 0.3);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.3);
+      },
+      crash() {
+        if (!this.ctx) return;
+        const now = this.ctx.currentTime;
+        const notes = [440, 392, 330, 261, 164];
+        notes.forEach((freq, idx) => {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'square';
+          osc.frequency.setValueAtTime(freq, now + idx * 0.09);
+          gain.gain.setValueAtTime(0.26, now + idx * 0.09);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + idx * 0.09 + 0.18);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(now + idx * 0.09);
+          osc.stop(now + idx * 0.09 + 0.18);
+        });
+      }
+    };
+
+    window.addEventListener('touchstart', () => AudioFX.init(), { once: true, passive: true });
+    window.addEventListener('click', () => AudioFX.init(), { once: true });
+
+    /* =========================================================================
+       4 RETRO ARCADE SEKTOREN (ALLE 400 METER)
+       ========================================================================= */
+    const ZONES = [
+      {
+        id: 0,
+        sectorName: "1-1",
+        sub: "NEO VERDANT",
+        skyColor: 0x2b5c8f,
+        fogColor: 0x2b5c8f,
+        groundColor: 0x27ae60,
+        trackColor1: '#2c3e50',
+        trackColor2: '#00ffff',
+        pillarColor: 0x00ffff,
+        hudColor: '#00ffff'
+      },
+      {
+        id: 1,
+        sectorName: "1-2",
+        sub: "AMBER DUNES",
+        skyColor: 0xbf5b27,
+        fogColor: 0xbf5b27,
+        groundColor: 0xd38346,
+        trackColor1: '#3d1f11',
+        trackColor2: '#ffaa00',
+        pillarColor: 0xffaa00,
+        hudColor: '#ffaa00'
+      },
+      {
+        id: 2,
+        sectorName: "1-3",
+        sub: "CYBER CAVERN",
+        skyColor: 0x0a0c1a,
+        fogColor: 0x0a0c1a,
+        groundColor: 0x1a214d,
+        trackColor1: '#120f26',
+        trackColor2: '#00ff88',
+        pillarColor: 0x00ff88,
+        hudColor: '#00ff88'
+      },
+      {
+        id: 3,
+        sectorName: "1-4",
+        sub: "MAGMA CORE",
+        skyColor: 0x4a0a14,
+        fogColor: 0x4a0a14,
+        groundColor: 0x6e1212,
+        trackColor1: '#260408',
+        trackColor2: '#ff3366',
+        pillarColor: 0xff3366,
+        hudColor: '#ff3366'
+      }
+    ];
+
+    const ZONE_LENGTH = 400;
+    let currentZoneIdx = -1;
+
+    /* =========================================================================
+       HIGHSCORES & TXT EXPORT
+       ========================================================================= */
+    const HighscoreManager = {
+      storageKey: 'pixel_protocol_scores',
+
+      getScores() {
+        try {
+          const raw = localStorage.getItem(this.storageKey);
+          return raw ? JSON.parse(raw) : [];
+        } catch (e) {
+          return [];
+        }
+      },
+
+      addScore(score) {
+        if (score <= 0) return;
+        const scores = this.getScores();
+        const dateStr = new Date().toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: '2-digit' });
+        scores.push({ score: Math.floor(score), date: dateStr });
+        scores.sort((a, b) => b.score - a.score);
+        const top = scores.slice(0, 10);
+        localStorage.setItem(this.storageKey, JSON.stringify(top));
+        return top;
+      },
+
+      renderTable(currentScore) {
+        const body = document.getElementById('highscore-body');
+        const scores = this.getScores();
+        body.innerHTML = '';
+        if (scores.length === 0) {
+          body.innerHTML = '<tr><td colspan="3">NO RECORDS</td></tr>';
+          return;
+        }
+
+        scores.slice(0, 5).forEach((item, index) => {
+          const isLatest = Math.floor(currentScore) === item.score;
+          const tr = document.createElement('tr');
+          if (isLatest) tr.style.color = '#ffcc00';
+          const scorePad = String(item.score).padStart(6, '0');
+          tr.innerHTML = `
+            <td>#${index + 1}</td>
+            <td>${scorePad}</td>
+            <td>${item.date}</td>
+          `;
+          body.appendChild(tr);
+        });
+      },
+
+      exportAsTxtFile() {
+        const scores = this.getScores();
+        let content = "========================================\r\n";
+        content += "     PIXEL PROTOCOL 198X - LEADERBOARD  \r\n";
+        content += "========================================\r\n\r\n";
+        content += "RANK\tSCORE\t\tDATE\r\n";
+        content += "----------------------------------------\r\n";
+
+        if (scores.length === 0) {
+          content += "No records yet.\r\n";
+        } else {
+          scores.forEach((s, idx) => {
+            const pad = String(s.score).padStart(6, '0');
+            content += `#${idx + 1}\t${pad} m\t\t${s.date}\r\n`;
+          });
+        }
+        content += "\r\nSaved: " + new Date().toLocaleString('de-DE') + "\r\n";
+
+        const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `pixel_protocol_highscores_${Date.now()}.txt`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }
+    };
+
+    /* =========================================================================
+       THREE.JS SETUP & RETRO SZENE
+       ========================================================================= */
+    const container = document.getElementById('canvas-container');
+    const scoreDisplay = document.getElementById('score-display');
+    const coinDisplay = document.getElementById('coin-display');
+    const speedDisplay = document.getElementById('speed-display');
+    const zoneDisplay = document.getElementById('zone-display');
+    const finalScoreDisplay = document.getElementById('final-score');
+    const finalCoinsDisplay = document.getElementById('final-coins');
+    const overlay = document.getElementById('overlay');
+    const restartBtn = document.getElementById('restart-btn');
+    const exportTxtBtn = document.getElementById('export-txt-btn');
+
+    const zoneBanner = document.getElementById('zone-banner');
+    const bannerTitle = document.getElementById('banner-title');
+    const bannerSub = document.getElementById('banner-sub');
+
+    const badgeShield = document.getElementById('badge-shield');
+    const badgeMult = document.getElementById('badge-mult');
+    const badgeSlowmo = document.getElementById('badge-slowmo');
+    const multTimerEl = document.getElementById('mult-timer');
+    const slowmoTimerEl = document.getElementById('slowmo-timer');
+
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x2b5c8f);
+    scene.fog = new THREE.Fog(0x2b5c8f, 80, 360);
+
+    const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 800);
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    container.appendChild(renderer.domElement);
+
+    let baseCamY = 4.4;
+    let baseCamZ = 8.8;
+
+    function handleResize() {
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      const aspect = w / h;
+      camera.aspect = aspect;
+
+      if (aspect < 1.0) {
+        camera.fov = 68;
+        baseCamZ = 8.8 + (1.0 - aspect) * 6.5;
+        baseCamY = 4.4 + (1.0 - aspect) * 2.8;
+      } else {
+        camera.fov = 60;
+        baseCamZ = 8.8;
+        baseCamY = 4.4;
+      }
+
+      camera.position.set(0, baseCamY, baseCamZ);
+      camera.lookAt(0, 1.6, -14);
+      camera.updateProjectionMatrix();
+      renderer.setSize(w, h);
+    }
+    window.addEventListener('resize', handleResize);
+    window.addEventListener('orientationchange', handleResize);
+
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.85);
+    scene.add(ambientLight);
+
+    const sunLight = new THREE.DirectionalLight(0xffffff, 1.25);
+    sunLight.position.set(20, 45, 20);
+    scene.add(sunLight);
+
+    /* =========================================================================
+       TEXTUR-GENERATOR FÜR DIE ARCADE-STRASSE
+       ========================================================================= */
+    function createArcadeTrackTexture(bgColor = '#2c3e50', gridColor = '#00ffff') {
+      const canvas = document.createElement('canvas');
+      canvas.width = 128;
+      canvas.height = 128;
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = bgColor;
+      ctx.fillRect(0, 0, 128, 128);
+
+      // Horizontale Pixel-Streifen
+      ctx.fillStyle = '#05070a';
+      ctx.fillRect(0, 0, 128, 4);
+      ctx.fillRect(0, 64, 128, 4);
+
+      // Fahrbahnmarkierungen (3 Lanes)
+      ctx.fillStyle = gridColor;
+      for (let y = 8; y < 128; y += 32) {
+        ctx.fillRect(41, y, 4, 16);
+        ctx.fillRect(83, y, 4, 16);
+      }
+
+      const tex = new THREE.CanvasTexture(canvas);
+      tex.wrapS = THREE.RepeatWrapping;
+      tex.wrapT = THREE.RepeatWrapping;
+      tex.repeat.set(1, 40);
+      tex.magFilter = THREE.NearestFilter;
+      tex.minFilter = THREE.NearestFilter;
+      return tex;
+    }
+
+    /* =========================================================================
+       3-LANE STRASSE & RETRO-UMGEBUNG
+       ========================================================================= */
+    const LANES = [-4.2, 0, 4.2];
+    const trackWidth = 14.4;
+
+    const trackGeo = new THREE.PlaneGeometry(trackWidth, 800);
+    const trackMat = new THREE.MeshLambertMaterial({ map: createArcadeTrackTexture() });
+    const trackMesh = new THREE.Mesh(trackGeo, trackMat);
+    trackMesh.rotation.x = -Math.PI / 2;
+    trackMesh.position.set(0, 0.02, -200);
+    scene.add(trackMesh);
+
+    const groundGeo = new THREE.PlaneGeometry(400, 800);
+    const groundMat = new THREE.MeshLambertMaterial({ color: 0x27ae60 });
+    const groundMesh = new THREE.Mesh(groundGeo, groundMat);
+    groundMesh.rotation.x = -Math.PI / 2;
+    groundMesh.position.set(0, -0.05, -200);
+    scene.add(groundMesh);
+
+    // Kantensteine
+    const curbMat = new THREE.MeshLambertMaterial({ color: 0x00ffff });
+    const leftCurb = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.4, 800), curbMat);
+    leftCurb.position.set(-trackWidth / 2 - 0.25, 0.2, -200);
+    scene.add(leftCurb);
+    const rightCurb = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.4, 800), curbMat);
+    rightCurb.position.set(trackWidth / 2 + 0.25, 0.2, -200);
+    scene.add(rightCurb);
+
+    // Pixelige Deko-Säulen am Horizont
+    const hillMat = new THREE.MeshLambertMaterial({ color: 0x1e824c });
+    for (let i = 0; i < 20; i++) {
+      const side = (i % 2 === 0 ? 1 : -1);
+      const hill = new THREE.Mesh(new THREE.BoxGeometry(16, 26, 16), hillMat);
+      hill.position.set(side * (32 + Math.random() * 45), 10, -Math.random() * 450);
+      scene.add(hill);
+    }
+
+    // Pixel-Wolken
+    const cloudMat = new THREE.MeshLambertMaterial({ color: 0xffffff });
+    for (let i = 0; i < 14; i++) {
+      const cloudGroup = new THREE.Group();
+      const b1 = new THREE.Mesh(new THREE.BoxGeometry(16, 5, 6), cloudMat);
+      const b2 = new THREE.Mesh(new THREE.BoxGeometry(10, 5, 6), cloudMat);
+      b2.position.y = 4;
+      cloudGroup.add(b1);
+      cloudGroup.add(b2);
+      cloudGroup.position.set((Math.random() - 0.5) * 260, 35 + Math.random() * 25, -Math.random() * 400);
+      scene.add(cloudGroup);
+    }
+
+    /* =========================================================================
+       CHIBI ARCADE-RUNNER (EIGENSTÄNDIGER RETRO-HELD)
+       ========================================================================= */
+    const playerRoot = new THREE.Group();
+    const heroModel = new THREE.Group();
+
+    // Palette: Cyberpunk-Bomberjacke (Lila/Magenta), Visier (Cyan), Sneaker
+    const jacketMat = new THREE.MeshLambertMaterial({ color: 0x5c1d8f });
+    const jacketTrimMat = new THREE.MeshLambertMaterial({ color: 0xff3366 });
+    const pantsMat = new THREE.MeshLambertMaterial({ color: 0x1b263b });
+    const visorMat = new THREE.MeshBasicMaterial({ color: 0x00ffff });
+    const helmetMat = new THREE.MeshLambertMaterial({ color: 0x0d131f });
+    const skinMat = new THREE.MeshLambertMaterial({ color: 0xffdbac });
+    const shoeMat = new THREE.MeshLambertMaterial({ color: 0xffffff });
+
+    // Kopf & Cyber-Helm mit Visier
+    const headGroup = new THREE.Group();
+    headGroup.position.y = 1.95;
+
+    const helmetMesh = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.75, 0.75), helmetMat);
+    headGroup.add(helmetMesh);
+
+    const visorMesh = new THREE.Mesh(new THREE.BoxGeometry(0.84, 0.28, 0.4), visorMat);
+    visorMesh.position.set(0, 0.08, -0.25);
+    headGroup.add(visorMesh);
+
+    // Retro-Kopfhörer an den Ohren
+    const earL = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.35, 0.35), jacketTrimMat);
+    earL.position.set(-0.43, 0.05, 0);
+    const earR = earL.clone();
+    earR.position.x = 0.43;
+    headGroup.add(earL);
+    headGroup.add(earR);
+
+    heroModel.add(headGroup);
+
+    // Rumpf & Bomberjacke
+    const torsoMesh = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.85, 0.55), jacketMat);
+    torsoMesh.position.y = 1.25;
+    heroModel.add(torsoMesh);
+
+    const jacketZipper = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.85, 0.06), jacketTrimMat);
+    jacketZipper.position.set(0, 1.25, -0.28);
+    heroModel.add(jacketZipper);
+
+    // Kleiner Booster-Rucksack
+    const boosterMesh = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.6, 0.25), new THREE.MeshLambertMaterial({ color: 0x0d131f }));
+    boosterMesh.position.set(0, 1.3, 0.38);
+    heroModel.add(boosterMesh);
+
+    const thrusterFlame = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.16, 0.16), new THREE.MeshBasicMaterial({ color: 0x00ffff }));
+    thrusterFlame.position.set(0, 0.95, 0.4);
+    heroModel.add(thrusterFlame);
+
+    // Arme mit Handschuhen
+    const armGeo = new THREE.BoxGeometry(0.24, 0.75, 0.24);
+    armGeo.translate(0, -0.32, 0);
+
+    const leftArmPivot = new THREE.Group();
+    leftArmPivot.position.set(-0.54, 1.55, 0);
+    leftArmPivot.add(new THREE.Mesh(armGeo, jacketMat));
+    const gloveL = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.28, 0.28), jacketTrimMat);
+    gloveL.position.y = -0.68;
+    leftArmPivot.add(gloveL);
+    heroModel.add(leftArmPivot);
+
+    const rightArmPivot = new THREE.Group();
+    rightArmPivot.position.set(0.54, 1.55, 0);
+    rightArmPivot.add(new THREE.Mesh(armGeo, jacketMat));
+    const gloveR = gloveL.clone();
+    rightArmPivot.add(gloveR);
+    heroModel.add(rightArmPivot);
+
+    // Beine & High-Top Sneaker
+    const legGeo = new THREE.BoxGeometry(0.3, 0.7, 0.3);
+    legGeo.translate(0, -0.3, 0);
+
+    const leftLegPivot = new THREE.Group();
+    leftLegPivot.position.set(-0.25, 0.85, 0);
+    leftLegPivot.add(new THREE.Mesh(legGeo, pantsMat));
+    const bootL = new THREE.Mesh(new THREE.BoxGeometry(0.34, 0.28, 0.52), shoeMat);
+    bootL.position.set(0, -0.65, -0.08);
+    leftLegPivot.add(bootL);
+    heroModel.add(leftLegPivot);
+
+    const rightLegPivot = new THREE.Group();
+    rightLegPivot.position.set(0.25, 0.85, 0);
+    rightLegPivot.add(new THREE.Mesh(legGeo, pantsMat));
+    const bootR = bootL.clone();
+    rightLegPivot.add(bootR);
+    heroModel.add(rightLegPivot);
+
+    playerRoot.add(heroModel);
+
+    // Schutzschild Sphäre
+    const shieldGeo = new THREE.SphereGeometry(1.65, 16, 16);
+    const shieldMat = new THREE.MeshBasicMaterial({ color: 0x00ffff, wireframe: true, transparent: true, opacity: 0.75 });
+    const shieldMesh = new THREE.Mesh(shieldGeo, shieldMat);
+    shieldMesh.position.y = 1.35;
+    shieldMesh.visible = false;
+    playerRoot.add(shieldMesh);
+
+    scene.add(playerRoot);
+    handleResize();
+
+    /* =========================================================================
+       DATA-BITS & RETRO POWER-UPS
+       ========================================================================= */
+    const powerups = [];
+    const coins = [];
+    let coinCount = 0;
+    const activePowerups = { shield: false, multiplierTimer: 0, slowmoTimer: 0 };
+    let lastItemZ = -999;
+
+    function createPowerupMesh(type) {
+      const group = new THREE.Group();
+      group.userData = { type: type };
+
+      if (type === 'shield') {
+        const core = new THREE.Mesh(new THREE.OctahedronGeometry(0.65, 0), new THREE.MeshBasicMaterial({ color: 0x00ffff, wireframe: true }));
+        const inner = new THREE.Mesh(new THREE.SphereGeometry(0.38, 8, 8), new THREE.MeshLambertMaterial({ color: 0x00ffff }));
+        group.add(core);
+        group.add(inner);
+      } else if (type === 'multiplier') {
+        const star = new THREE.Mesh(new THREE.DodecahedronGeometry(0.68, 0), new THREE.MeshLambertMaterial({ color: 0xffd700, emissive: 0xff9900, emissiveIntensity: 0.6 }));
+        group.add(star);
+      } else if (type === 'slowmo') {
+        const core = new THREE.Mesh(new THREE.TorusGeometry(0.55, 0.2, 8, 14), new THREE.MeshLambertMaterial({ color: 0xff3366, emissive: 0x880022, emissiveIntensity: 0.7 }));
+        group.add(core);
+      }
+
+      group.position.y = 1.25;
+      return group;
+    }
+
+    // Schwebender Data-Bit Pixel-Cube
+    function createCoinMesh() {
+      const group = new THREE.Group();
+      const cube = new THREE.Mesh(
+        new THREE.BoxGeometry(0.65, 0.65, 0.65),
+        new THREE.MeshLambertMaterial({ color: 0xffd700, emissive: 0xff9900, emissiveIntensity: 0.65 })
+      );
+      group.add(cube);
+      group.position.y = 1.35;
+      return group;
+    }
+
+    function spawnPowerup(zPos, lane) {
+      const types = ['shield', 'multiplier', 'slowmo'];
+      const type = types[Math.floor(Math.random() * types.length)];
+      const mesh = createPowerupMesh(type);
+      mesh.position.set(LANES[lane], 1.25, zPos);
+      scene.add(mesh);
+      powerups.push(mesh);
+      lastItemZ = zPos;
+    }
+
+    function spawnCoins(zPos, lane) {
+      for (let i = 0; i < 3; i++) {
+        const c = createCoinMesh();
+        c.position.set(LANES[lane], 1.35, zPos - (i * 6));
+        scene.add(c);
+        coins.push(c);
+      }
+    }
+
+    function applyPowerup(type) {
+      AudioFX.powerup();
+      if (type === 'shield') {
+        activePowerups.shield = true;
+        shieldMesh.visible = true;
+        badgeShield.classList.add('active');
+      } else if (type === 'multiplier') {
+        activePowerups.multiplierTimer = 8.0;
+        badgeMult.classList.add('active');
+      } else if (type === 'slowmo') {
+        activePowerups.slowmoTimer = 5.0;
+        badgeSlowmo.classList.add('active');
+      }
+    }
+
+    /* =========================================================================
+       HINDERNISSE:
+       1. PLASMA-STACHELN (Niedrig -> Springen)
+       2. LASER-SCHRANKE (Überkopf -> Sliden)
+       3. CYBER-MONOLITH (Hoch -> Ausweichen)
+       ========================================================================= */
+    const obstacles = [];
+
+    // 1. Plasma-Stacheln
+    function createSpikeHazard(laneIndex) {
+      const group = new THREE.Group();
+      const spikeH = 1.45;
+      const baseMat = new THREE.MeshLambertMaterial({ color: 0x1f2421 });
+      const spikeMat = new THREE.MeshLambertMaterial({ color: 0xff3366, emissive: 0x660022, emissiveIntensity: 0.8 });
+
+      const base = new THREE.Mesh(new THREE.BoxGeometry(2.8, 0.25, 1.4), baseMat);
+      base.position.y = 0.12;
+      group.add(base);
+
+      for (let i = -1; i <= 1; i++) {
+        const cone = new THREE.Mesh(new THREE.ConeGeometry(0.5, spikeH, 4), spikeMat);
+        cone.position.set(i * 0.9, spikeH / 2 + 0.1, 0);
+        group.add(cone);
+      }
+
+      group.position.x = LANES[laneIndex];
+      group.position.y = 0;
+      group.userData = { type: 'spike', lane: laneIndex, height: spikeH };
+      return group;
+    }
+
+    // 2. Cyber-Monolith (Hohe Barrikade -> Ausweichen)
+    function createMonolithHazard(laneIndex) {
+      const group = new THREE.Group();
+      const blockH = 4.8;
+      const blockMat = new THREE.MeshLambertMaterial({ color: 0x101726, emissive: 0x00ffff, emissiveIntensity: 0.4 });
+      const accentMat = new THREE.MeshBasicMaterial({ color: 0x00ffff });
+
+      const body = new THREE.Mesh(new THREE.BoxGeometry(3.2, blockH, 1.4), blockMat);
+      body.position.y = blockH / 2;
+      group.add(body);
+
+      // Leuchtstreifen
+      const stripe1 = new THREE.Mesh(new THREE.BoxGeometry(3.3, 0.25, 1.45), accentMat);
+      stripe1.position.y = 1.6;
+      group.add(stripe1);
+      const stripe2 = stripe1.clone();
+      stripe2.position.y = 3.4;
+      group.add(stripe2);
+
+      group.position.x = LANES[laneIndex];
+      group.position.y = 0;
+      group.userData = { type: 'tall', lane: laneIndex, height: blockH };
+      return group;
+    }
+
+    // 3. Laser-Schranke (Überkopf -> Sliden)
+    function createOverheadHazard(laneIndex) {
+      const group = new THREE.Group();
+      const clearanceY = 1.34;
+      const frameMat = new THREE.MeshLambertMaterial({ color: 0x222222 });
+      const laserMat = new THREE.MeshBasicMaterial({ color: 0xffaa00 });
+
+      // Zwei schmale Pfeiler links & rechts
+      const pillarL = new THREE.Mesh(new THREE.BoxGeometry(0.3, 3.8, 0.6), frameMat);
+      pillarL.position.set(-1.7, 1.9, 0);
+      group.add(pillarL);
+      const pillarR = pillarL.clone();
+      pillarR.position.x = 1.7;
+      group.add(pillarR);
+
+      // Schwebender Laser-Querbalken oben
+      const topBeam = new THREE.Mesh(new THREE.BoxGeometry(3.6, 1.5, 0.9), frameMat);
+      topBeam.position.y = clearanceY + 0.75;
+      group.add(topBeam);
+
+      const laserBar = new THREE.Mesh(new THREE.BoxGeometry(3.5, 0.25, 0.95), laserMat);
+      laserBar.position.y = clearanceY + 0.15;
+      group.add(laserBar);
+
+      group.position.x = LANES[laneIndex];
+      group.position.y = 0;
+      group.userData = { type: 'overhead', lane: laneIndex, clearance: clearanceY };
+      return group;
+    }
+
+    /* =========================================================================
+       WELLEN-BASIERTES SPAWN-SYSTEM
+       ========================================================================= */
+    const START_SPEED = 40;
+    const MAX_SPEED = 72;
+    let currentSpeed = START_SPEED;
+    let furthestSpawnZ = -50;
+
+    function getFairSpacing() {
+      const speedRatio = (currentSpeed - START_SPEED) / (MAX_SPEED - START_SPEED);
+      return 42 + (speedRatio * 16) + (Math.random() * 8);
+    }
+
+    function spawnWaveAt(zPos) {
+      const availableLanes = [0, 1, 2];
+      const hazardRoll = Math.random();
+
+      let hazardType = 'spike';
+      if (hazardRoll < 0.36) hazardType = 'overhead';
+      else if (hazardRoll < 0.72) hazardType = 'spike';
+      else hazardType = 'tall';
+
+      let count = 1;
+      if (hazardType === 'tall') count = (Math.random() < 0.2) ? 2 : 1;
+      else count = (Math.random() < 0.5) ? 2 : 1;
+
+      for (let i = 0; i < count; i++) {
+        const randIdx = Math.floor(Math.random() * availableLanes.length);
+        const lane = availableLanes.splice(randIdx, 1)[0];
+
+        let hazard;
+        if (hazardType === 'overhead') hazard = createOverheadHazard(lane);
+        else if (hazardType === 'tall') hazard = createMonolithHazard(lane);
+        else hazard = createSpikeHazard(lane);
+
+        hazard.position.z = zPos;
+        scene.add(hazard);
+        obstacles.push(hazard);
+      }
+
+      // Bits oder Power-Ups auf freier Spur
+      if (availableLanes.length > 0) {
+        const freeLane = availableLanes[Math.floor(Math.random() * availableLanes.length)];
+        if (Math.abs(zPos - lastItemZ) > 210 && Math.random() < 0.12) {
+          spawnPowerup(zPos, freeLane);
+        } else if (Math.random() < 0.6) {
+          spawnCoins(zPos, freeLane);
+        }
+      }
+    }
+
+    function initTrackObjects() {
+      obstacles.forEach(o => scene.remove(o));
+      obstacles.length = 0;
+      powerups.forEach(p => scene.remove(p));
+      powerups.length = 0;
+      coins.forEach(c => scene.remove(c));
+      coins.length = 0;
+      lastItemZ = -999;
+
+      furthestSpawnZ = -55;
+      while (furthestSpawnZ > -400) {
+        spawnWaveAt(furthestSpawnZ);
+        furthestSpawnZ -= getFairSpacing();
+      }
+    }
+
+    /* =========================================================================
+       ZONEN-SYSTEM (ALLE 400 METER)
+       ========================================================================= */
+    let bannerTimeout = null;
+
+    function checkZoneTransition(dist) {
+      const zoneIdx = Math.floor(dist / ZONE_LENGTH) % ZONES.length;
+
+      if (zoneIdx !== currentZoneIdx) {
+        const oldZone = currentZoneIdx;
+        currentZoneIdx = zoneIdx;
+        const currentZone = ZONES[currentZoneIdx];
+
+        const sectorMajor = Math.floor(dist / (ZONE_LENGTH * 4)) + 1;
+        const sectorMinor = (currentZoneIdx % 4) + 1;
+        const sectorStr = `${sectorMajor}-${sectorMinor}`;
+
+        zoneDisplay.innerText = sectorStr;
+        zoneDisplay.style.color = currentZone.hudColor;
+
+        if (oldZone !== -1) {
+          bannerTitle.innerText = `SECTOR ${sectorStr}`;
+          bannerSub.innerText = currentZone.sub;
+          zoneBanner.style.borderColor = currentZone.hudColor;
+          zoneBanner.classList.add('active');
+
+          if (bannerTimeout) clearTimeout(bannerTimeout);
+          bannerTimeout = setTimeout(() => zoneBanner.classList.remove('active'), 2400);
+
+          AudioFX.powerup();
+        }
+
+        scene.background.setHex(currentZone.skyColor);
+        scene.fog.color.setHex(currentZone.fogColor);
+        groundMat.color.setHex(currentZone.groundColor);
+        trackMat.map = createArcadeTrackTexture(currentZone.trackColor1, currentZone.trackColor2);
+        curbMat.color.setHex(currentZone.pillarColor);
+      }
+    }
+
+    /* =========================================================================
+       STEUERUNG
+       ========================================================================= */
+    let currentLane = 1;
+    let playerY = 0;
+    let velocityY = 0;
+    const gravity = -68;
+    const jumpForce = 16.5;
+    let isJumping = false;
+
+    let isSliding = false;
+    let slideTimer = 0;
+    const SLIDE_DURATION = 0.65;
+
+    function jump() {
+      if (!isJumping && !isGameOver) {
+        AudioFX.init();
+        if (isSliding) {
+          isSliding = false;
+          slideTimer = 0;
+        }
+        isJumping = true;
+        velocityY = jumpForce;
+        AudioFX.jump();
+      }
+    }
+
+    function startSlide() {
+      if (!isGameOver && !isJumping && !isSliding) {
+        AudioFX.init();
+        isSliding = true;
+        slideTimer = SLIDE_DURATION;
+        AudioFX.slide();
+      }
+    }
+
+    function switchLane(direction) {
+      if (isGameOver) return;
+      AudioFX.init();
+      const oldLane = currentLane;
+      currentLane = Math.max(0, Math.min(2, currentLane + direction));
+      if (oldLane !== currentLane) {
+        AudioFX.switchLane();
+      }
+    }
+
+    window.addEventListener('keydown', (e) => {
+      AudioFX.init();
+      if (e.code === 'ArrowLeft' || e.code === 'KeyA') switchLane(-1);
+      if (e.code === 'ArrowRight' || e.code === 'KeyD') switchLane(1);
+      if (e.code === 'Space' || e.code === 'ArrowUp' || e.code === 'KeyW') {
+        e.preventDefault();
+        jump();
+      }
+      if (e.code === 'ArrowDown' || e.code === 'KeyS') {
+        e.preventDefault();
+        startSlide();
+      }
+    });
+
+    const btnLeft = document.getElementById('t-btn-left');
+    const btnRight = document.getElementById('t-btn-right');
+    const btnJump = document.getElementById('t-btn-jump');
+    const btnSlide = document.getElementById('t-btn-slide');
+
+    btnLeft.addEventListener('touchstart', (e) => { e.preventDefault(); e.stopPropagation(); switchLane(-1); }, { passive: false });
+    btnRight.addEventListener('touchstart', (e) => { e.preventDefault(); e.stopPropagation(); switchLane(1); }, { passive: false });
+    btnJump.addEventListener('touchstart', (e) => { e.preventDefault(); e.stopPropagation(); jump(); }, { passive: false });
+    btnSlide.addEventListener('touchstart', (e) => { e.preventDefault(); e.stopPropagation(); startSlide(); }, { passive: false });
+
+    btnLeft.addEventListener('click', (e) => { e.stopPropagation(); switchLane(-1); });
+    btnRight.addEventListener('click', (e) => { e.stopPropagation(); switchLane(1); });
+    btnJump.addEventListener('click', (e) => { e.stopPropagation(); jump(); });
+    btnSlide.addEventListener('click', (e) => { e.stopPropagation(); startSlide(); });
+
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let touchStartTime = 0;
+
+    window.addEventListener('touchstart', (e) => {
+      if (e.target.closest('#touch-controls') || e.target.closest('#overlay')) return;
+      touchStartX = e.touches[0].clientX;
+      touchStartY = e.touches[0].clientY;
+      touchStartTime = performance.now();
+    }, { passive: true });
+
+    window.addEventListener('touchend', (e) => {
+      if (e.target.closest('#touch-controls') || e.target.closest('#overlay')) return;
+      const diffX = e.changedTouches[0].clientX - touchStartX;
+      const diffY = e.changedTouches[0].clientY - touchStartY;
+      const elapsed = performance.now() - touchStartTime;
+
+      if (Math.abs(diffX) > Math.abs(diffY)) {
+        if (diffX < -35) switchLane(-1);
+        else if (diffX > 35) switchLane(1);
+      } else {
+        if (diffY < -35) {
+          jump();
+        } else if (diffY > 35) {
+          startSlide();
+        } else if (Math.abs(diffX) < 15 && Math.abs(diffY) < 15 && elapsed < 250) {
+          jump();
+        }
+      }
+    }, { passive: true });
+
+    /* =========================================================================
+       SPIELLOGIK & KOLLISION
+       ========================================================================= */
+    let distance = 0;
+    let isGameOver = false;
+    let runCycle = 0;
+
+    function restartGame() {
+      overlay.classList.remove('active');
+      zoneBanner.classList.remove('active');
+      distance = 0;
+      coinCount = 0;
+      coinDisplay.innerText = 'x00';
+      currentSpeed = START_SPEED;
+      currentLane = 1;
+      currentZoneIdx = -1;
+      checkZoneTransition(0);
+
+      playerRoot.position.set(LANES[1], 0, 0);
+      playerY = 0;
+      velocityY = 0;
+      isJumping = false;
+      isSliding = false;
+      slideTimer = 0;
+      isGameOver = false;
+
+      activePowerups.shield = false;
+      activePowerups.multiplierTimer = 0;
+      activePowerups.slowmoTimer = 0;
+      shieldMesh.visible = false;
+      badgeShield.classList.remove('active');
+      badgeMult.classList.remove('active');
+      badgeSlowmo.classList.remove('active');
+
+      initTrackObjects();
+    }
+
+    restartBtn.addEventListener('click', restartGame);
+    exportTxtBtn.addEventListener('click', () => HighscoreManager.exportAsTxtFile());
+
+    function triggerGameOver() {
+      if (isGameOver) return;
+      isGameOver = true;
+      AudioFX.crash();
+
+      const finalScore = Math.floor(distance);
+      finalScoreDisplay.innerText = String(finalScore).padStart(6, '0');
+      finalCoinsDisplay.innerText = coinCount;
+      HighscoreManager.addScore(finalScore);
+      HighscoreManager.renderTable(finalScore);
+
+      overlay.classList.add('active');
+    }
+
+    function checkCollisions() {
+      const playerX = playerRoot.position.x;
+      const playerFeetY = playerY;
+      const playerHeadY = isSliding ? 0.85 : (playerFeetY + 2.35);
+
+      // 1. Data-Bits
+      for (let i = coins.length - 1; i >= 0; i--) {
+        const c = coins[i];
+        if (Math.abs(c.position.z - playerRoot.position.z) < 1.3 && Math.abs(c.position.x - playerX) < 1.4) {
+          coinCount++;
+          coinDisplay.innerText = 'x' + String(coinCount).padStart(2, '0');
+          distance += 10;
+          AudioFX.coin();
+          scene.remove(c);
+          coins.splice(i, 1);
+        }
+      }
+
+      // 2. Power-Ups
+      for (let i = powerups.length - 1; i >= 0; i--) {
+        const p = powerups[i];
+        if (Math.abs(p.position.z - playerRoot.position.z) < 1.4 && Math.abs(p.position.x - playerX) < 1.5) {
+          applyPowerup(p.userData.type);
+          scene.remove(p);
+          powerups.splice(i, 1);
+        }
+      }
+
+      // 3. Hindernisse
+      for (let i = 0; i < obstacles.length; i++) {
+        const obs = obstacles[i];
+        const zDist = Math.abs(obs.position.z - playerRoot.position.z);
+        if (zDist < 1.3) {
+          const xDist = Math.abs(obs.position.x - playerX);
+          if (xDist < 1.5) {
+            let collides = false;
+
+            if (obs.userData.type === 'overhead') {
+              if (playerHeadY > obs.userData.clearance) collides = true;
+            } else if (obs.userData.type === 'spike') {
+              if (playerFeetY < obs.userData.height - 0.2) collides = true;
+            } else if (obs.userData.type === 'tall') {
+              collides = true;
+            }
+
+            if (collides) {
+              if (activePowerups.shield) {
+                activePowerups.shield = false;
+                shieldMesh.visible = false;
+                badgeShield.classList.remove('active');
+                AudioFX.shieldBreak();
+
+                scene.remove(obs);
+                obstacles.splice(i, 1);
+                break;
+              } else {
+                triggerGameOver();
+                break;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    /* =========================================================================
+       HAUPTSCHLEIFE (LOOP)
+       ========================================================================= */
+    let lastTime = performance.now();
+
+    function animate(now) {
+      requestAnimationFrame(animate);
+
+      const rawDelta = Math.min((now - lastTime) / 1000, 0.1);
+      lastTime = now;
+
+      if (!isGameOver) {
+        let timeScale = 1.0;
+
+        if (activePowerups.slowmoTimer > 0) {
+          activePowerups.slowmoTimer -= rawDelta;
+          timeScale = 0.5;
+          slowmoTimerEl.innerText = Math.max(0, activePowerups.slowmoTimer).toFixed(1) + 's';
+          if (activePowerups.slowmoTimer <= 0) badgeSlowmo.classList.remove('active');
+        }
+
+        let scoreMultiplier = 1;
+        if (activePowerups.multiplierTimer > 0) {
+          activePowerups.multiplierTimer -= rawDelta;
+          scoreMultiplier = 2;
+          multTimerEl.innerText = Math.max(0, activePowerups.multiplierTimer).toFixed(1) + 's';
+          if (activePowerups.multiplierTimer <= 0) badgeMult.classList.remove('active');
+        }
+
+        const delta = rawDelta * timeScale;
+
+        currentSpeed = Math.min(START_SPEED + distance * 0.024, MAX_SPEED);
+        speedDisplay.innerText = ((currentSpeed / START_SPEED) * timeScale).toFixed(1) + 'X';
+
+        distance += currentSpeed * delta * 0.55 * scoreMultiplier;
+        scoreDisplay.innerText = String(Math.floor(distance)).padStart(6, '0');
+
+        checkZoneTransition(distance);
+
+        const targetX = LANES[currentLane];
+        playerRoot.position.x = THREE.MathUtils.lerp(playerRoot.position.x, targetX, 0.24);
+        const laneDiff = targetX - playerRoot.position.x;
+        playerRoot.rotation.z = -laneDiff * 0.12;
+
+        if (isSliding) {
+          slideTimer -= delta;
+          if (slideTimer <= 0) isSliding = false;
+        }
+
+        // ==========================================
+        // HERO POSEN & ANIMATIONEN
+        // ==========================================
+        if (isJumping) {
+          velocityY += gravity * delta;
+          playerY += velocityY * delta;
+
+          if (playerY <= 0) {
+            playerY = 0;
+            velocityY = 0;
+            isJumping = false;
+          }
+
+          // ARCADE JUMP POSE: Faust nach oben gestreckt!
+          heroModel.rotation.x = THREE.MathUtils.lerp(heroModel.rotation.x, 0, 0.2);
+          heroModel.position.y = THREE.MathUtils.lerp(heroModel.position.y, 0, 0.2);
+          rightArmPivot.rotation.x = 2.8;
+          leftArmPivot.rotation.x = -0.5;
+          rightLegPivot.rotation.x = -0.7;
+          leftLegPivot.rotation.x = 0.3;
+        } else if (isSliding) {
+          // SLIDE POSE: Flach auf dem Boden mit Beinen nach vorn
+          heroModel.rotation.x = THREE.MathUtils.lerp(heroModel.rotation.x, -Math.PI / 2.5, 0.28);
+          heroModel.position.y = THREE.MathUtils.lerp(heroModel.position.y, 0.4, 0.28);
+          leftLegPivot.rotation.x = -1.1;
+          rightLegPivot.rotation.x = -1.1;
+          leftArmPivot.rotation.x = 0.4;
+          rightArmPivot.rotation.x = 0.4;
+          playerY = 0;
+        } else {
+          // LAUF-ZYKLUS
+          heroModel.rotation.x = THREE.MathUtils.lerp(heroModel.rotation.x, 0, 0.2);
+          heroModel.position.y = THREE.MathUtils.lerp(heroModel.position.y, 0, 0.2);
+
+          runCycle += delta * (currentSpeed * 0.24);
+          const legAngle = Math.sin(runCycle) * 0.85;
+          leftLegPivot.rotation.x = legAngle;
+          rightLegPivot.rotation.x = -legAngle;
+
+          leftArmPivot.rotation.x = -legAngle * 0.9;
+          rightArmPivot.rotation.x = legAngle * 0.9;
+
+          playerY = Math.abs(Math.sin(runCycle * 2)) * 0.1;
+        }
+
+        playerRoot.position.y = playerY;
+
+        if (activePowerups.shield) {
+          shieldMesh.rotation.y += delta * 3;
+        }
+
+        // Data-Bits rotieren & bewegen
+        for (let i = coins.length - 1; i >= 0; i--) {
+          const c = coins[i];
+          c.position.z += currentSpeed * delta;
+          c.rotation.y += delta * 3.5;
+          c.rotation.x += delta * 2;
+          if (c.position.z > 20) {
+            scene.remove(c);
+            coins.splice(i, 1);
+          }
+        }
+
+        // Power-Ups bewegen
+        for (let i = powerups.length - 1; i >= 0; i--) {
+          const p = powerups[i];
+          p.position.z += currentSpeed * delta;
+          p.rotation.y += delta * 3;
+          if (p.position.z > 20) {
+            scene.remove(p);
+            powerups.splice(i, 1);
+          }
+        }
+
+        // Hindernisse bewegen
+        for (let i = obstacles.length - 1; i >= 0; i--) {
+          const obs = obstacles[i];
+          obs.position.z += currentSpeed * delta;
+          if (obs.position.z > 20) {
+            scene.remove(obs);
+            obstacles.splice(i, 1);
+          }
+        }
+
+        furthestSpawnZ += currentSpeed * delta;
+        while (furthestSpawnZ > -390) {
+          furthestSpawnZ -= getFairSpacing();
+          spawnWaveAt(furthestSpawnZ);
+        }
+
+        trackMat.map.offset.y -= currentSpeed * delta * 0.042;
+
+        checkCollisions();
+      }
+
+      camera.position.x = THREE.MathUtils.lerp(camera.position.x, playerRoot.position.x * 0.45, 0.1);
+      renderer.render(scene, camera);
+    }
+
+    checkZoneTransition(0);
+    initTrackObjects();
+    requestAnimationFrame(animate);
+  </script>
+</body>
+</html>
