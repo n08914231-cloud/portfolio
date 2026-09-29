@@ -97,6 +97,11 @@
       min-height: 18rem;
       color: #e2e8f0;
     }
+    .code-workbench #code-display-wrap {
+      max-height: min(68vh, 42rem);
+      overflow: auto;
+      overscroll-behavior: contain;
+    }
     .code-workbench #code-display .hljs {
       padding: 0;
       background: transparent;
@@ -529,14 +534,14 @@
 </div>
 <!-- Snippet Tabs -->
 <div class="flex items-center gap-1.5 p-1 rounded-xl bg-white/[0.03] border border-white/[0.06]" id="snippet-tabs">
-<button class="px-4 py-1.5 rounded-lg text-xs font-mono font-medium text-[#00F2FE] bg-white/[0.08] border border-white/[0.08] transition-all" id="tab-queue" data-snippet="queue">
-              useAsyncQueue.ts
+<button class="px-4 py-1.5 rounded-lg text-xs font-mono font-medium text-[#00F2FE] bg-white/[0.08] border border-white/[0.08] transition-all" id="tab-gameLoop" data-snippet="gameLoop">
+              game-loop.js
             </button>
-<button class="px-4 py-1.5 rounded-lg text-xs font-mono font-medium text-gray-400 hover:text-white transition-all" id="tab-rate" data-snippet="rate">
-              RateLimiter.js
+<button class="px-4 py-1.5 rounded-lg text-xs font-mono font-medium text-gray-400 hover:text-white transition-all" id="tab-collisions" data-snippet="collisions">
+              collisions.js
             </button>
-<button class="px-4 py-1.5 rounded-lg text-xs font-mono font-medium text-gray-400 hover:text-white transition-all" id="tab-hook" data-snippet="hook">
-              ThemeHook.tsx
+<button class="px-4 py-1.5 rounded-lg text-xs font-mono font-medium text-gray-400 hover:text-white transition-all" id="tab-highscore" data-snippet="highscore">
+              highscore-manager.js
             </button>
 </div>
 <!-- Copy Button -->
@@ -546,35 +551,30 @@
 </button>
 </div>
 <!-- Syntax Code Body -->
-<div class="p-8 sm:p-10 bg-[#07080a] overflow-x-auto font-mono text-xs sm:text-sm leading-relaxed">
-<pre class="font-mono" id="code-display"><span class="text-gray-500">// useAsyncQueue: Manages concurrency-bounded asynchronous job executions</span>
-<span class="text-[#a855f7] font-semibold">import</span> { useState, useEffect, useRef } <span class="text-[#a855f7] font-semibold">from</span> <span class="text-emerald-400">'react'</span>;
+<div id="code-display-wrap" class="p-8 sm:p-10 bg-[#07080a] overflow-auto font-mono text-xs sm:text-sm leading-relaxed">
+<pre class="font-mono" id="code-display">// Main Three.js runner loop
+let lastTime = performance.now();
 
-<span class="text-[#a855f7] font-semibold">export function</span> <span class="text-[#00F2FE] font-bold">useAsyncQueue</span>&lt;<span class="text-cyan-200">T</span>&gt;(concurrency = <span class="text-purple-300">2</span>) {
-  <span class="text-[#a855f7] font-semibold">const</span> [pending, setPending] = <span class="text-[#00F2FE]">useState</span>&lt;<span class="text-cyan-200">number</span>&gt;(<span class="text-purple-300">0</span>);
-  <span class="text-[#a855f7] font-semibold">const</span> queueRef = <span class="text-[#00F2FE]">useRef</span>&lt;(() =&gt; <span class="text-cyan-200">Promise</span>&lt;<span class="text-cyan-200">T</span>&gt;)[]&gt;([]);
-  <span class="text-[#a855f7] font-semibold">const</span> activeCount = <span class="text-[#00F2FE]">useRef</span>(<span class="text-purple-300">0</span>);
+function animate(now) {
+  requestAnimationFrame(animate);
+  const rawDelta = Math.min((now - lastTime) / 1000, 0.1);
+  lastTime = now;
 
-  <span class="text-[#a855f7] font-semibold">const</span> next = () =&gt; {
-    <span class="text-[#a855f7] font-semibold">if</span> (activeCount.current &gt;= concurrency || queueRef.current.length === <span class="text-purple-300">0</span>) <span class="text-[#a855f7] font-semibold">return</span>;
-    <span class="text-[#a855f7] font-semibold">const</span> task = queueRef.current.shift();
-    <span class="text-[#a855f7] font-semibold">if</span> (!task) <span class="text-[#a855f7] font-semibold">return</span>;
-    
-    activeCount.current += <span class="text-purple-300">1</span>;
-    task().finally(() =&gt; {
-      activeCount.current -= <span class="text-purple-300">1</span>;
-      <span class="text-[#00F2FE]">setPending</span>(queueRef.current.length);
-      next();
-    });
-  };
+  if (!isGameOver) {
+    let timeScale = 1.0;
+    if (activePowerups.slowmoTimer > 0) {
+      activePowerups.slowmoTimer -= rawDelta;
+      timeScale = 0.5;
+    }
+    const delta = rawDelta * timeScale;
+    currentSpeed = Math.min(START_SPEED + distance * 0.024, MAX_SPEED);
+    distance += currentSpeed * delta * 0.55 * scoreMultiplier;
+    scoreDisplay.innerText = String(Math.floor(distance)).padStart(6, '0');
+    checkZoneTransition(distance);
+  }
 
-  <span class="text-[#a855f7] font-semibold">const</span> enqueue = (task: () =&gt; <span class="text-cyan-200">Promise</span>&lt;<span class="text-cyan-200">T</span>&gt;) =&gt; {
-    queueRef.current.push(task);
-    <span class="text-[#00F2FE]">setPending</span>(queueRef.current.length);
-    next();
-  };
-
-  <span class="text-[#a855f7] font-semibold">return</span> { enqueue, pending };
+  camera.position.x = THREE.MathUtils.lerp(camera.position.x, playerRoot.position.x * 0.45, 0.1);
+  renderer.render(scene, camera);
 }</pre>
 </div>
 </div>

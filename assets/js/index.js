@@ -1,94 +1,312 @@
 const snippets = {
-      queue: `// useAsyncQueue: Manages concurrency-bounded asynchronous job executions
-import { useState, useEffect, useRef } from 'react';
+      gameLoop: `// Main Three.js runner loop
+let lastTime = performance.now();
 
-export function useAsyncQueue<T>(concurrency = 2) {
-  const [pending, setPending] = useState<number>(0);
-  const queueRef = useRef<(() => Promise<T>)[]>([]);
-  const activeCount = useRef(0);
+function animate(now) {
+  requestAnimationFrame(animate);
+  const rawDelta = Math.min((now - lastTime) / 1000, 0.1);
+  lastTime = now;
 
-  const next = () => {
-    if (activeCount.current >= concurrency || queueRef.current.length === 0) return;
-    const task = queueRef.current.shift();
-    if (!task) return;
-    
-    activeCount.current += 1;
-    task().finally(() => {
-      activeCount.current -= 1;
-      setPending(queueRef.current.length);
-      next();
-    });
-  };
-
-  const enqueue = (task: () => Promise<T>) => {
-    queueRef.current.push(task);
-    setPending(queueRef.current.length);
-    next();
-  };
-
-  return { enqueue, pending };
-}`,
-      rate: `// RateLimiter.js: Token Bucket implementation for Edge Functions
-class TokenBucket {
-  constructor(capacity, refillRatePerSec) {
-    this.capacity = capacity;
-    this.tokens = capacity;
-    this.refillRate = refillRatePerSec;
-    this.lastRefill = Date.now();
-  }
-
-  refill() {
-    const now = Date.now();
-    const elapsed = (now - this.lastRefill) / 1000;
-    this.tokens = Math.min(this.capacity, this.tokens + elapsed * this.refillRate);
-    this.lastRefill = now;
-  }
-
-  consume(tokens = 1) {
-    this.refill();
-    if (this.tokens >= tokens) {
-      this.tokens -= tokens;
-      return { allowed: true, remaining: Math.floor(this.tokens) };
+  if (!isGameOver) {
+    let timeScale = 1.0;
+    if (activePowerups.slowmoTimer > 0) {
+      activePowerups.slowmoTimer -= rawDelta;
+      timeScale = 0.5;
+      slowmoTimerEl.innerText = Math.max(0, activePowerups.slowmoTimer).toFixed(1) + 's';
+      if (activePowerups.slowmoTimer <= 0) badgeSlowmo.classList.remove('active');
     }
-    return { allowed: false, remaining: 0 };
+
+    let scoreMultiplier = 1;
+    if (activePowerups.multiplierTimer > 0) {
+      activePowerups.multiplierTimer -= rawDelta;
+      scoreMultiplier = 2;
+      multTimerEl.innerText = Math.max(0, activePowerups.multiplierTimer).toFixed(1) + 's';
+      if (activePowerups.multiplierTimer <= 0) badgeMult.classList.remove('active');
+    }
+
+    const delta = rawDelta * timeScale;
+    currentSpeed = Math.min(START_SPEED + distance * 0.024, MAX_SPEED);
+    speedDisplay.innerText = ((currentSpeed / START_SPEED) * timeScale).toFixed(1) + 'X';
+    distance += currentSpeed * delta * 0.55 * scoreMultiplier;
+    scoreDisplay.innerText = String(Math.floor(distance)).padStart(6, '0');
+    checkZoneTransition(distance);
+
+    const targetX = LANES[currentLane];
+    playerRoot.position.x = THREE.MathUtils.lerp(playerRoot.position.x, targetX, 0.24);
+    const laneDiff = targetX - playerRoot.position.x;
+    playerRoot.rotation.z = -laneDiff * 0.12;
+
+    if (isSliding) {
+      slideTimer -= delta;
+      if (slideTimer <= 0) isSliding = false;
+    }
+
+    if (isJumping) {
+      velocityY += gravity * delta;
+      playerY += velocityY * delta;
+      if (playerY <= 0) {
+        playerY = 0;
+        velocityY = 0;
+        isJumping = false;
+      }
+      rightArmPivot.rotation.x = 2.8;
+      leftArmPivot.rotation.x = -0.5;
+      rightLegPivot.rotation.x = -0.7;
+      leftLegPivot.rotation.x = 0.3;
+    } else if (isSliding) {
+      heroModel.rotation.x = THREE.MathUtils.lerp(heroModel.rotation.x, -Math.PI / 2.5, 0.28);
+      heroModel.position.y = THREE.MathUtils.lerp(heroModel.position.y, 0.4, 0.28);
+      leftLegPivot.rotation.x = -1.1;
+      rightLegPivot.rotation.x = -1.1;
+      leftArmPivot.rotation.x = 0.4;
+      rightArmPivot.rotation.x = 0.4;
+      playerY = 0;
+    } else {
+      heroModel.rotation.x = THREE.MathUtils.lerp(heroModel.rotation.x, 0, 0.2);
+      heroModel.position.y = THREE.MathUtils.lerp(heroModel.position.y, 0, 0.2);
+      runCycle += delta * (currentSpeed * 0.24);
+      const legAngle = Math.sin(runCycle) * 0.85;
+      leftLegPivot.rotation.x = legAngle;
+      rightLegPivot.rotation.x = -legAngle;
+      leftArmPivot.rotation.x = -legAngle * 0.9;
+      rightArmPivot.rotation.x = legAngle * 0.9;
+      playerY = Math.abs(Math.sin(runCycle * 2)) * 0.1;
+    }
+
+    playerRoot.position.y = playerY;
+
+    if (activePowerups.shield) {
+      shieldMesh.rotation.y += delta * 3;
+    }
+
+    for (let i = coins.length - 1; i >= 0; i--) {
+      const coin = coins[i];
+      coin.position.z += currentSpeed * delta;
+      coin.rotation.y += delta * 3.5;
+      coin.rotation.x += delta * 2;
+      if (coin.position.z > 20) {
+        scene.remove(coin);
+        coins.splice(i, 1);
+      }
+    }
+
+    for (let i = powerups.length - 1; i >= 0; i--) {
+      const powerup = powerups[i];
+      powerup.position.z += currentSpeed * delta;
+      powerup.rotation.y += delta * 3;
+      if (powerup.position.z > 20) {
+        scene.remove(powerup);
+        powerups.splice(i, 1);
+      }
+    }
+
+    for (let i = obstacles.length - 1; i >= 0; i--) {
+      const obstacle = obstacles[i];
+      obstacle.position.z += currentSpeed * delta;
+      if (obstacle.position.z > 20) {
+        scene.remove(obstacle);
+        obstacles.splice(i, 1);
+      }
+    }
+
+    furthestSpawnZ += currentSpeed * delta;
+    while (furthestSpawnZ > -390) {
+      furthestSpawnZ -= getFairSpacing();
+      spawnWaveAt(furthestSpawnZ);
+    }
+    trackMat.map.offset.y -= currentSpeed * delta * 0.042;
+    checkCollisions();
   }
-}
 
-export const limiter = new TokenBucket(60, 10);`,
-      hook: `// ThemeHook.tsx: System-aware dark/light context synchronizer
-import React, { createContext, useContext, useEffect, useState } from 'react';
+  camera.position.x = THREE.MathUtils.lerp(camera.position.x, playerRoot.position.x * 0.45, 0.1);
+  renderer.render(scene, camera);
+}`,
+      collisions: `// Collect items, apply power-ups and resolve obstacle hits
+function checkCollisions() {
+  const playerX = playerRoot.position.x;
+  const playerFeetY = playerY;
+  const playerHeadY = isSliding ? 0.85 : playerFeetY + 2.35;
 
-type Theme = 'dark' | 'light';
-const ThemeContext = createContext<{ theme: Theme; toggle: () => void }>({
-  theme: 'dark',
-  toggle: () => {},
-});
+  // Pick up score bits
+  for (let i = coins.length - 1; i >= 0; i--) {
+    const item = coins[i];
+    if (Math.abs(item.position.z - playerRoot.position.z) < 1.3 &&
+        Math.abs(item.position.x - playerX) < 1.4) {
+      coinCount++;
+      coinDisplay.innerText = 'x' + String(coinCount).padStart(2, '0');
+      distance += 10;
+      AudioFX.coin();
+      scene.remove(item);
+      coins.splice(i, 1);
+    }
+  }
 
-export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [theme, setTheme] = useState<Theme>('dark');
+  // Activate collected power-ups
+  for (let i = powerups.length - 1; i >= 0; i--) {
+    const item = powerups[i];
+    if (Math.abs(item.position.z - playerRoot.position.z) < 1.4 &&
+        Math.abs(item.position.x - playerX) < 1.5) {
+      applyPowerup(item.userData.type);
+      scene.remove(item);
+      powerups.splice(i, 1);
+    }
+  }
 
-  const toggle = () => {
-    const next = theme === 'dark' ? 'light' : 'dark';
-    setTheme(next);
-    document.documentElement.classList.toggle('dark', next === 'dark');
-  };
+  // Test lane and vertical clearance for each obstacle
+  for (let i = 0; i < obstacles.length; i++) {
+    const obstacle = obstacles[i];
+    const zDistance = Math.abs(obstacle.position.z - playerRoot.position.z);
+    if (zDistance < 1.3) {
+      const xDistance = Math.abs(obstacle.position.x - playerX);
+      if (xDistance < 1.5) {
+        let collides = false;
 
-  return (
-    <ThemeContext.Provider value={{ theme, toggle }}>
-      {children}
-    </ThemeContext.Provider>
-  );
+        if (obstacle.userData.type === 'overhead') {
+          if (playerHeadY > obstacle.userData.clearance) collides = true;
+        } else if (obstacle.userData.type === 'spike') {
+          if (playerFeetY < obstacle.userData.height - 0.2) collides = true;
+        } else if (obstacle.userData.type === 'tall') {
+          collides = true;
+        }
+
+        if (collides) {
+          if (activePowerups.shield) {
+            activePowerups.shield = false;
+            shieldMesh.visible = false;
+            badgeShield.classList.remove('active');
+            AudioFX.shieldBreak();
+            scene.remove(obstacle);
+            obstacles.splice(i, 1);
+            break;
+          } else {
+            triggerGameOver();
+            break;
+          }
+        }
+      }
+    }
+  }
+}`,
+      highscore: `// Persist scores locally and sync them through Supabase
+const HighscoreManager = {
+  storageKey: 'pixel_protocol_scores',
+
+  getScores() {
+    try {
+      const raw = localStorage.getItem(this.storageKey);
+      return raw ? JSON.parse(raw).slice(0, 50) : [];
+    } catch (error) {
+      return [];
+    }
+  },
+
+  addScore(score) {
+    if (score <= 0) return;
+    const scores = this.getScores();
+    scores.push({ player_name: 'YOU', score: Math.floor(score) });
+    scores.sort((left, right) => right.score - left.score);
+    const topScores = scores.slice(0, 50);
+    localStorage.setItem(this.storageKey, JSON.stringify(topScores));
+    return topScores;
+  },
+
+  isConfigured() {
+    const config = window.SUPABASE_CONFIG || {};
+    return Boolean(config.url && config.anonKey &&
+      !config.url.includes('YOUR_') && !config.anonKey.includes('YOUR_'));
+  },
+
+  async loadLeaderboard(currentScore) {
+    if (!this.isConfigured()) {
+      this.renderTable(this.getScores(), currentScore);
+      return;
+    }
+
+    const config = window.SUPABASE_CONFIG;
+    const url = config.url.replace(/\\/$/, '') +
+      '/rest/v1/arcade_leaderboard' +
+      '?select=player_name,score,created_at' +
+      '&order=score.desc,created_at.asc&limit=50';
+    try {
+      const response = await fetch(url, {
+        headers: { apikey: config.anonKey }
+      });
+      if (!response.ok) throw new Error('Leaderboard request failed');
+      const rows = await response.json();
+      this.renderTable(rows.map(row => ({
+        player_name: row.player_name,
+        score: row.score,
+        date: new Date(row.created_at).toLocaleDateString('de-DE')
+      })), currentScore);
+    } catch (error) {
+      this.renderTable(this.getScores(), currentScore);
+    }
+  },
+
+  async submitScore(score, playerName) {
+    if (!this.isConfigured()) throw new Error('Supabase ist noch nicht konfiguriert.');
+    const config = window.SUPABASE_CONFIG;
+    const response = await fetch(
+      config.url.replace(/\\/$/, '') + '/rest/v1/rpc/submit_arcade_score',
+      {
+      method: 'POST',
+      headers: {
+        apikey: config.anonKey,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        p_player_name: playerName,
+        p_score: Math.floor(score)
+      })
+      }
+    );
+
+    if (!response.ok) {
+      let details = '';
+      try {
+        const error = await response.json();
+        details = error.message || error.details || error.hint || '';
+      } catch (error) {
+        details = response.statusText;
+      }
+      throw new Error(details || 'Score submission failed');
+    }
+
+    const rows = await response.json();
+    this.renderTable(rows, score);
+    return rows;
+  },
+
+  renderTable(scores, currentScore) {
+    const body = document.getElementById('highscore-body');
+    body.innerHTML = '';
+    scores.slice(0, 50).forEach((item, index) => {
+      const row = document.createElement('tr');
+      if (Math.floor(currentScore) === item.score) row.style.color = '#ffcc00';
+      [
+        '#' + (index + 1),
+        item.player_name || 'PLAYER',
+        String(item.score).padStart(6, '0'),
+        item.date || new Date(item.created_at).toLocaleDateString('de-DE')
+      ].forEach(value => {
+        const cell = document.createElement('td');
+        cell.textContent = value;
+        row.appendChild(cell);
+      });
+      body.appendChild(row);
+    });
+  }
 };`
     };
 
-    let currentKey = 'queue';
+    let currentKey = 'gameLoop';
 
     function renderSnippet(key) {
       const display = document.getElementById('code-display');
       if (!display) return;
 
       if (window.hljs) {
-        display.innerHTML = window.hljs.highlight(snippets[key], { language: 'typescript' }).value;
+        display.innerHTML = window.hljs.highlight(snippets[key], { language: 'javascript' }).value;
       } else {
         display.textContent = snippets[key];
       }
@@ -98,7 +316,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
     function switchSnippet(key) {
       currentKey = key;
-      const tabs = ['queue', 'rate', 'hook'];
+      const tabs = ['gameLoop', 'collisions', 'highscore'];
       
       tabs.forEach(t => {
         const btn = document.getElementById(`tab-${t}`);
