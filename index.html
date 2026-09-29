@@ -17,6 +17,78 @@
     html {
       scroll-behavior: smooth;
     }
+    html.light {
+      color-scheme: light;
+    }
+    html.light body {
+      background: #f3f7fb !important;
+      color: #0f172a !important;
+    }
+    html.light #top {
+      background: #f3f7fb !important;
+      color: #0f172a !important;
+    }
+    html.light header {
+      background: rgba(255, 255, 255, 0.8) !important;
+      border-color: rgba(15, 23, 42, 0.08) !important;
+    }
+    html.light .text-white,
+    html.light .text-gray-300,
+    html.light .text-gray-400,
+    html.light .text-gray-500,
+    html.light .text-gray-600,
+    html.light .text-gray-700 {
+      color: #0f172a !important;
+    }
+    html.light .text-gray-400 {
+      color: #475569 !important;
+    }
+    html.light .bg-white\/\[0\.04\],
+    html.light .bg-white\/\[0\.03\],
+    html.light .bg-white\/\[0\.02\] {
+      background-color: rgba(15, 23, 42, 0.04) !important;
+    }
+    html.light .border-white\/\[0\.08\],
+    html.light .border-white\/\[0\.06\],
+    html.light .border-white\/\[0\.1\] {
+      border-color: rgba(15, 23, 42, 0.12) !important;
+    }
+    html.light .apple-glass-card {
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.82) 0%, rgba(245, 247, 251, 0.94) 100%) !important;
+      border-color: rgba(15, 23, 42, 0.08) !important;
+      box-shadow: 0 20px 50px -15px rgba(15, 23, 42, 0.12), inset 0 1px 0 0 rgba(255, 255, 255, 0.65) !important;
+    }
+    html.light .apple-glass {
+      background: rgba(255, 255, 255, 0.7) !important;
+      border-color: rgba(15, 23, 42, 0.08) !important;
+    }
+    html.light .hero-visual {
+      border-color: rgba(15, 23, 42, 0.08) !important;
+      background: #eff6ff !important;
+      box-shadow: 0 28px 90px -38px rgba(14, 116, 144, 0.22) !important;
+    }
+    html.light .hero-visual::after {
+      background: linear-gradient(90deg, rgba(15, 23, 42, 0.18), transparent 60%), linear-gradient(0deg, rgba(15, 23, 42, 0.14), transparent 48%) !important;
+    }
+    html.light .hero-visual-caption,
+    html.light .hero-visual-index {
+      color: rgba(15, 23, 42, 0.7) !important;
+    }
+    html.light .subtle-glow {
+      box-shadow: 0 0 60px -15px rgba(14, 165, 233, 0.18) !important;
+    }
+    html.light footer {
+      background: #edf3fb !important;
+      border-color: rgba(15, 23, 42, 0.08) !important;
+    }
+    html.light .bg-white:not(.text-black):not(.text-white) {
+      background-color: rgba(255, 255, 255, 0.92) !important;
+    }
+    html.light main,
+    html.light section,
+    html.light div[style*="background"] {
+      background-color: transparent !important;
+    }
     #primary-navigation {
       position: relative;
       isolation: isolate;
@@ -279,7 +351,7 @@
 </div>
 <!-- Actions -->
 <div class="flex items-center gap-1.5 border-l border-white/[0.08] pl-4">
-<a aria-label="GitHub Profile" class="p-2 rounded-xl text-gray-400 hover:text-white hover:bg-white/[0.06] transition-colors flex items-center justify-center" href="https://github.com" rel="noreferrer" target="_blank">
+<a aria-label="GitHub Profile" class="p-2 rounded-xl text-gray-400 hover:text-white hover:bg-white/[0.06] transition-colors flex items-center justify-center" href="https://github.com/alexchen-dev" rel="noreferrer" target="_blank">
 <span class="material-symbols-outlined text-[20px]">terminal</span>
 </a>
 <a aria-label="LinkedIn Profile" class="p-2 rounded-xl text-gray-400 hover:text-white hover:bg-white/[0.06] transition-colors flex items-center justify-center" href="https://linkedin.com" rel="noreferrer" target="_blank">
@@ -342,7 +414,7 @@
 </div>
 <!-- Fast Monospace Links Bar -->
 <div class="flex flex-wrap items-center justify-center gap-2 pt-6">
-<a class="flex items-center gap-2 px-4 py-2 rounded-full bg-white/[0.03] border border-white/[0.08] hover:border-[#00F2FE]/40 text-gray-300 hover:text-white font-mono text-xs transition-all" href="https://github.com" rel="noreferrer" target="_blank">
+<a class="flex items-center gap-2 px-4 py-2 rounded-full bg-white/[0.03] border border-white/[0.08] hover:border-[#00F2FE]/40 text-gray-300 hover:text-white font-mono text-xs transition-all" href="https://github.com/alexchen-dev" rel="noreferrer" target="_blank">
 <span class="material-symbols-outlined text-[16px] text-[#00F2FE]">code</span>
 <span>@alexchen-dev</span>
 </a>

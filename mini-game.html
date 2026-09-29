@@ -25,6 +25,56 @@
         var(--page-bg);
       font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif;
     }
+    html.light {
+      color-scheme: light;
+    }
+    html.light body {
+      background:
+        radial-gradient(ellipse at 50% 18%, rgba(14, 165, 233, 0.10), transparent 38rem),
+        radial-gradient(ellipse at 92% 72%, rgba(16, 185, 129, 0.08), transparent 32rem),
+        #f3f7fb !important;
+      color: #0f172a !important;
+    }
+    html.light header {
+      background: rgba(255, 255, 255, 0.78) !important;
+      border-color: rgba(15, 23, 42, 0.1) !important;
+    }
+    html.light .text-white,
+    html.light .text-gray-300,
+    html.light .text-gray-400,
+    html.light .text-gray-500,
+    html.light .text-gray-600,
+    html.light .text-gray-700,
+    html.light h1,
+    html.light h2,
+    html.light p,
+    html.light span {
+      color: #0f172a !important;
+    }
+    html.light .game-shell,
+    html.light .game-toolbar {
+      background: rgba(255, 255, 255, 0.9) !important;
+      border-color: rgba(15, 23, 42, 0.12) !important;
+      color: #0f172a !important;
+      box-shadow: 0 20px 60px -35px rgba(14, 116, 144, 0.22) !important;
+    }
+    html.light .control-button {
+      background: rgba(15, 23, 42, 0.04) !important;
+      border-color: rgba(15, 23, 42, 0.12) !important;
+      color: #0f172a !important;
+    }
+    html.light #game-navigation {
+      background: rgba(255, 255, 255, 0.75) !important;
+      border-color: rgba(15, 23, 42, 0.08) !important;
+    }
+    html.light #game-navigation a,
+    html.light #game-back-link {
+      color: #334155 !important;
+    }
+    html.light #game-back-link {
+      background: rgba(15, 23, 42, 0.04) !important;
+      border-color: rgba(15, 23, 42, 0.08) !important;
+    }
     .game-shell {
       height: min(76svh, 820px);
       min-height: 520px;
@@ -69,16 +119,16 @@
       height: 100%;
     }
     .leaderboard-panel {
-      border: 2px solid #00ffff;
-      border-radius: 4px;
-      background: rgba(0, 0, 0, 0.8);
-      box-shadow: 4px 4px 0px #ff3366;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      background: #fff;
+      box-shadow: 0 12px 32px rgba(15, 23, 42, 0.1);
       overflow: hidden;
       font-family: 'Press Start 2P', monospace;
     }
     .leaderboard-header {
-      border-bottom: 2px solid rgba(255, 255, 255, 0.22);
-      background: rgba(14, 17, 22, 0.96);
+      border-bottom: 1px solid #e2e8f0;
+      background: #f8fafc;
       padding: 0.9rem 1rem;
     }
     .leaderboard-table {
@@ -91,23 +141,46 @@
     .leaderboard-table td {
       padding: 0.75rem 0.8rem;
       text-align: left;
-      border-bottom: 1px dashed rgba(255, 255, 255, 0.18);
+      border-bottom: 1px dashed #cbd5e1;
     }
     .leaderboard-table th {
-      color: #00ffff;
+      color: #475569;
       letter-spacing: 1px;
       font-weight: 400;
       text-transform: uppercase;
     }
     .leaderboard-table td {
-      color: #fff;
+      color: #111827;
       font-variant-numeric: tabular-nums;
     }
     .leaderboard-table tr:last-child td {
       border-bottom: 0;
     }
-    .leaderboard-table tr:first-child td {
-      color: #ffcc00;
+    .leaderboard-header p {
+      color: #0891b2;
+    }
+    .leaderboard-header h2 {
+      color: #111827;
+    }
+    html.dark .leaderboard-panel {
+      border: 2px solid #00ffff;
+      background: rgba(0, 0, 0, 0.8);
+      box-shadow: 4px 4px 0 #ff3366;
+    }
+    html.dark .leaderboard-header {
+      border-bottom: 2px solid rgba(255, 255, 255, 0.22);
+      background: rgba(14, 17, 22, 0.96);
+    }
+    html.dark .leaderboard-header h2,
+    html.dark .leaderboard-table td {
+      color: #fff;
+    }
+    html.dark .leaderboard-table th {
+      color: #00ffff;
+    }
+    html.dark .leaderboard-table th,
+    html.dark .leaderboard-table td {
+      border-color: rgba(255, 255, 255, 0.18);
     }
     .control-button {
       display: inline-flex;
@@ -173,11 +246,19 @@
         <a class="whitespace-nowrap rounded-full px-4 py-2 text-xs text-gray-400 transition-all duration-200 hover:bg-white/[0.06] hover:text-white" href="index.html">Overview</a>
         <a class="whitespace-nowrap rounded-full bg-white/[0.12] px-4 py-2 text-xs font-medium text-white shadow-sm transition-all duration-200" href="mini-game.html" aria-current="page">Mini Game</a>
       </nav>
-      <a id="game-back-link" class="inline-flex items-center gap-2 rounded-full border border-white/[0.1] bg-white/[0.04] px-3 py-2 text-xs text-gray-300 transition-colors hover:border-[#00f2fe]/40 hover:text-white" href="index.html">
-        <span class="material-symbols-outlined text-[17px]" aria-hidden="true">arrow_back</span>
-        <span class="hidden sm:inline">Zur Startseite</span>
-        <span class="sm:hidden">Zurück</span>
-      </a>
+      <div class="flex items-center gap-2">
+        <a aria-label="GitHub Profile" class="inline-flex items-center justify-center rounded-full border border-white/[0.1] bg-white/[0.04] p-2 text-gray-300 transition-colors hover:border-[#00f2fe]/40 hover:text-white" href="https://github.com/alexchen-dev" rel="noreferrer" target="_blank">
+          <span class="material-symbols-outlined text-[17px]" aria-hidden="true">terminal</span>
+        </a>
+        <button aria-label="Toggle Theme" class="inline-flex items-center justify-center rounded-full border border-white/[0.1] bg-white/[0.04] p-2 text-gray-300 transition-colors hover:border-[#00f2fe]/40 hover:text-white" id="mini-theme-toggle" type="button">
+          <span class="material-symbols-outlined text-[17px]" aria-hidden="true">dark_mode</span>
+        </button>
+        <a id="game-back-link" class="inline-flex items-center gap-2 rounded-full border border-white/[0.1] bg-white/[0.04] px-3 py-2 text-xs text-gray-300 transition-colors hover:border-[#00f2fe]/40 hover:text-white" href="index.html">
+          <span class="material-symbols-outlined text-[17px]" aria-hidden="true">arrow_back</span>
+          <span class="hidden sm:inline">Zur Startseite</span>
+          <span class="sm:hidden">Zurück</span>
+        </a>
+      </div>
     </div>
   </header>
 

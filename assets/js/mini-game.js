@@ -2,8 +2,33 @@ const gameShell = document.getElementById('game-shell');
 const fullscreenToggle = document.getElementById('fullscreen-toggle');
 const fullscreenIcon = document.getElementById('fullscreen-icon');
 const fullscreenLabel = document.getElementById('fullscreen-label');
+const miniThemeToggle = document.getElementById('mini-theme-toggle');
 const leaderboardBody = document.getElementById('mini-leaderboard-body');
 const leaderboardStatus = document.getElementById('mini-leaderboard-status');
+
+function applyTheme(theme) {
+  const isDark = theme === 'dark';
+  document.documentElement.classList.toggle('dark', isDark);
+  document.documentElement.classList.toggle('light', !isDark);
+  localStorage.setItem('portfolio-theme', theme);
+
+  if (miniThemeToggle) {
+    const icon = miniThemeToggle.querySelector('.material-symbols-outlined');
+    if (icon) {
+      icon.textContent = isDark ? 'dark_mode' : 'light_mode';
+    }
+    miniThemeToggle.setAttribute('aria-label', isDark ? 'Switch to light mode' : 'Switch to dark mode');
+    miniThemeToggle.title = isDark ? 'Switch to light mode' : 'Switch to dark mode';
+  }
+}
+
+const savedTheme = localStorage.getItem('portfolio-theme') || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+applyTheme(savedTheme);
+
+miniThemeToggle?.addEventListener('click', () => {
+  const nextTheme = document.documentElement.classList.contains('dark') ? 'light' : 'dark';
+  applyTheme(nextTheme);
+});
 
 function formatDate(value) {
   if (!value) return '—';

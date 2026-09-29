@@ -126,8 +126,31 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       }, 500);
     }
 
-    document.getElementById('theme-toggle')?.addEventListener('click', () => {
-      document.documentElement.classList.toggle('dark');
+    const themeToggle = document.getElementById('theme-toggle');
+    const THEME_KEY = 'portfolio-theme';
+
+    function applyTheme(theme) {
+      const isDark = theme === 'dark';
+      document.documentElement.classList.toggle('dark', isDark);
+      document.documentElement.classList.toggle('light', !isDark);
+      localStorage.setItem(THEME_KEY, theme);
+
+      if (themeToggle) {
+        const icon = themeToggle.querySelector('.material-symbols-outlined');
+        if (icon) {
+          icon.textContent = isDark ? 'dark_mode' : 'light_mode';
+        }
+        themeToggle.setAttribute('aria-label', isDark ? 'Switch to light mode' : 'Switch to dark mode');
+        themeToggle.title = isDark ? 'Switch to light mode' : 'Switch to dark mode';
+      }
+    }
+
+    const savedTheme = localStorage.getItem(THEME_KEY) || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+    applyTheme(savedTheme);
+
+    themeToggle?.addEventListener('click', () => {
+      const nextTheme = document.documentElement.classList.contains('dark') ? 'light' : 'dark';
+      applyTheme(nextTheme);
     });
 
     document.querySelectorAll('[data-snippet]').forEach((button) => {
