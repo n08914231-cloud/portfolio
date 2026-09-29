@@ -501,7 +501,6 @@
 
       <div class="btn-group">
         <button class="btn btn-pink" id="restart-btn">RETRY RUN</button>
-        <button class="btn" id="export-txt-btn">EXPORT TXT (.TXT)</button>
       </div>
     </div>
   </div>
@@ -857,7 +856,6 @@
     const finalCoinsDisplay = document.getElementById('final-coins');
     const overlay = document.getElementById('overlay');
     const restartBtn = document.getElementById('restart-btn');
-    const exportTxtBtn = document.getElementById('export-txt-btn');
     const leaderboardForm = document.getElementById('leaderboard-form');
     const playerNameInput = document.getElementById('player-name');
     const leaderboardStatus = document.getElementById('leaderboard-status');
@@ -1519,7 +1517,6 @@
     }
 
     restartBtn.addEventListener('click', restartGame);
-    exportTxtBtn.addEventListener('click', () => HighscoreManager.exportAsTxtFile());
     leaderboardForm.addEventListener('submit', async event => {
       event.preventDefault();
       const playerName = playerNameInput.value.trim();

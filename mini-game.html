@@ -68,6 +68,47 @@
     .game-shell:fullscreen .game-stage iframe {
       height: 100%;
     }
+    .leaderboard-panel {
+      border: 2px solid #00ffff;
+      border-radius: 4px;
+      background: rgba(0, 0, 0, 0.8);
+      box-shadow: 4px 4px 0px #ff3366;
+      overflow: hidden;
+      font-family: 'Press Start 2P', monospace;
+    }
+    .leaderboard-header {
+      border-bottom: 2px solid rgba(255, 255, 255, 0.22);
+      background: rgba(14, 17, 22, 0.96);
+      padding: 0.9rem 1rem;
+    }
+    .leaderboard-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.62rem;
+      line-height: 1.6;
+    }
+    .leaderboard-table th,
+    .leaderboard-table td {
+      padding: 0.75rem 0.8rem;
+      text-align: left;
+      border-bottom: 1px dashed rgba(255, 255, 255, 0.18);
+    }
+    .leaderboard-table th {
+      color: #00ffff;
+      letter-spacing: 1px;
+      font-weight: 400;
+      text-transform: uppercase;
+    }
+    .leaderboard-table td {
+      color: #fff;
+      font-variant-numeric: tabular-nums;
+    }
+    .leaderboard-table tr:last-child td {
+      border-bottom: 0;
+    }
+    .leaderboard-table tr:first-child td {
+      color: #ffcc00;
+    }
     .control-button {
       display: inline-flex;
       min-height: 38px;
@@ -170,7 +211,31 @@
         <iframe id="game-frame" src="highscore_runner.html" title="Pixel Protocol 198X Mini Game" allow="autoplay; fullscreen; gamepad"></iframe>
       </div>
     </section>
+
+    <section class="leaderboard-panel mt-6">
+      <div class="leaderboard-header flex items-center justify-between gap-3">
+        <div>
+          <p class="font-mono text-[10px] uppercase tracking-[0.18em] text-[#00f2fe]">Leaderboard</p>
+          <h2 class="mt-1 text-lg text-white">TOP 10</h2>
+        </div>
+        <span id="mini-leaderboard-status" class="text-[10px] uppercase tracking-[0.14em] text-gray-400">Loading…</span>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="leaderboard-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>PLAYER</th>
+              <th>SCORE</th>
+              <th>DATE</th>
+            </tr>
+          </thead>
+          <tbody id="mini-leaderboard-body"></tbody>
+        </table>
+      </div>
+    </section>
   </main>
+  <script src="assets/js/supabase-config.js"></script>
   <script src="assets/js/mini-game.js"></script>
 </body>
 </html>
