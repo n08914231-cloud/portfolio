@@ -111,21 +111,6 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       });
     }
 
-    function handleContactSubmit(e) {
-      e.preventDefault();
-      const feedback = document.getElementById('form-feedback');
-      const btn = document.getElementById('submit-btn');
-      
-      btn.disabled = true;
-      btn.classList.add('opacity-70');
-      
-      setTimeout(() => {
-        feedback.classList.remove('hidden');
-        btn.innerHTML = `<span>Sent</span><span class="material-symbols-outlined text-[18px]">done</span>`;
-        e.target.reset();
-      }, 500);
-    }
-
     const themeToggle = document.getElementById('theme-toggle');
     const THEME_KEY = 'portfolio-theme';
 
@@ -158,7 +143,8 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     });
 
     document.getElementById('copy-code-btn')?.addEventListener('click', copySnippetCode);
-    document.getElementById('contact-form')?.addEventListener('submit', handleContactSubmit);
+    const copyrightYear = document.getElementById('copyright-year');
+    if (copyrightYear) copyrightYear.textContent = new Date().getFullYear();
 
     const primaryNavigation = document.getElementById('primary-navigation');
     const navigationIndicator = primaryNavigation?.querySelector('.nav-indicator');
