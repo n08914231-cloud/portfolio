@@ -83,9 +83,21 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
     let currentKey = 'queue';
 
+    function renderSnippet(key) {
+      const display = document.getElementById('code-display');
+      if (!display) return;
+
+      if (window.hljs) {
+        display.innerHTML = window.hljs.highlight(snippets[key], { language: 'typescript' }).value;
+      } else {
+        display.textContent = snippets[key];
+      }
+    }
+
+    renderSnippet(currentKey);
+
     function switchSnippet(key) {
       currentKey = key;
-      const display = document.getElementById('code-display');
       const tabs = ['queue', 'rate', 'hook'];
       
       tabs.forEach(t => {
@@ -97,7 +109,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         }
       });
 
-      display.textContent = snippets[key];
+      renderSnippet(key);
     }
 
     function copySnippetCode() {
