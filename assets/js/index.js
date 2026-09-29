@@ -158,6 +158,28 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const copyrightYear = document.getElementById('copyright-year');
     if (copyrightYear) copyrightYear.textContent = new Date().getFullYear();
 
+    const staggerGroups = document.querySelectorAll('[data-reveal-stagger]');
+    staggerGroups.forEach((group) => {
+      [...group.children].forEach((item, index) => {
+        item.setAttribute('data-scroll-reveal', '');
+        item.style.setProperty('--reveal-delay', `${Math.min(index * 90, 270)}ms`);
+      });
+    });
+
+    const revealItems = [...document.querySelectorAll('[data-scroll-reveal]')];
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reducedMotion || !('IntersectionObserver' in window)) {
+      revealItems.forEach((item) => item.classList.add('is-visible'));
+    } else {
+      document.documentElement.classList.add('has-scroll-reveal');
+      const revealObserver = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          entry.target.classList.toggle('is-visible', entry.isIntersecting);
+        });
+      }, { threshold: 0.12, rootMargin: '0px 0px -6% 0px' });
+      revealItems.forEach((item) => revealObserver.observe(item));
+    }
+
     const primaryNavigation = document.getElementById('primary-navigation');
     const navigationIndicator = primaryNavigation?.querySelector('.nav-indicator');
     const sectionLinks = [...(primaryNavigation?.querySelectorAll('[data-scroll-target]') ?? [])];
