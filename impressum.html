@@ -1,38 +1,46 @@
 <!DOCTYPE html>
 
-<html class="dark" lang="de"><head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Impressum | noah.dev</title>
-<link href="assets/fonts/fonts.css" rel="stylesheet"/>
-<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" rel="stylesheet"/>
-<!-- Tailwind CSS -->
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<script src="assets/js/tailwind-index.js"></script>
-<style>
+<html class="dark" lang="de">
+
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>Impressum | noah.dev</title>
+  <link href="assets/fonts/fonts.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" rel="stylesheet" />
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script src="assets/js/tailwind-index.js"></script>
+  <style>
     body {
       background-color: #090a0d;
       color: #e2e8f0;
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     }
+
     html {
       scroll-behavior: smooth;
     }
+
     html.light {
       color-scheme: light;
     }
+
     html.light body {
       background: #f3f7fb !important;
       color: #0f172a !important;
     }
+
     html.light #top {
       background: #f3f7fb !important;
       color: #0f172a !important;
     }
+
     html.light header {
       background: rgba(255, 255, 255, 0.8) !important;
       border-color: rgba(15, 23, 42, 0.08) !important;
     }
+
     html.light .text-white,
     html.light .text-gray-300,
     html.light .text-gray-400,
@@ -41,80 +49,110 @@
     html.light .text-gray-700 {
       color: #0f172a !important;
     }
+
     html.light .text-gray-400 {
       color: #475569 !important;
     }
+
     html.light .bg-white\/\[0\.04\],
     html.light .bg-white\/\[0\.03\],
     html.light .bg-white\/\[0\.02\] {
       background-color: rgba(15, 23, 42, 0.04) !important;
     }
+
     html.light .border-white\/\[0\.08\],
     html.light .border-white\/\[0\.06\],
     html.light .border-white\/\[0\.1\] {
       border-color: rgba(15, 23, 42, 0.12) !important;
     }
+
     html.light .apple-glass-card {
       background: linear-gradient(180deg, rgba(255, 255, 255, 0.82) 0%, rgba(245, 247, 251, 0.94) 100%) !important;
       border-color: rgba(15, 23, 42, 0.08) !important;
       box-shadow: 0 20px 50px -15px rgba(15, 23, 42, 0.12), inset 0 1px 0 0 rgba(255, 255, 255, 0.65) !important;
     }
+
     html.light .apple-glass {
       background: rgba(255, 255, 255, 0.7) !important;
       border-color: rgba(15, 23, 42, 0.08) !important;
     }
+
     html.light .hero-visual {
       border-color: rgba(15, 23, 42, 0.08) !important;
       background: #eff6ff !important;
       box-shadow: 0 28px 90px -38px rgba(14, 116, 144, 0.22) !important;
     }
+
     html.light .hero-visual::after {
       background: linear-gradient(90deg, rgba(15, 23, 42, 0.18), transparent 60%), linear-gradient(0deg, rgba(15, 23, 42, 0.14), transparent 48%) !important;
     }
+
     html.light .hero-visual-caption,
     html.light .hero-visual-index {
       color: rgba(15, 23, 42, 0.7) !important;
     }
+
     html.light .subtle-glow {
       box-shadow: 0 0 60px -15px rgba(14, 165, 233, 0.18) !important;
     }
+
     html.light footer {
       background: #edf3fb !important;
       border-color: rgba(15, 23, 42, 0.08) !important;
     }
+
     html.light .bg-white:not(.text-black):not(.text-white) {
       background-color: rgba(255, 255, 255, 0.92) !important;
     }
-    html.light .code-workbench .text-gray-300 { color: #cbd5e1 !important; }
-    html.light .code-workbench .text-gray-400 { color: #94a3b8 !important; }
-    html.light .code-workbench .text-gray-500 { color: #647489 !important; }
-    html.light .code-workbench .text-white { color: #f8fafc !important; }
+
+    html.light .code-workbench .text-gray-300 {
+      color: #cbd5e1 !important;
+    }
+
+    html.light .code-workbench .text-gray-400 {
+      color: #94a3b8 !important;
+    }
+
+    html.light .code-workbench .text-gray-500 {
+      color: #647489 !important;
+    }
+
+    html.light .code-workbench .text-white {
+      color: #f8fafc !important;
+    }
+
     html.light .code-workbench .bg-white\/\[0\.03\],
     html.light .code-workbench .bg-white\/\[0\.04\] {
       background-color: rgba(255, 255, 255, 0.04) !important;
     }
+
     .code-workbench #code-display {
       min-height: 18rem;
       color: #e2e8f0;
     }
+
     .code-workbench #code-display-wrap {
       max-height: min(68vh, 42rem);
       overflow: auto;
       overscroll-behavior: contain;
     }
+
     .code-workbench #code-display .hljs {
       padding: 0;
       background: transparent;
     }
+
     html.light main,
     html.light section,
     html.light div[style*="background"] {
       background-color: transparent !important;
     }
+
     #primary-navigation {
       position: relative;
       isolation: isolate;
     }
+
     #primary-navigation .nav-indicator {
       position: absolute;
       z-index: 0;
@@ -128,19 +166,23 @@
       will-change: width, transform;
       transition: width 460ms cubic-bezier(0.22, 1, 0.36, 1), transform 460ms cubic-bezier(0.22, 1, 0.36, 1);
     }
+
     #primary-navigation a {
       position: relative;
       z-index: 1;
       transition: color 180ms ease, background-color 180ms ease;
     }
+
     #primary-navigation a[aria-current="page"] {
       color: #fff;
     }
+
     #featured-work,
     #code-lab,
     #contact {
       scroll-margin-top: 96px;
     }
+
     html.has-scroll-reveal [data-scroll-reveal] {
       opacity: 0;
       transform: translate3d(0, 22px, 0);
@@ -148,10 +190,12 @@
       transition-delay: var(--reveal-delay, 0ms);
       will-change: opacity, transform;
     }
+
     html.has-scroll-reveal [data-scroll-reveal].is-visible {
       opacity: 1;
       transform: translate3d(0, 0, 0);
     }
+
     @media (prefers-reduced-motion: reduce) {
       html.has-scroll-reveal [data-scroll-reveal] {
         opacity: 1;
@@ -159,10 +203,17 @@
         transition: none;
       }
     }
+
     @media (prefers-reduced-motion: reduce) {
-      html { scroll-behavior: auto; }
-      #primary-navigation .nav-indicator { transition: none; }
+      html {
+        scroll-behavior: auto;
+      }
+
+      #primary-navigation .nav-indicator {
+        transition: none;
+      }
     }
+
     @media (max-width: 767px) {
       #primary-navigation {
         display: flex;
@@ -179,12 +230,27 @@
         -webkit-overflow-scrolling: touch;
         scrollbar-width: none;
       }
-      #primary-navigation::-webkit-scrollbar { display: none; }
-      #primary-navigation a { flex: 0 0 auto; padding: 12px 14px; }
-      #primary-navigation .nav-indicator { top: 6px; bottom: 6px; }
+
+      #primary-navigation::-webkit-scrollbar {
+        display: none;
+      }
+
+      #primary-navigation a {
+        flex: 0 0 auto;
+        padding: 12px 14px;
+      }
+
+      #primary-navigation .nav-indicator {
+        top: 6px;
+        bottom: 6px;
+      }
+
       #featured-work,
       #code-lab,
-      #contact { scroll-margin-top: 150px; }
+      #contact {
+        scroll-margin-top: 150px;
+      }
+
       #terminal-toolbar {
         display: grid;
         height: auto;
@@ -193,20 +259,31 @@
         gap: 8px;
         padding: 10px 12px;
       }
-      #terminal-dots { display: none; }
+
+      #terminal-dots {
+        display: none;
+      }
+
       #snippet-tabs {
         grid-column: 1 / -1;
         grid-row: 2;
         width: 100%
       }
-      #copy-code-btn { grid-column: 2; grid-row: 1; min-height: 40px; }
+
+      #copy-code-btn {
+        grid-column: 2;
+        grid-row: 1;
+        min-height: 40px;
+      }
     }
+
     .apple-glass {
       background: rgba(18, 21, 27, 0.65);
       backdrop-filter: blur(24px);
       -webkit-backdrop-filter: blur(24px);
       border: 1px solid rgba(255, 255, 255, 0.07);
     }
+
     .apple-glass-card {
       background: linear-gradient(180deg, rgba(23, 27, 34, 0.72) 0%, rgba(14, 16, 21, 0.8) 100%);
       backdrop-filter: blur(30px);
@@ -214,13 +291,16 @@
       border: 1px solid rgba(255, 255, 255, 0.08);
       box-shadow: 0 20px 50px -15px rgba(0, 0, 0, 0.6), inset 0 1px 0 0 rgba(255, 255, 255, 0.08);
     }
+
     .apple-glass-card:hover {
       border-color: rgba(0, 242, 254, 0.25);
       box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.7), 0 0 40px -15px rgba(0, 242, 254, 0.12), inset 0 1px 0 0 rgba(255, 255, 255, 0.14);
     }
+
     .subtle-glow {
       box-shadow: 0 0 60px -15px rgba(0, 242, 254, 0.18);
     }
+
     .hero-visual {
       position: relative;
       width: min(100%, 960px);
@@ -233,6 +313,7 @@
       box-shadow: 0 28px 90px -38px rgba(0, 242, 254, 0.28);
       animation: hero-reveal 900ms cubic-bezier(0.2, 0.75, 0.25, 1) both;
     }
+
     .hero-visual img {
       width: 100%;
       height: 100%;
@@ -240,6 +321,7 @@
       object-position: center 54%;
       animation: hero-image-drift 24s ease-in-out infinite alternate;
     }
+
     .hero-visual::after {
       position: absolute;
       inset: 0;
@@ -248,6 +330,7 @@
       content: "";
       pointer-events: none;
     }
+
     .hero-visual-scan {
       position: absolute;
       top: -35%;
@@ -259,6 +342,7 @@
       animation: hero-scan 8s ease-in-out infinite;
       pointer-events: none;
     }
+
     .hero-visual-caption,
     .hero-visual-index {
       position: absolute;
@@ -269,16 +353,19 @@
       letter-spacing: 0.14em;
       text-transform: uppercase;
     }
+
     .hero-visual-caption {
       left: 24px;
       display: flex;
       align-items: center;
       gap: 10px;
     }
+
     .hero-visual-index {
       right: 24px;
       color: rgba(255, 255, 255, 0.58);
     }
+
     .hero-visual-dot {
       width: 7px;
       height: 7px;
@@ -287,44 +374,98 @@
       box-shadow: 0 0 14px rgba(0, 242, 254, 0.8);
       animation: hero-status-pulse 2.2s ease-in-out infinite;
     }
+
     .hero-copy {
       animation: hero-copy-reveal 750ms 180ms cubic-bezier(0.2, 0.75, 0.25, 1) both;
     }
+
     @keyframes hero-reveal {
-      from { opacity: 0; transform: translateY(24px) scale(0.985); }
-      to { opacity: 1; transform: translateY(0) scale(1); }
+      from {
+        opacity: 0;
+        transform: translateY(24px) scale(0.985);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
     }
+
     @keyframes hero-copy-reveal {
-      from { opacity: 0; transform: translateY(16px); }
-      to { opacity: 1; transform: translateY(0); }
+      from {
+        opacity: 0;
+        transform: translateY(16px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
+
     @keyframes hero-image-drift {
-      from { transform: scale(1.02) translate3d(-0.4%, 0, 0); }
-      to { transform: scale(1.1) translate3d(0.4%, -1.2%, 0); }
+      from {
+        transform: scale(1.02) translate3d(-0.4%, 0, 0);
+      }
+
+      to {
+        transform: scale(1.1) translate3d(0.4%, -1.2%, 0);
+      }
     }
+
     @keyframes hero-scan {
-      0%, 12% { transform: translateY(0); opacity: 0; }
-      24% { opacity: 1; }
-      76% { opacity: 0.65; }
-      90%, 100% { transform: translateY(620%); opacity: 0; }
+
+      0%,
+      12% {
+        transform: translateY(0);
+        opacity: 0;
+      }
+
+      24% {
+        opacity: 1;
+      }
+
+      76% {
+        opacity: 0.65;
+      }
+
+      90%,
+      100% {
+        transform: translateY(620%);
+        opacity: 0;
+      }
     }
+
     @keyframes hero-status-pulse {
-      50% { opacity: 0.45; box-shadow: 0 0 5px rgba(0, 242, 254, 0.45); }
+      50% {
+        opacity: 0.45;
+        box-shadow: 0 0 5px rgba(0, 242, 254, 0.45);
+      }
     }
+
     @media (max-width: 640px) {
       .hero-visual {
         aspect-ratio: 1.35 / 1;
         border-radius: 18px;
       }
+
       .hero-visual-caption,
       .hero-visual-index {
         bottom: 16px;
         font-size: 9px;
       }
-      .hero-visual-caption { left: 16px; }
-      .hero-visual-index { right: 16px; }
+
+      .hero-visual-caption {
+        left: 16px;
+      }
+
+      .hero-visual-index {
+        right: 16px;
+      }
     }
+
     @media (prefers-reduced-motion: reduce) {
+
       .hero-visual,
       .hero-visual img,
       .hero-visual-scan,
@@ -333,206 +474,247 @@
         animation: none;
       }
     }
+
     ::-webkit-scrollbar {
       width: 6px;
       height: 6px;
     }
+
     ::-webkit-scrollbar-track {
       background: #090a0d;
     }
+
     ::-webkit-scrollbar-thumb {
       background: #1f2530;
       border-radius: 9999px;
     }
+
     ::-webkit-scrollbar-thumb:hover {
       background: #333c4d;
     }
+
     html.light ::-webkit-scrollbar-track {
       background: #f3f7fb;
     }
+
     html.light ::-webkit-scrollbar-thumb {
       background: #cbd5e1;
     }
+
     html.light ::-webkit-scrollbar-thumb:hover {
       background: #94a3b8;
     }
   </style>
 </head>
-<body id="top" class="bg-[#090a0d] text-[#E2E8F0] antialiased selection:bg-[#00F2FE]/20 selection:text-[#00F2FE] min-h-screen flex flex-col font-sans">
-<!-- TOP NAVIGATION HEADER -->
-<header class="fixed top-0 left-0 w-full z-50 bg-[#090a0d]/75 backdrop-blur-2xl border-b border-white/[0.06] transition-all">
-<div class="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 h-20 flex items-center justify-between">
-<!-- Brand Logo -->
-<a class="flex items-center gap-3.5 group" href="index.html">
-<div class="h-11 w-11 rounded-2xl bg-gradient-to-b from-white/15 to-white/5 p-[1px] transition-all duration-300 group-hover:scale-105 group-hover:shadow-[#00F2FE]/30 shadow-lg shadow-black/40">
-<div class="h-full w-full bg-[#111317] rounded-[15px] flex items-center justify-center font-mono font-medium text-sm text-[#00F2FE] shadow-[0_0_12px_rgba(0,242,254,0.5)]">
-</>
-</div>
-</div>
-<div class="flex items-center text-lg font-semibold font-display tracking-tight text-white">
+
+<body id="top"
+  class="bg-[#090a0d] text-[#E2E8F0] antialiased selection:bg-[#00F2FE]/20 selection:text-[#00F2FE] min-h-screen flex flex-col font-sans">
+  <!-- TOP NAVIGATION HEADER -->
+  <header
+    class="fixed top-0 left-0 w-full z-50 bg-[#090a0d]/75 backdrop-blur-2xl border-b border-white/[0.06] transition-all">
+    <div class="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 h-20 flex items-center justify-between">
+      <!-- Brand Logo -->
+      <a class="flex items-center gap-3.5 group" href="index.html">
+        <div
+          class="h-11 w-11 rounded-2xl bg-gradient-to-b from-white/15 to-white/5 p-[1px] transition-all duration-300 group-hover:scale-105 group-hover:shadow-[#00F2FE]/30 shadow-lg shadow-black/40">
+          <div
+            class="h-full w-full bg-[#111317] rounded-[15px] flex items-center justify-center font-mono font-medium text-xs text-[#00F2FE]">
+            &lt;/&gt;
+          </div>
+        </div>
+        <div class="flex items-center text-lg font-semibold font-display tracking-tight text-white">
           noah<span class="text-[#00F2FE] font-bold">.dev</span>
-</div>
-</a>
-<!-- Center Pill Navigation -->
-<nav id="primary-navigation" aria-label="Primary navigation" class="hidden md:flex shrink-0 items-center gap-0.5 p-1 rounded-full bg-white/[0.04] border border-white/[0.08] backdrop-blur-xl shadow-inner">
-<span class="nav-indicator" aria-hidden="true"></span>
-<a aria-current="page" data-scroll-target="top" class="whitespace-nowrap px-3 py-2 rounded-full text-[11px] font-medium text-gray-400" href="index.html">Overview</a>
-<a data-scroll-target="featured-work" class="whitespace-nowrap px-3 py-2 rounded-full text-[11px] font-medium text-gray-400 hover:text-white" href="index.html#featured-work">Work & Architecture</a>
-<a data-scroll-target="code-lab" class="whitespace-nowrap px-3 py-2 rounded-full text-[11px] font-medium text-gray-400 hover:text-white" href="index.html#code-lab">Lab / Snippets</a>
-<a data-scroll-target="contact" class="whitespace-nowrap px-3 py-2 rounded-full text-[11px] font-medium text-gray-400 hover:text-white" href="index.html#contact">Contact</a>
-<a class="whitespace-nowrap px-3 py-2 rounded-full text-[11px] font-medium text-gray-400 hover:text-white" href="mini-game.html">Mini Game</a>
-</nav>
-<!-- Status & Fast Actions -->
-<div class="flex items-center gap-4">
-<!-- Live Available Pill -->
-<div class="hidden lg:flex items-center gap-2.5 h-8 px-4 rounded-full bg-white/[0.04] border border-emerald-500/20 text-emerald-400">
-<span class="relative flex h-2 w-2">
-<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-<span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-400"></span>
-</span>
-<span class="font-mono text-[11px] font-medium tracking-wide uppercase">Learning by building</span>
-</div>
-<!-- Actions -->
-<div class="flex items-center gap-1.5 border-l border-white/[0.08] pl-4">
-<a aria-label="Noah's GitHub Profile" title="Open Noah's GitHub profile" class="p-2 rounded-xl text-gray-400 hover:text-white hover:bg-white/[0.06] transition-colors flex items-center justify-center" href="https://github.com/n08914231-cloud" rel="noreferrer" target="_blank">
-<span class="material-symbols-outlined text-[20px]">code</span>
-</a>
-<button aria-label="Toggle Theme" class="p-2 rounded-xl text-gray-400 hover:text-[#00F2FE] hover:bg-white/[0.06] transition-colors flex items-center justify-center" id="theme-toggle" type="button">
-<span class="material-symbols-outlined text-[20px]">dark_mode</span>
-</button>
-</div>
-<!-- Avatar Thumbnail -->
-<div class="relative">
-<div aria-label="Noah" class="flex h-9 w-9 items-center justify-center rounded-full bg-[#00F2FE]/10 text-xs font-semibold text-[#00F2FE] ring-2 ring-white/10">N</div>
-<span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-400 ring-2 ring-[#090a0d]"></span>
-</div>
-</div>
-</div>
-</header>
-<!-- MAIN WRAPPER -->
-<main class="w-full flex-grow pt-20 relative overflow-hidden">
-<!-- Ambient Backdrop Glows (Apple Subtle Ambient) -->
-<div class="absolute top-16 left-1/2 -translate-x-1/2 w-[900px] h-[450px] bg-gradient-to-b from-[#00F2FE]/10 via-[#7928CA]/10 to-transparent blur-[140px] rounded-full pointer-events-none -z-10"></div>
-<div class="absolute top-[850px] right-[-100px] w-[600px] h-[600px] bg-[#7928CA]/08 blur-[160px] rounded-full pointer-events-none -z-10"></div>
-<div class="absolute top-[1700px] left-[-150px] w-[650px] h-[650px] bg-[#00F2FE]/07 blur-[170px] rounded-full pointer-events-none -z-10"></div>
+        </div>
+      </a>
+      <!-- Center Pill Navigation -->
+      <nav id="primary-navigation" aria-label="Primary navigation"
+        class="hidden md:flex shrink-0 items-center gap-0.5 p-1 rounded-full bg-white/[0.04] border border-white/[0.08] backdrop-blur-xl shadow-inner">
+        <span class="nav-indicator" aria-hidden="true"></span>
+        <a aria-current="page" data-scroll-target="top"
+          class="whitespace-nowrap px-3 py-2 rounded-full text-[11px] font-medium text-gray-400"
+          href="index.html">Overview</a>
+        <a data-scroll-target="featured-work"
+          class="whitespace-nowrap px-3 py-2 rounded-full text-[11px] font-medium text-gray-400 hover:text-white"
+          href="index.html#featured-work">Work & Architecture</a>
+        <a data-scroll-target="code-lab"
+          class="whitespace-nowrap px-3 py-2 rounded-full text-[11px] font-medium text-gray-400 hover:text-white"
+          href="index.html#code-lab">Lab / Snippets</a>
+        <a data-scroll-target="contact"
+          class="whitespace-nowrap px-3 py-2 rounded-full text-[11px] font-medium text-gray-400 hover:text-white"
+          href="index.html#contact">Contact</a>
+        <a class="whitespace-nowrap px-3 py-2 rounded-full text-[11px] font-medium text-gray-400 hover:text-white"
+          href="mini-game.html">Mini Game</a>
+      </nav>
+      <!-- Status & Fast Actions -->
+      <div class="flex items-center gap-4">
+        <!-- Live Available Pill -->
+        <div
+          class="hidden lg:flex items-center gap-2.5 h-8 px-4 rounded-full bg-white/[0.04] border border-emerald-500/20 text-emerald-400">
+          <span class="relative flex h-2 w-2">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-400"></span>
+          </span>
+          <span class="font-mono text-[11px] font-medium tracking-wide uppercase">Learning by building</span>
+        </div>
+        <!-- Actions -->
+        <div class="flex items-center gap-1.5 border-l border-white/[0.08] pl-4">
+          <a aria-label="Noah's GitHub Profile" title="Open Noah's GitHub profile"
+            class="p-2 rounded-xl text-gray-400 hover:text-white hover:bg-white/[0.06] transition-colors flex items-center justify-center"
+            href="https://github.com/n08914231-cloud" rel="noreferrer" target="_blank">
+            <span class="material-symbols-outlined text-[20px]">code</span>
+          </a>
+          <button aria-label="Toggle Theme"
+            class="p-2 rounded-xl text-gray-400 hover:text-[#00F2FE] hover:bg-white/[0.06] transition-colors flex items-center justify-center"
+            id="theme-toggle" type="button">
+            <span class="material-symbols-outlined text-[20px]">dark_mode</span>
+          </button>
+        </div>
+        <!-- Avatar Thumbnail -->
+        <div class="relative">
+          <div aria-label="Noah"
+            class="flex h-9 w-9 items-center justify-center rounded-full bg-[#00F2FE]/10 text-xs font-semibold text-[#00F2FE] ring-2 ring-white/10">
+            N</div>
+          <span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-400 ring-2 ring-[#090a0d]"></span>
+        </div>
+      </div>
+    </div>
+  </header>
+  <!-- MAIN WRAPPER -->
+  <main class="w-full flex-grow pt-20 relative overflow-hidden">
+    <!-- Ambient Backdrop Glows (Apple Subtle Ambient) -->
+    <div
+      class="absolute top-16 left-1/2 -translate-x-1/2 w-[900px] h-[450px] bg-gradient-to-b from-[#00F2FE]/10 via-[#7928CA]/10 to-transparent blur-[140px] rounded-full pointer-events-none -z-10">
+    </div>
+    <div
+      class="absolute top-[850px] right-[-100px] w-[600px] h-[600px] bg-[#7928CA]/08 blur-[160px] rounded-full pointer-events-none -z-10">
+    </div>
+    <div
+      class="absolute top-[1700px] left-[-150px] w-[650px] h-[650px] bg-[#00F2FE]/07 blur-[170px] rounded-full pointer-events-none -z-10">
+    </div>
 
-<!-- Impressum Content -->
-<div class="max-w-4xl mx-auto px-6 sm:px-8 lg:px-12 py-24 w-full">
-<!-- Page Header -->
-<div data-scroll-reveal class="mb-12">
-<span class="font-mono text-xs font-semibold text-[#00F2FE] uppercase tracking-wider block mb-3">// Rechtliches</span>
-<h1 class="font-display text-4xl sm:text-5xl font-bold text-white tracking-tight">Impressum</h1>
-<p class="font-sans text-sm text-gray-400 mt-3 font-light">Angaben gemäß § 5 DDG, § 18 Abs. 2 MStV</p>
-</div>
+    <!-- Impressum Content -->
+    <div class="max-w-4xl mx-auto px-6 sm:px-8 lg:px-12 py-24 w-full">
+      <!-- Page Header -->
+      <div data-scroll-reveal class="mb-12">
+        <span class="font-mono text-xs font-semibold text-[#00F2FE] uppercase tracking-wider block mb-3">//
+          Rechtliches</span>
+        <h1 class="font-display text-4xl sm:text-5xl font-bold text-white tracking-tight">Impressum</h1>
+        <p class="font-sans text-sm text-gray-400 mt-3 font-light">Angaben gemäß § 5 DDG, § 18 Abs. 2 MStV</p>
+      </div>
 
 
 
-  <p><strong>Angaben gemäß § 5 TMG</strong></p>
+      <p><strong>Angaben gemäß § 5 TMG</strong></p>
 
-  <!-- Adresse -->
-  <p id="impressum-address">Adresse wird geladen...</p>
+      <!-- Adresse -->
+      <p id="impressum-address">Adresse wird geladen...</p>
 
-  <p><strong>Kontakt</strong></p>
+      <p><strong>Kontakt</strong></p>
 
-  <!-- Telefon -->
-  <p>Telefon: <span id="impressum-phone">Telefon wird geladen...</span></p>
+      <!-- Telefon -->
+      <p>Telefon: <span id="impressum-phone">Telefon wird geladen...</span></p>
 
-  <!-- E-Mail -->
-  <p>E-Mail: <span id="impressum-email">E-Mail wird geladen...</span></p>
-</section>
+      <!-- E-Mail -->
+      <p>E-Mail: <span id="impressum-email">E-Mail wird geladen...</span></p>
+      </section>
 
-<!-- Script am Ende des Body einbinden -->
-<script src="script.js"></script>
-</body> 
-<script src="script.js"></script>
+</body>
 <!-- Back to home -->
 <div data-scroll-reveal class="text-center pt-4">
-<a class="inline-flex items-center gap-2.5 rounded-full border border-[#00F2FE]/30 bg-[#00F2FE]/[0.08] px-5 font-mono text-xs font-semibold text-white transition-all hover:border-[#00F2FE]/70 hover:bg-[#00F2FE]/[0.14]" href="index.html">
-<span aria-hidden="true" class="material-symbols-outlined text-[18px] text-[#00F2FE]">arrow_back</span>
-<span>Zur Startseite</span>
-</a>
+  <a class="inline-flex items-center gap-2.5 rounded-full border border-[#00F2FE]/30 bg-[#00F2FE]/[0.08] px-5 font-mono text-xs font-semibold text-white transition-all hover:border-[#00F2FE]/70 hover:bg-[#00F2FE]/[0.14]"
+    href="index.html">
+    <span aria-hidden="true" class="material-symbols-outlined text-[18px] text-[#00F2FE]">arrow_back</span>
+    <span>Zur Startseite</span>
+  </a>
 </div>
 </div>
 </main>
 <!-- FOOTER (Apple Minimalist) -->
-<footer class="w-full bg-[#08090b] border-t border-white/[0.06] mt-auto">
-<div class="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-12 flex flex-col md:flex-row items-center justify-between gap-6">
-<div class="flex flex-col sm:flex-row items-center gap-3 text-center sm:text-left">
-<div class="flex items-center gap-2 font-mono text-xs text-gray-400">
-<span class="w-2 h-2 rounded-full bg-emerald-400"></span>
-<span>Building and learning</span>
-</div>
-<span class="hidden sm:inline text-gray-700">•</span>
-<span class="font-sans text-xs text-gray-500 font-light">Crafted with Tailwind CSS & Apple-inspired aesthetics</span>
-</div>
-<div class="flex items-center gap-8 text-center">
-<span class="font-sans text-xs text-gray-500">© <span id="copyright-year">2026</span> Noah. All rights reserved.</span>
-<div class="flex items-center gap-4">
-<a class="font-mono text-xs text-gray-400 hover:text-white transition-colors" href="index.html">Overview</a>
-<a class="font-mono text-xs text-[#00F2FE] hover:text-white transition-colors" href="impressum.html">Impressum</a>
-</div>
-</div>
-</div>
-</footer>
+ <footer class="w-full bg-[#08090b] border-t border-white/[0.06] mt-auto">
+    <div
+      class="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-12 flex flex-col md:flex-row items-center justify-between gap-6">
+      <div class="flex flex-col sm:flex-row items-center gap-3 text-center sm:text-left">
+        <div class="flex items-center gap-2 font-mono text-xs text-gray-400">
+          <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+          <span>Building and learning</span>
+        </div>
+        <span class="hidden sm:inline text-gray-700">•</span>
+        <span class="font-sans text-xs text-gray-500 font-light">Crafted with Tailwind CSS &amp; Apple-inspired
+          aesthetics</span>
+      </div>
+      <div class="flex items-center gap-8 text-center">
+        <span class="font-sans text-xs text-gray-500">© <span id="copyright-year">2026</span> Noah. All rights
+          reserved.</span>
+        <div class="flex items-center gap-4">
+          <a class="font-mono text-xs text-gray-400 hover:text-white transition-colors" href="#code-lab">Interactive
+            Lab</a>
+          <a class="font-mono text-xs text-gray-400 hover:text-[#00F2FE] transition-colors"
+            href="impressum.html">Impressum</a>
+        </div>
+      </div>
+    </div>
+  </footer>
 <!-- SCRIPT -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 <script src="assets/js/index.js"></script>
 <script>
 
-document.addEventListener('DOMContentLoaded', () => {
+  document.addEventListener('DOMContentLoaded', () => {
 
-  // ===================================================
-  // TESTDATEN (Hier später deine echten Daten eintragen)
-  // ===================================================
+    // ===================================================
+    // TESTDATEN (Hier später deine echten Daten eintragen)
+    // ===================================================
 
-  const emailParts = { 
-    user: 'n08914231', 
-    domain: 'gmail.com' 
-  };
+    const emailParts = {
+      user: 'n08914231',
+      domain: 'gmail.com'
+    };
 
-  const phoneParts = {
-    country: '+49',
-    zero: '(0)',
-    area: '30',
-    number: '8492015'
-  };
+    const phoneParts = {
+      country: '+49',
+      zero: '(0)',
+      area: '30',
+      number: '8492015'
+    };
 
-  const addressParts = {
-    name: 'Noah Jeromin',
-    street: 'Oberevolpersrße',
-    number: '5',
-    zip: '37170',
-    city: 'Uslar',
-    country: 'Deutschland'
-  };
+    const addressParts = {
+      name: 'Noah Jeromin',
+      street: 'Oberevolpersrße',
+      number: '5',
+      zip: '37170',
+      city: 'Uslar',
+      country: 'Deutschland'
+    };
 
-  // ===================================================
-  // DATEN ALS REINER TEXT EINFÜGEN
-  // ===================================================
+    // ===================================================
+    // DATEN ALS REINER TEXT EINFÜGEN
+    // ===================================================
 
-  // 1. E-Mail
-  const emailElem = document.getElementById('impressum-email');
-  if (emailElem) {
-    emailElem.textContent = `${emailParts.user}@${emailParts.domain}`;
-  }
+    // 1. E-Mail
+    const emailElem = document.getElementById('impressum-email');
+    if (emailElem) {
+      emailElem.textContent = `${emailParts.user}@${emailParts.domain}`;
+    }
 
-  // 2. Telefon
-  const phoneElem = document.getElementById('impressum-phone');
-  if (phoneElem) {
-    phoneElem.textContent = `${phoneParts.country} ${phoneParts.zero} ${phoneParts.area} ${phoneParts.number}`;
-  }
+    // 2. Telefon
+    const phoneElem = document.getElementById('impressum-phone');
+    if (phoneElem) {
+      phoneElem.textContent = `${phoneParts.country} ${phoneParts.zero} ${phoneParts.area} ${phoneParts.number}`;
+    }
 
-  // 3. Adresse
-  const addressElem = document.getElementById('impressum-address');
-  if (addressElem) {
-    addressElem.innerHTML = `
+    // 3. Adresse
+    const addressElem = document.getElementById('impressum-address');
+    if (addressElem) {
+      addressElem.innerHTML = `
       ${addressParts.name}<br>
       ${addressParts.street} ${addressParts.number}<br>
       ${addressParts.zip} ${addressParts.city}<br>
       ${addressParts.country}
     `.trim();
-  }
+    }
 
-});
+  });
 </script>
-</body></html>
+</body>
+
+</html>
