@@ -492,3 +492,19 @@ const HighscoreManager = {
     window.addEventListener('load', updateNavigationFromScroll, { once: true });
     setActiveNavigation('top');
     updateNavigationFromScroll();
+
+    // Bot-protected email construction
+    const emailParts = { user: 'n08914231', domain: 'gmail.com' };
+    const fullEmail = emailParts.user + '@' + emailParts.domain;
+
+    const contactLink = document.getElementById('contact-email-link');
+    const contactDisplay = document.getElementById('contact-email-display');
+    if (contactLink && contactDisplay) {
+      contactDisplay.textContent = fullEmail;
+      contactLink.href = 'mailto:' + fullEmail;
+    }
+
+    const impressumEmailDisplay = document.getElementById('impressum-email-display');
+    if (impressumEmailDisplay) {
+      impressumEmailDisplay.textContent = fullEmail;
+    }

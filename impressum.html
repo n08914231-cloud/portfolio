@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 
-<html class="dark" lang="en"><head>
+<html class="dark" lang="de"><head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>noah.dev | Developer Portfolio</title>
+<title>Impressum | noah.dev</title>
 <link href="assets/fonts/fonts.css" rel="stylesheet"/>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" rel="stylesheet"/>
 <!-- Tailwind CSS -->
@@ -86,8 +86,8 @@
       background-color: rgba(255, 255, 255, 0.92) !important;
     }
     html.light .code-workbench .text-gray-300 { color: #cbd5e1 !important; }
-    html.light .code-workbench .text-gray-400 { color: #9ca3af !important; }
-    html.light .code-workbench .text-gray-500 { color: #94a3b8 !important; }
+    html.light .code-workbench .text-gray-400 { color: #94a3b8 !important; }
+    html.light .code-workbench .text-gray-500 { color: #647489 !important; }
     html.light .code-workbench .text-white { color: #f8fafc !important; }
     html.light .code-workbench .bg-white\/\[0\.03\],
     html.light .code-workbench .bg-white\/\[0\.04\] {
@@ -197,14 +197,8 @@
       #snippet-tabs {
         grid-column: 1 / -1;
         grid-row: 2;
-        width: 100%;
-        min-width: 0;
-        overflow-x: auto;
-        justify-content: flex-start;
-        scrollbar-width: none;
+        width: 100%
       }
-      #snippet-tabs::-webkit-scrollbar { display: none; }
-      #snippet-tabs button { flex: 0 0 auto; min-height: 40px; padding-inline: 10px; }
       #copy-code-btn { grid-column: 2; grid-row: 1; min-height: 40px; }
     }
     .apple-glass {
@@ -353,6 +347,15 @@
     ::-webkit-scrollbar-thumb:hover {
       background: #333c4d;
     }
+    html.light ::-webkit-scrollbar-track {
+      background: #f3f7fb;
+    }
+    html.light ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+    }
+    html.light ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
   </style>
 </head>
 <body id="top" class="bg-[#090a0d] text-[#E2E8F0] antialiased selection:bg-[#00F2FE]/20 selection:text-[#00F2FE] min-h-screen flex flex-col font-sans">
@@ -360,11 +363,11 @@
 <header class="fixed top-0 left-0 w-full z-50 bg-[#090a0d]/75 backdrop-blur-2xl border-b border-white/[0.06] transition-all">
 <div class="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 h-20 flex items-center justify-between">
 <!-- Brand Logo -->
-<a class="flex items-center gap-3.5 group" href="#top">
-<div class="h-10 w-10 rounded-2xl bg-gradient-to-b from-white/15 to-white/5 p-[1px] transition-all duration-300 group-hover:scale-105 shadow-lg shadow-black/40">
-<div class="h-full w-full bg-[#111317] rounded-[15px] flex items-center justify-center font-mono font-medium text-xs text-[#00F2FE]">
-            &lt;/&gt;
-          </div>
+<a class="flex items-center gap-3.5 group" href="index.html">
+<div class="h-11 w-11 rounded-2xl bg-gradient-to-b from-white/15 to-white/5 p-[1px] transition-all duration-300 group-hover:scale-105 group-hover:shadow-[#00F2FE]/30 shadow-lg shadow-black/40">
+<div class="h-full w-full bg-[#111317] rounded-[15px] flex items-center justify-center font-mono font-medium text-sm text-[#00F2FE] shadow-[0_0_12px_rgba(0,242,254,0.5)]">
+</>
+</div>
 </div>
 <div class="flex items-center text-lg font-semibold font-display tracking-tight text-white">
           noah<span class="text-[#00F2FE] font-bold">.dev</span>
@@ -373,10 +376,10 @@
 <!-- Center Pill Navigation -->
 <nav id="primary-navigation" aria-label="Primary navigation" class="hidden md:flex shrink-0 items-center gap-0.5 p-1 rounded-full bg-white/[0.04] border border-white/[0.08] backdrop-blur-xl shadow-inner">
 <span class="nav-indicator" aria-hidden="true"></span>
-<a aria-current="page" data-scroll-target="top" class="whitespace-nowrap px-3 py-2 rounded-full text-[11px] font-medium text-gray-400" href="#top">Overview</a>
-<a data-scroll-target="featured-work" class="whitespace-nowrap px-3 py-2 rounded-full text-[11px] font-medium text-gray-400 hover:text-white" href="#featured-work">Work &amp; Architecture</a>
-<a data-scroll-target="code-lab" class="whitespace-nowrap px-3 py-2 rounded-full text-[11px] font-medium text-gray-400 hover:text-white" href="#code-lab">Lab / Snippets</a>
-<a data-scroll-target="contact" class="whitespace-nowrap px-3 py-2 rounded-full text-[11px] font-medium text-gray-400 hover:text-white" href="#contact">Contact</a>
+<a aria-current="page" data-scroll-target="top" class="whitespace-nowrap px-3 py-2 rounded-full text-[11px] font-medium text-gray-400" href="index.html">Overview</a>
+<a data-scroll-target="featured-work" class="whitespace-nowrap px-3 py-2 rounded-full text-[11px] font-medium text-gray-400 hover:text-white" href="index.html#featured-work">Work & Architecture</a>
+<a data-scroll-target="code-lab" class="whitespace-nowrap px-3 py-2 rounded-full text-[11px] font-medium text-gray-400 hover:text-white" href="index.html#code-lab">Lab / Snippets</a>
+<a data-scroll-target="contact" class="whitespace-nowrap px-3 py-2 rounded-full text-[11px] font-medium text-gray-400 hover:text-white" href="index.html#contact">Contact</a>
 <a class="whitespace-nowrap px-3 py-2 rounded-full text-[11px] font-medium text-gray-400 hover:text-white" href="mini-game.html">Mini Game</a>
 </nav>
 <!-- Status & Fast Actions -->
@@ -398,7 +401,7 @@
 <span class="material-symbols-outlined text-[20px]">dark_mode</span>
 </button>
 </div>
-<!-- Avatar Thumbnail with Image 15 -->
+<!-- Avatar Thumbnail -->
 <div class="relative">
 <div aria-label="Noah" class="flex h-9 w-9 items-center justify-center rounded-full bg-[#00F2FE]/10 text-xs font-semibold text-[#00F2FE] ring-2 ring-white/10">N</div>
 <span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-400 ring-2 ring-[#090a0d]"></span>
@@ -407,199 +410,43 @@
 </div>
 </header>
 <!-- MAIN WRAPPER -->
-<main class="w-full pt-20 flex-grow relative overflow-hidden">
+<main class="w-full flex-grow pt-20 relative overflow-hidden">
 <!-- Ambient Backdrop Glows (Apple Subtle Ambient) -->
 <div class="absolute top-16 left-1/2 -translate-x-1/2 w-[900px] h-[450px] bg-gradient-to-b from-[#00F2FE]/10 via-[#7928CA]/10 to-transparent blur-[140px] rounded-full pointer-events-none -z-10"></div>
 <div class="absolute top-[850px] right-[-100px] w-[600px] h-[600px] bg-[#7928CA]/08 blur-[160px] rounded-full pointer-events-none -z-10"></div>
 <div class="absolute top-[1700px] left-[-150px] w-[650px] h-[650px] bg-[#00F2FE]/07 blur-[170px] rounded-full pointer-events-none -z-10"></div>
-<!-- 1. HERO SECTION (Apple Spacing & Whitespace) -->
-<section class="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 pt-28 pb-32 w-full flex flex-col items-center text-center gap-10">
-<!-- Live Status Badge -->
-<div class="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.09] shadow-sm backdrop-blur-xl">
-<span class="relative flex h-2 w-2">
-<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-<span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-400"></span>
-</span>
-<span class="font-mono text-xs uppercase tracking-wider text-gray-300 font-medium">
-          Learning web development through small projects
-        </span>
+
+<!-- Impressum Content -->
+<div class="max-w-4xl mx-auto px-6 sm:px-8 lg:px-12 py-24 w-full">
+<!-- Page Header -->
+<div data-scroll-reveal class="mb-12">
+<span class="font-mono text-xs font-semibold text-[#00F2FE] uppercase tracking-wider block mb-3">// Rechtliches</span>
+<h1 class="font-display text-4xl sm:text-5xl font-bold text-white tracking-tight">Impressum</h1>
+<p class="font-sans text-sm text-gray-400 mt-3 font-light">Angaben gemäß § 5 DDG, § 18 Abs. 2 MStV</p>
 </div>
-<div class="hero-visual" role="img" aria-label="Macro photograph of a circuit board with chips and illuminated traces">
-<img alt="" fetchpriority="high" src="assets/images/hero-circuit-board.jpg"/>
-<span class="hero-visual-scan" aria-hidden="true"></span>
-<div class="hero-visual-caption" aria-hidden="true"><span class="hero-visual-dot"></span><span>Engineering / In Motion</span></div>
-<span class="hero-visual-index" aria-hidden="true">01 — 03</span>
-</div>
-<!-- Hero Typography -->
-<div class="hero-copy flex flex-col gap-6 max-w-4xl mx-auto">
-<h1 class="font-display text-4xl sm:text-5xl lg:text-7xl font-bold text-white tracking-tight leading-[1.08]">
-          Learning to build useful web experiences, from
-          <span class="bg-gradient-to-r from-[#00F2FE] via-[#a855f7] to-[#e0fdff] text-transparent bg-clip-text">
-            pixel to production
-          </span>.
-        </h1>
-<p class="font-sans text-lg sm:text-xl text-gray-400 max-w-2xl mx-auto font-light leading-relaxed">
-          I’m learning web development by building small projects. Right now, I’m exploring JavaScript, responsive interfaces, and connecting web pages to data.
+
+<div data-scroll-reveal class="apple-glass-card rounded-3xl p-8 sm:p-12 mb-8">
+<p class="font-sans text-gray-300 leading-relaxed mb-2">
+          Noah Mustermann<br />
+          Musterstraße 1<br />
+          12345 Musterstadt<br />
+          Deutschland
         </p>
+<p class="font-sans text-gray-300 leading-relaxed">
+<span class="text-gray-400">E-Mail:</span> <span id="impressum-email-display">…</span><br />
+<span class="text-gray-400">Telefon:</span> +49 (0) 123 456789<br />
+<span class="text-gray-400">GitHub:</span> <a class="text-[#00F2FE] hover:text-white transition-colors" href="https://github.com/n08914231-cloud" rel="noreferrer" target="_blank">n08914231-cloud</a>
+</p>
 </div>
-<!-- Action Buttons & Fast Handles -->
-<div class="flex flex-wrap items-center justify-center gap-4 pt-4">
-<a class="group inline-flex items-center gap-2.5 px-7 py-3.5 rounded-full font-display text-sm font-semibold bg-white text-black hover:bg-gray-100 transition-all duration-300 shadow-xl shadow-white/10 hover:scale-[1.02]" href="#featured-work">
-<span>Explore Projects</span>
-<span class="material-symbols-outlined text-[18px] transition-transform duration-200 group-hover:translate-x-1">arrow_forward</span>
+
+<!-- Back to home -->
+<div data-scroll-reveal class="text-center pt-4">
+<a class="inline-flex items-center gap-2.5 rounded-full border border-[#00F2FE]/30 bg-[#00F2FE]/[0.08] px-5 font-mono text-xs font-semibold text-white transition-all hover:border-[#00F2FE]/70 hover:bg-[#00F2FE]/[0.14]" href="index.html">
+<span aria-hidden="true" class="material-symbols-outlined text-[18px] text-[#00F2FE]">arrow_back</span>
+<span>Zur Startseite</span>
 </a>
 </div>
-<!-- Fast Monospace Links Bar -->
-<div class="flex flex-wrap items-center justify-center gap-2 pt-6">
-<a aria-label="Noah's GitHub Profile" title="Open Noah's GitHub profile" class="group flex min-h-11 items-center gap-2.5 rounded-full border border-[#00F2FE]/30 bg-[#00F2FE]/[0.08] px-5 font-mono text-xs font-semibold text-white transition-all hover:border-[#00F2FE]/70 hover:bg-[#00F2FE]/[0.14]" href="https://github.com/n08914231-cloud" rel="noreferrer" target="_blank">
-<span class="material-symbols-outlined text-[17px] text-[#00F2FE]">code</span>
-<span>GitHub</span>
-</a>
 </div>
-</section>
-<!-- 2. BENTO & WORK SHOWCASE (Apple Aesthetic with Cinematic Device Imagery) -->
-<section class="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-28 w-full" id="featured-work">
-<!-- Section Header -->
-<div data-scroll-reveal class="flex flex-col sm:flex-row sm:items-end justify-between mb-16 pb-6 border-b border-white/[0.08] gap-4">
-<div>
-<span class="font-mono text-xs font-semibold text-[#00F2FE] tracking-widest uppercase block mb-2">// 01. Projects</span>
-<h2 class="font-display text-3xl sm:text-4xl font-bold text-white tracking-tight">Projects I’m building</h2>
-</div>
-<span class="font-mono text-xs text-gray-400 tracking-wider uppercase">Selected Projects</span>
-</div>
-<!-- Bento Grid Layout -->
-<div data-reveal-stagger class="grid grid-cols-1 lg:grid-cols-12 gap-8 w-full">
-<article class="lg:col-span-12 apple-glass-card p-6 sm:p-8 rounded-3xl grid grid-cols-1 md:grid-cols-2 gap-8 items-center transition-all duration-300">
-  <div class="max-w-3xl">
-    <div class="flex flex-wrap items-center gap-3 mb-4">
-      <span class="px-3 py-1 rounded-full bg-[#00F2FE]/10 border border-[#00F2FE]/30 text-[#00F2FE] font-mono text-[11px] uppercase font-semibold tracking-wider">Browser Game</span>
-      <span class="font-mono text-xs text-gray-400">JavaScript · Supabase</span>
-    </div>
-    <h3 class="font-display text-2xl sm:text-3xl font-bold text-white">Arcade Highscore</h3>
-    <p class="font-sans text-sm sm:text-base text-gray-400 mt-3 leading-relaxed font-light">A browser arcade game with a score submission flow and a leaderboard backed by Supabase. This project is where I’m learning to connect a game interface to a database.</p>
-  </div>
-  <a aria-label="Play the mini-game" class="group inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-full border border-[#00F2FE]/30 bg-[#00F2FE]/[0.08] px-5 font-mono text-xs font-semibold text-white transition-all hover:border-[#00F2FE]/70 hover:bg-[#00F2FE]/[0.14]" href="mini-game.html">
-    <span>Play Mini-Game</span>
-    <span aria-hidden="true" class="material-symbols-outlined text-[17px] text-[#00F2FE] transition-transform group-hover:translate-x-0.5">arrow_forward</span>
-  </a>
-  <a class="group relative block aspect-[4/3] overflow-hidden rounded-lg border border-white/10 bg-[#10151b] md:col-start-2 md:row-start-1 md:row-span-2" href="mini-game.html" aria-label="Open Arcade Highscore mini-game">
-    <img class="h-full w-full object-cover" src="assets/images/arcade-gameplay.gif" alt="Gameplay aus dem Arcade Highscore Runner" loading="lazy" />
-    <span class="absolute inset-0 flex items-end bg-gradient-to-t from-black/75 via-transparent to-transparent p-4 font-mono text-[10px] uppercase tracking-wider text-white">Arcade Highscore <span class="ml-auto text-[#00F2FE]">Open game ↗</span></span>
-  </a>
-</article>
-<article class="lg:col-span-6 apple-glass-card p-8 sm:p-10 rounded-3xl">
-  <h3 class="font-display text-xl font-bold text-white">About</h3>
-  <p class="font-sans text-sm text-gray-400 mt-4 leading-relaxed">I’m Noah. I’m learning web development by making small projects and improving them as I go.</p>
-</article>
-<article class="lg:col-span-6 apple-glass-card p-8 sm:p-10 rounded-3xl">
-  <h3 class="font-display text-xl font-bold text-white">What I’m learning</h3>
-  <p class="font-sans text-sm text-gray-400 mt-4 leading-relaxed">Building pages with HTML, CSS, and JavaScript, then using Supabase to save and display game scores.</p>
-</article>
-<!-- Current project tools -->
-<div class="lg:col-span-12 apple-glass-card p-8 sm:p-10 rounded-3xl">
-<div>
-<div class="flex items-center justify-between pb-3 mb-4 border-b border-white/[0.06]">
-<span class="font-mono text-xs font-semibold text-[#00F2FE] uppercase tracking-wider">// USED IN THIS SITE</span>
-<span class="material-symbols-outlined text-gray-500 text-[20px]">developer_board</span>
-</div>
-<div class="flex flex-wrap gap-2">
-<span class="px-3 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] text-gray-200 font-mono text-xs">HTML</span>
-<span class="px-3 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] text-gray-200 font-mono text-xs">CSS</span>
-<span class="px-3 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] text-gray-200 font-mono text-xs">JavaScript</span>
-<span class="px-3 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] text-gray-200 font-mono text-xs">Tailwind CSS</span>
-<span class="px-3 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] text-gray-200 font-mono text-xs">Supabase</span>
-</div>
-</div>
-</div>
-</div>
-</section>
-<!-- 3. INTERACTIVE CODE SNIPPET TERMINAL (Apple macOS Style) -->
-<section class="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-32 w-full border-t border-white/[0.06]" id="code-lab">
-<!-- Header -->
-<div data-scroll-reveal class="flex flex-col sm:flex-row sm:items-end justify-between mb-16 pb-6 border-b border-white/[0.08] gap-4">
-<div>
-<span class="font-mono text-xs font-semibold text-[#00F2FE] tracking-widest uppercase block mb-2">// 02. Code Experiments</span>
-<h2 class="font-display text-3xl sm:text-4xl font-bold text-white tracking-tight">Code experiments</h2>
-</div>
-<span class="font-mono text-xs text-gray-400 tracking-wider uppercase">Interactive Source</span>
-</div>
-<!-- Terminal Window Box -->
-<div data-scroll-reveal class="code-workbench w-full apple-glass-card rounded-3xl overflow-hidden shadow-2xl border border-white/[0.1]">
-<!-- macOS Chrome Header -->
-<div class="h-14 bg-white/[0.03] border-b border-white/[0.08] px-6 flex items-center justify-between backdrop-blur-xl" id="terminal-toolbar">
-<div class="flex items-center gap-2" id="terminal-dots">
-<span class="w-3 h-3 rounded-full bg-[#EF4444]/90 inline-block"></span>
-<span class="w-3 h-3 rounded-full bg-[#F59E0B]/90 inline-block"></span>
-<span class="w-3 h-3 rounded-full bg-[#10B981]/90 inline-block"></span>
-</div>
-<!-- Snippet Tabs -->
-<div class="flex items-center gap-1.5 p-1 rounded-xl bg-white/[0.03] border border-white/[0.06]" id="snippet-tabs">
-<button class="px-4 py-1.5 rounded-lg text-xs font-mono font-medium text-[#00F2FE] bg-white/[0.08] border border-white/[0.08] transition-all" id="tab-gameLoop" data-snippet="gameLoop">
-              game-loop.js
-            </button>
-<button class="px-4 py-1.5 rounded-lg text-xs font-mono font-medium text-gray-400 hover:text-white transition-all" id="tab-collisions" data-snippet="collisions">
-              collisions.js
-            </button>
-<button class="px-4 py-1.5 rounded-lg text-xs font-mono font-medium text-gray-400 hover:text-white transition-all" id="tab-highscore" data-snippet="highscore">
-              highscore-manager.js
-            </button>
-</div>
-<!-- Copy Button -->
-<button class="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-white/[0.04] border border-white/[0.08] hover:bg-white/[0.08] text-gray-300 font-mono text-xs transition-colors" id="copy-code-btn">
-<span class="material-symbols-outlined text-[15px]">content_copy</span>
-<span id="copy-text">Copy</span>
-</button>
-</div>
-<!-- Syntax Code Body -->
-<div id="code-display-wrap" class="p-8 sm:p-10 bg-[#07080a] overflow-auto font-mono text-xs sm:text-sm leading-relaxed">
-<pre class="font-mono" id="code-display">// Main Three.js runner loop
-let lastTime = performance.now();
-
-function animate(now) {
-  requestAnimationFrame(animate);
-  const rawDelta = Math.min((now - lastTime) / 1000, 0.1);
-  lastTime = now;
-
-  if (!isGameOver) {
-    let timeScale = 1.0;
-    if (activePowerups.slowmoTimer > 0) {
-      activePowerups.slowmoTimer -= rawDelta;
-      timeScale = 0.5;
-    }
-    const delta = rawDelta * timeScale;
-    currentSpeed = Math.min(START_SPEED + distance * 0.024, MAX_SPEED);
-    distance += currentSpeed * delta * 0.55 * scoreMultiplier;
-    scoreDisplay.innerText = String(Math.floor(distance)).padStart(6, '0');
-    checkZoneTransition(distance);
-  }
-
-  camera.position.x = THREE.MathUtils.lerp(camera.position.x, playerRoot.position.x * 0.45, 0.1);
-  renderer.render(scene, camera);
-}</pre>
-</div>
-</div>
-</section>
-<!-- 4. CONTACT & PIPELINE SECTION (Spacious Apple Glass) -->
-<section class="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-32 w-full border-t border-white/[0.06]" id="contact">
-<!-- Section Header -->
-<div data-scroll-reveal class="flex flex-col sm:flex-row sm:items-end justify-between mb-16 pb-6 border-b border-white/[0.08] gap-4">
-<div>
-<span class="font-mono text-xs font-semibold text-[#00F2FE] tracking-widest uppercase block mb-2">// 03. Connection Pipeline</span>
-<h2 class="font-display text-3xl sm:text-4xl font-bold text-white tracking-tight">Let's Connect</h2>
-</div>
-<span class="font-mono text-xs text-gray-400 tracking-wider uppercase">Contact</span>
-</div>
-<div data-scroll-reveal class="apple-glass-card p-8 sm:p-12 lg:p-16 rounded-3xl">
-  <div class="max-w-3xl">
-    <h3 class="font-display text-3xl sm:text-4xl font-bold text-white leading-tight">Let's build something remarkable together.</h3>
-    <p class="font-sans text-base text-gray-400 mt-4 leading-relaxed font-light">For opportunities, collaborations, or questions, reach me directly by email.</p>
-    <a class="mt-8 inline-flex min-h-11 items-center gap-2.5 rounded-full border border-[#00F2FE]/30 bg-[#00F2FE]/[0.08] px-5 font-mono text-xs font-semibold text-white transition-all hover:border-[#00F2FE]/70 hover:bg-[#00F2FE]/[0.14]" id="contact-email-link" href="#" aria-label="E-Mail senden">
-      <span aria-hidden="true" class="material-symbols-outlined text-[18px] text-[#00F2FE]">mail</span>
-      <span id="contact-email-display">…</span>
-    </a>
-  </div>
-</div>
-</section>
 </main>
 <!-- FOOTER (Apple Minimalist) -->
 <footer class="w-full bg-[#08090b] border-t border-white/[0.06] mt-auto">
@@ -610,14 +457,14 @@ function animate(now) {
 <span>Building and learning</span>
 </div>
 <span class="hidden sm:inline text-gray-700">•</span>
-<span class="font-sans text-xs text-gray-500 font-light">Crafted with Tailwind CSS &amp; Apple-inspired aesthetics</span>
+<span class="font-sans text-xs text-gray-500 font-light">Crafted with Tailwind CSS & Apple-inspired aesthetics</span>
 </div>
 <div class="flex items-center gap-8 text-center">
-  <span class="font-sans text-xs text-gray-500">© <span id="copyright-year">2026</span> Noah. All rights reserved.</span>
-  <div class="flex items-center gap-4">
-    <a class="font-mono text-xs text-gray-400 hover:text-white transition-colors" href="#code-lab">Interactive Lab</a>
-    <a class="font-mono text-xs text-gray-400 hover:text-[#00F2FE] transition-colors" href="impressum.html">Impressum</a>
-  </div>
+<span class="font-sans text-xs text-gray-500">© <span id="copyright-year">2026</span> Noah. All rights reserved.</span>
+<div class="flex items-center gap-4">
+<a class="font-mono text-xs text-gray-400 hover:text-white transition-colors" href="index.html">Overview</a>
+<a class="font-mono text-xs text-[#00F2FE] hover:text-white transition-colors" href="impressum.html">Impressum</a>
+</div>
 </div>
 </div>
 </footer>
