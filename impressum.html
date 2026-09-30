@@ -425,20 +425,26 @@
 <p class="font-sans text-sm text-gray-400 mt-3 font-light">Angaben gemäß § 5 DDG, § 18 Abs. 2 MStV</p>
 </div>
 
-<div data-scroll-reveal class="apple-glass-card rounded-3xl p-8 sm:p-12 mb-8">
-<p class="font-sans text-gray-300 leading-relaxed mb-2">
-          Noah Mustermann<br />
-          Musterstraße 1<br />
-          12345 Musterstadt<br />
-          Deutschland
-        </p>
-<p class="font-sans text-gray-300 leading-relaxed">
-<span class="text-gray-400">E-Mail:</span> <span id="impressum-email-display">…</span><br />
-<span class="text-gray-400">Telefon:</span> +49 (0) 123 456789<br />
-<span class="text-gray-400">GitHub:</span> <a class="text-[#00F2FE] hover:text-white transition-colors" href="https://github.com/n08914231-cloud" rel="noreferrer" target="_blank">n08914231-cloud</a>
-</p>
-</div>
 
+
+  <p><strong>Angaben gemäß § 5 TMG</strong></p>
+
+  <!-- Adresse -->
+  <p id="impressum-address">Adresse wird geladen...</p>
+
+  <p><strong>Kontakt</strong></p>
+
+  <!-- Telefon -->
+  <p>Telefon: <span id="impressum-phone">Telefon wird geladen...</span></p>
+
+  <!-- E-Mail -->
+  <p>E-Mail: <span id="impressum-email">E-Mail wird geladen...</span></p>
+</section>
+
+<!-- Script am Ende des Body einbinden -->
+<script src="script.js"></script>
+</body> 
+<script src="script.js"></script>
 <!-- Back to home -->
 <div data-scroll-reveal class="text-center pt-4">
 <a class="inline-flex items-center gap-2.5 rounded-full border border-[#00F2FE]/30 bg-[#00F2FE]/[0.08] px-5 font-mono text-xs font-semibold text-white transition-all hover:border-[#00F2FE]/70 hover:bg-[#00F2FE]/[0.14]" href="index.html">
@@ -471,4 +477,62 @@
 <!-- SCRIPT -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 <script src="assets/js/index.js"></script>
+<script>
+
+document.addEventListener('DOMContentLoaded', () => {
+
+  // ===================================================
+  // TESTDATEN (Hier später deine echten Daten eintragen)
+  // ===================================================
+
+  const emailParts = { 
+    user: 'n08914231', 
+    domain: 'gmail.com' 
+  };
+
+  const phoneParts = {
+    country: '+49',
+    zero: '(0)',
+    area: '30',
+    number: '8492015'
+  };
+
+  const addressParts = {
+    name: 'Noah Jeromin',
+    street: 'Oberevolpersrße',
+    number: '5',
+    zip: '37170',
+    city: 'Uslar',
+    country: 'Deutschland'
+  };
+
+  // ===================================================
+  // DATEN ALS REINER TEXT EINFÜGEN
+  // ===================================================
+
+  // 1. E-Mail
+  const emailElem = document.getElementById('impressum-email');
+  if (emailElem) {
+    emailElem.textContent = `${emailParts.user}@${emailParts.domain}`;
+  }
+
+  // 2. Telefon
+  const phoneElem = document.getElementById('impressum-phone');
+  if (phoneElem) {
+    phoneElem.textContent = `${phoneParts.country} ${phoneParts.zero} ${phoneParts.area} ${phoneParts.number}`;
+  }
+
+  // 3. Adresse
+  const addressElem = document.getElementById('impressum-address');
+  if (addressElem) {
+    addressElem.innerHTML = `
+      ${addressParts.name}<br>
+      ${addressParts.street} ${addressParts.number}<br>
+      ${addressParts.zip} ${addressParts.city}<br>
+      ${addressParts.country}
+    `.trim();
+  }
+
+});
+</script>
 </body></html>
