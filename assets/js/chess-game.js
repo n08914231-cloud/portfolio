@@ -23,6 +23,7 @@ const boardHint = document.getElementById('chess-board-hint');
 const themeToggle = document.getElementById('chess-theme-toggle');
 const resetLocalButton = document.getElementById('chess-reset-local');
 const localGameStorageKey = 'noah-dev-chess-local-v1';
+const resultDisplayMs = 10000;
 
 await customElements.whenDefined('chess-board');
 
@@ -40,6 +41,8 @@ let selectedSquare = null;
 let lastDropAt = 0;
 let lastMoveSquares = [];
 let legalTargetSquares = [];
+let autoResetInterval = null;
+let autoResetKey = '';
 
 const boardThemeSheet = new CSSStyleSheet();
 boardThemeSheet.replaceSync(`
@@ -137,8 +140,7 @@ function renderPosition(moves) {
   updateBoardHighlights();
   const gameOver = game.isGameOver();
   const turn = game.turn();
-  const canMove = gameLoaded && !gameOver && !isSubmitting && !isLoading &&
-    (gameMode === 'local' || turn === 'w');
+  const canMove = gameLoaded && !gameOver && !isSubmitting && !isLoading;
   resultBanner.classList.add('hidden');
   resultBanner.textContent = '';
   board.draggablePieces = canMove;
@@ -149,14 +151,8 @@ function renderPosition(moves) {
   if (gameOver) {
     if (game.isCheckmate()) {
       const winner = turn === 'w' ? 'Black' : 'White';
-      const winnerName = gameMode === 'local'
-        ? winner
-        : winner === 'White' ? 'The visitors' : 'Noah';
-      const checkedKing = gameMode === 'local'
-        ? turn === 'w' ? "White's" : "Black's"
-        : turn === 'w' ? 'The visitors’' : 'Noah’s';
-      const resultText = `${checkedKing} king is checkmated — ${winnerName} win${winnerName === 'The visitors' ? '' : 's'}!`;
-      turnLabel.textContent = `${winnerName} wins by checkmate`;
+      const resultText = `${turn === 'w' ? 'White' : 'Black'} is checkmated — ${winner} wins!`;
+      turnLabel.textContent = `${winner} wins by checkmate`;
       resultBanner.textContent = resultText;
       resultBanner.classList.remove('hidden');
       boardHint.textContent = resultText;
@@ -179,16 +175,81 @@ function renderPosition(moves) {
     turnLabel.textContent = 'White to move';
     boardHint.textContent = gameMode === 'local'
       ? 'Local demo: move either color in turn. Click or drag a piece to move.'
-      : 'Visitors: click a white piece and its destination, or drag it.';
+      : 'White is to move. Anyone can move: select a piece and destination, or drag it.';
   } else {
     turnLabel.textContent = 'Black to move';
     boardHint.textContent = gameMode === 'local'
       ? 'Local demo: move either color in turn. Click or drag a piece to move.'
-      : 'Waiting for Noah to respond as Black.';
+      : 'Black is to move. Anyone can move: select a piece and destination, or drag it.';
   }
   savedMoves = moves;
   renderMoves(savedMoves, gameOver && game.isCheckmate() && terminalMove ? savedMoves.length - 1 : -1);
   clearSelection();
+  scheduleAutoReset(moves);
+}
+
+function scheduleAutoReset(moves) {
+  if (!game.isGameOver() || moves.length === 0) {
+    if (autoResetInterval !== null) window.clearInterval(autoResetInterval);
+    autoResetInterval = null;
+    autoResetKey = '';
+    return;
+  }
+
+  const finalMove = moves[moves.length - 1];
+  const key = `${gameMode}:${finalMove.ply}:${finalMove.fen}`;
+  if (key === autoResetKey) return;
+
+  if (autoResetInterval !== null) window.clearInterval(autoResetInterval);
+  autoResetKey = key;
+  const recordedAt = Date.parse(finalMove.created_at || '');
+  const resetAt = (Number.isNaN(recordedAt) ? Date.now() : recordedAt) + resultDisplayMs;
+
+  const updateCountdown = async () => {
+    if (autoResetKey !== key) return;
+    const secondsRemaining = Math.max(0, Math.ceil((resetAt - Date.now()) / 1000));
+    if (secondsRemaining > 0) {
+      resultBanner.textContent = `${resultBanner.textContent.replace(/\s*New game starts in \d+s\.$/, '')} New game starts in ${secondsRemaining}s.`;
+      return;
+    }
+
+    window.clearInterval(autoResetInterval);
+    autoResetInterval = null;
+    autoResetKey = '';
+    if (gameMode === 'local') {
+      localStorage.removeItem(localGameStorageKey);
+      renderPosition([]);
+      gameLoaded = true;
+      showStatus('New local game — only this browser', 'neutral');
+      return;
+    }
+
+    try {
+      const { data, error } = await client.functions.invoke('chess-move', {
+        body: { action: 'reset' }
+      });
+      if (error) {
+        const response = error.context;
+        if (response instanceof Response) {
+          const result = await response.json();
+          throw new Error(result.error || error.message);
+        }
+        throw error;
+      }
+      if (!data?.reset) {
+        await loadGame({ quiet: true });
+        return;
+      }
+      await loadGame({ quiet: true });
+    } catch (error) {
+      console.error('Could not automatically reset the finished chess game:', error);
+      showStatus(error.message || 'Could not reset the finished game.', 'error');
+      autoResetKey = key;
+    }
+  };
+
+  updateCountdown();
+  autoResetInterval = window.setInterval(updateCountdown, 1000);
 }
 
 function updateBoardHighlights() {
@@ -246,6 +307,7 @@ function selectSquare(square) {
 
 function loadLocalGame() {
   gameMode = 'local';
+  gameLoaded = true;
   resetLocalButton.classList.remove('hidden');
   const rawMoves = localStorage.getItem(localGameStorageKey);
   let localMoves = [];
@@ -254,7 +316,6 @@ function loadLocalGame() {
     if (!Array.isArray(localMoves)) throw new Error('The saved local chess game is invalid.');
   }
   renderPosition(localMoves);
-  gameLoaded = true;
   showStatus('Local demo — only this browser', 'neutral');
 }
 
@@ -264,7 +325,7 @@ async function loadGame({ quiet = false } = {}) {
   try {
     const { data, error } = await client
       .from('chess_moves')
-      .select('ply, from_square, to_square, promotion, san, fen')
+      .select('ply, from_square, to_square, promotion, san, fen, created_at')
       .order('ply', { ascending: true });
     if (error) throw error;
 
@@ -272,8 +333,8 @@ async function loadGame({ quiet = false } = {}) {
       if (data[index].ply !== index + 1) throw new Error('The shared game history has a missing move.');
     }
     gameMode = 'shared';
-    renderPosition(data);
     gameLoaded = true;
+    renderPosition(data);
     showStatus('Shared game is live', 'live');
   } catch (error) {
     if (error.code === 'PGRST205') {
@@ -298,8 +359,7 @@ async function loadGame({ quiet = false } = {}) {
     if (!quiet) boardHint.textContent = 'The game could not be loaded. Please try again later.';
   } finally {
     isLoading = false;
-    board.draggablePieces = gameLoaded && !isSubmitting && !game.isGameOver() &&
-      (gameMode === 'local' || game.turn() === 'w');
+    board.draggablePieces = gameLoaded && !isSubmitting && !game.isGameOver();
   }
 }
 
@@ -326,14 +386,15 @@ async function submitMove(from, to, promotion, candidate, move) {
         to_square: move.to,
         promotion: move.promotion || null,
         san: move.san,
-        fen: candidate.fen()
+        fen: candidate.fen(),
+        created_at: new Date().toISOString()
       }];
       localStorage.setItem(localGameStorageKey, JSON.stringify(nextMoves));
       renderPosition(nextMoves);
       showStatus('Local demo — only this browser', 'neutral');
       return;
     }
-    showStatus('Saving move…', 'neutral');
+    showStatus('Saving move online…', 'neutral');
     const { error } = await client.functions.invoke('chess-move', {
       body: { from, to, promotion }
     });
@@ -352,8 +413,7 @@ async function submitMove(from, to, promotion, candidate, move) {
     await loadGame({ quiet: true });
   } finally {
     isSubmitting = false;
-    board.draggablePieces = gameLoaded && !game.isGameOver() &&
-      (gameMode === 'local' || game.turn() === 'w');
+    board.draggablePieces = gameLoaded && !game.isGameOver();
   }
 }
 
@@ -384,7 +444,7 @@ board.addEventListener('drag-start', (event) => {
   const { piece } = event.detail;
   const expectedPrefix = game.turn() === 'w' ? 'w' : 'b';
   if (isSubmitting || isLoading || !gameLoaded || game.isGameOver() || piece[0] !== expectedPrefix ||
-      (gameMode === 'shared' && game.turn() !== 'w')) {
+      (gameMode === 'shared' && piece[0] !== game.turn())) {
     event.preventDefault();
   }
 });
@@ -403,7 +463,7 @@ board.addEventListener('click', (event) => {
   if (!square) return;
 
   const piece = game.get(square);
-  const canSelectPiece = piece && (gameMode === 'local' || piece.color === 'w');
+  const canSelectPiece = piece && (gameMode === 'local' || piece.color === game.turn());
   if (!selectedSquare) {
     if (canSelectPiece) selectSquare(square);
     return;
@@ -441,6 +501,16 @@ if (!client) {
   }
 } else {
   loadGame();
+  client
+    .channel('community-chess-moves')
+    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'chess_moves' }, () => {
+      loadGame({ quiet: true });
+    })
+    .subscribe((subscriptionStatus) => {
+      if (subscriptionStatus === 'CHANNEL_ERROR' || subscriptionStatus === 'TIMED_OUT') {
+        console.error(`Chess realtime subscription status: ${subscriptionStatus}`);
+      }
+    });
   window.setInterval(() => {
     if (gameMode === 'shared') loadGame({ quiet: true });
   }, 10000);

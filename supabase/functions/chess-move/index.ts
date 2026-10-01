@@ -2,7 +2,6 @@ import { createClient } from 'npm:@supabase/supabase-js@2';
 import { Chess } from 'npm:chess.js@1.4.0';
 
 const supabaseUrl = Deno.env.get('SUPABASE_URL');
-const anonKey = Deno.env.get('SUPABASE_ANON_KEY');
 const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -24,7 +23,7 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 Deno.serve(async (request) => {
   if (request.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
   if (request.method !== 'POST') return jsonResponse({ error: 'Method not allowed.' }, 405);
-  if (!supabaseUrl || !anonKey || !serviceRoleKey) {
+  if (!supabaseUrl || !serviceRoleKey) {
     console.error('Chess function is missing required Supabase environment variables.');
     return jsonResponse({ error: 'Chess service is not configured.' }, 500);
   }
@@ -35,10 +34,13 @@ Deno.serve(async (request) => {
   } catch {
     return jsonResponse({ error: 'Request body must be valid JSON.' }, 400);
   }
-  if (!isRecord(body) ||
-      typeof body.from !== 'string' || !/^[a-h][1-8]$/.test(body.from) ||
-      typeof body.to !== 'string' || !/^[a-h][1-8]$/.test(body.to) ||
-      (body.promotion !== undefined && !['q', 'r', 'b', 'n'].includes(String(body.promotion)))) {
+  if (!isRecord(body)) {
+    return jsonResponse({ error: 'Request body must contain a chess move or reset action.' }, 400);
+  }
+  if (body.action !== 'reset' &&
+      (typeof body.from !== 'string' || !/^[a-h][1-8]$/.test(body.from) ||
+       typeof body.to !== 'string' || !/^[a-h][1-8]$/.test(body.to) ||
+       (body.promotion !== undefined && !['q', 'r', 'b', 'n'].includes(String(body.promotion))))) {
     return jsonResponse({ error: 'Move coordinates or promotion piece are invalid.' }, 400);
   }
 
@@ -47,7 +49,7 @@ Deno.serve(async (request) => {
   });
   const { data: rows, error: readError } = await admin
     .from('chess_moves')
-    .select('ply, from_square, to_square, promotion, san, fen')
+    .select('ply, from_square, to_square, promotion, san, fen, created_at')
     .order('ply', { ascending: true });
   if (readError) {
     console.error('Could not load chess history:', readError);
@@ -76,31 +78,23 @@ Deno.serve(async (request) => {
     }
   }
 
-  if (game.isGameOver()) return jsonResponse({ error: 'This game is already over.' }, 409);
-
-  const authorization = request.headers.get('Authorization') || '';
-  let isChessAdmin = false;
-  if (authorization.toLowerCase().startsWith('bearer ')) {
-    const token = authorization.slice(7).trim();
-    const apiKey = request.headers.get('apikey');
-    if (token && token !== anonKey && token !== apiKey) {
-      const authClient = createClient(supabaseUrl, anonKey, {
-        auth: { autoRefreshToken: false, persistSession: false }
-      });
-      const { data, error } = await authClient.auth.getUser(token);
-      if (error) {
-        return jsonResponse({ error: 'Your sign-in session is invalid. Please sign in again.' }, 401);
-      }
-      isChessAdmin = data.user.app_metadata?.chess_admin === true;
+  if (body.action === 'reset') {
+    if (!game.isGameOver() || rows.length === 0) {
+      return jsonResponse({ reset: false });
     }
+
+    const { data: reset, error: resetError } = await admin.rpc('reset_community_chess_if_finished', {
+      p_expected_ply: rows.length,
+      p_expected_fen: game.fen()
+    });
+    if (resetError) {
+      console.error('Could not reset finished chess game:', resetError);
+      return jsonResponse({ error: 'Could not reset the finished game.' }, 500);
+    }
+    return jsonResponse({ reset: Boolean(reset) });
   }
 
-  if (game.turn() === 'w' && isChessAdmin) {
-    return jsonResponse({ error: 'The chess admin can only make Black’s reply.' }, 403);
-  }
-  if (game.turn() === 'b' && !isChessAdmin) {
-    return jsonResponse({ error: 'Only the chess admin can make Black’s move.' }, 403);
-  }
+  if (game.isGameOver()) return jsonResponse({ error: 'This game is already over.' }, 409);
 
   let move;
   try {
@@ -114,16 +108,16 @@ Deno.serve(async (request) => {
   }
   if (!move) return jsonResponse({ error: 'That is not a legal chess move.' }, 400);
 
-  const { error: insertError } = await admin.from('chess_moves').insert({
-    ply: rows.length + 1,
-    from_square: move.from,
-    to_square: move.to,
-    promotion: move.promotion || null,
-    san: move.san,
-    fen: game.fen()
+  const { error: insertError } = await admin.rpc('save_community_chess_move', {
+    p_ply: rows.length + 1,
+    p_from_square: move.from,
+    p_to_square: move.to,
+    p_promotion: move.promotion || null,
+    p_san: move.san,
+    p_fen: game.fen()
   });
   if (insertError) {
-    if (insertError.code === '23505') {
+    if (insertError.code === '23505' || insertError.code === 'P0001') {
       return jsonResponse({ error: 'Someone just moved. The board has been refreshed; try again.' }, 409);
     }
     console.error('Could not save chess move:', insertError);
