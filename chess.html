@@ -156,9 +156,25 @@
         <a class="hidden whitespace-nowrap rounded-full px-4 py-2 text-xs text-gray-400 transition-all hover:bg-white/[0.06] hover:text-white sm:inline-flex" href="mini-game.html">Mini Game</a>
         <a class="whitespace-nowrap rounded-full bg-white/[0.12] px-3 py-2 text-xs font-medium text-white shadow-sm sm:px-4" href="chess.html" aria-current="page">Chess</a>
       </nav>
-      <button aria-label="Toggle theme" class="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/[0.1] bg-white/[0.04] text-gray-300 transition-colors hover:border-[#00f2fe]/40 hover:text-white" id="chess-theme-toggle" type="button">
-        <span class="material-symbols-outlined text-[17px]" aria-hidden="true">dark_mode</span>
-      </button>
+      <div class="flex items-center gap-2">
+        <a aria-label="Noah's GitHub Profile" title="Open Noah's GitHub profile"
+          class="inline-flex items-center justify-center rounded-full border border-white/[0.1] bg-white/[0.04] p-2 text-gray-300 transition-colors hover:border-[#00f2fe]/40 hover:text-white"
+          href="https://github.com/n08914231-cloud" rel="noreferrer" target="_blank">
+          <span class="material-symbols-outlined text-[17px]" aria-hidden="true">code</span>
+        </a>
+        <button aria-label="Toggle theme"
+          class="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/[0.1] bg-white/[0.04] text-gray-300 transition-colors hover:border-[#00f2fe]/40 hover:text-white"
+          id="chess-theme-toggle" type="button">
+          <span class="material-symbols-outlined text-[17px]" aria-hidden="true">dark_mode</span>
+        </button>
+        <a id="chess-back-link"
+          class="inline-flex items-center gap-2 rounded-full border border-white/[0.1] bg-white/[0.04] px-3 py-2 text-xs text-gray-300 transition-colors hover:border-[#00f2fe]/40 hover:text-white"
+          href="index.html">
+          <span class="material-symbols-outlined text-[17px]" aria-hidden="true">arrow_back</span>
+          <span class="hidden sm:inline">Zur Startseite</span>
+          <span class="sm:hidden">Zurück</span>
+        </a>
+      </div>
     </div>
   </header>
 
