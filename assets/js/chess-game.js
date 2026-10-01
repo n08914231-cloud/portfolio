@@ -5,9 +5,9 @@ const config = window.SUPABASE_CONFIG || {};
 const client = config.url && config.anonKey
   ? createClient(config.url, config.anonKey, {
       auth: {
-        autoRefreshToken: false,
-        persistSession: false,
-        detectSessionInUrl: false
+        autoRefreshToken: true,
+        persistSession: true,
+        detectSessionInUrl: true
       }
     })
   : null;
@@ -38,6 +38,8 @@ let savedMoves = [];
 let isSubmitting = false;
 let isLoading = false;
 let gameLoaded = false;
+let accessLoaded = false;
+let isChessOwner = false;
 let selectedSquare = null;
 let lastDropAt = -Infinity;
 let lastPointerTapAt = -Infinity;
@@ -116,7 +118,7 @@ function renderMoves(moves, winningPly = -1) {
   if (!moves.length) {
     const empty = document.createElement('li');
     empty.className = 'col-span-3 text-gray-500';
-    empty.textContent = 'No moves yet — make the first move as White.';
+    empty.textContent = 'No moves yet — the owner starts as White; visitors can play Black.';
     moveList.append(empty);
     moveList.scrollTop = 0;
     return;
@@ -161,7 +163,7 @@ function renderPosition(moves) {
   updateBoardHighlights();
   const gameOver = game.isGameOver();
   const turn = game.turn();
-  const canMove = gameLoaded && !gameOver && !isSubmitting && !isLoading;
+  const canMove = gameLoaded && !gameOver && !isSubmitting && !isLoading && canPlayCurrentTurn();
   resultBanner.classList.add('hidden');
   resultBanner.textContent = '';
   board.draggablePieces = canMove;
@@ -196,12 +198,16 @@ function renderPosition(moves) {
     turnLabel.textContent = 'White to move';
     boardHint.textContent = gameMode === 'local'
       ? 'Local demo: move either color in turn. Click, drag, or focus the board and use arrow keys + Enter.'
-      : 'White is to move. Click, drag, or focus the board and use arrow keys + Enter.';
+      : isChessOwner
+        ? 'Your turn as White. Click, drag, or focus the board and use arrow keys + Enter.'
+        : 'White is reserved for the owner. Visitors can play Black.';
   } else {
     turnLabel.textContent = 'Black to move';
     boardHint.textContent = gameMode === 'local'
       ? 'Local demo: move either color in turn. Click, drag, or focus the board and use arrow keys + Enter.'
-      : 'Black is to move. Click, drag, or focus the board and use arrow keys + Enter.';
+      : isChessOwner
+        ? 'Visitors play Black. Wait for their move.'
+        : 'Your turn as Black. Click, drag, or focus the board and use arrow keys + Enter.';
   }
   savedMoves = moves;
   renderMoves(savedMoves, gameOver && game.isCheckmate() && terminalMove ? savedMoves.length - 1 : -1);
@@ -314,6 +320,10 @@ function clearSelection() {
   updateBoardHighlights();
 }
 
+function canPlayCurrentTurn() {
+  return gameMode === 'local' || (accessLoaded && (game.turn() === 'w') === isChessOwner);
+}
+
 function selectSquare(square) {
   const availableMoves = game.moves({ square, verbose: true });
   if (availableMoves.length === 0) {
@@ -330,6 +340,14 @@ function selectSquare(square) {
   updateBoardHighlights();
   boardHint.textContent = `Selected ${square}. Choose a destination square.`;
   announceSquare(square);
+}
+
+async function loadChessAccess() {
+  const { data, error } = await client.rpc('is_community_chess_owner');
+  if (error) throw error;
+  if (typeof data !== 'boolean') throw new Error('Chess access settings returned an invalid owner status.');
+  isChessOwner = data;
+  accessLoaded = true;
 }
 
 function loadLocalGame() {
@@ -373,7 +391,11 @@ async function loadGame({ quiet = false } = {}) {
     gameMode = 'shared';
     gameLoaded = true;
     if (!historyUnchanged) renderPosition(data);
-    showStatus('Shared game is live', 'live');
+    if (accessLoaded) {
+      showStatus(isChessOwner ? 'Signed in — you play White' : 'Shared game — visitors play Black', 'live');
+    } else {
+      showStatus('Chess access settings are unavailable', 'error');
+    }
   } catch (error) {
     if (error.code === 'PGRST205') {
       try {
@@ -397,7 +419,7 @@ async function loadGame({ quiet = false } = {}) {
     if (!quiet) boardHint.textContent = 'The game could not be loaded. Please try again later.';
   } finally {
     isLoading = false;
-    board.draggablePieces = gameLoaded && !isSubmitting && !game.isGameOver();
+    board.draggablePieces = gameLoaded && !isSubmitting && !game.isGameOver() && canPlayCurrentTurn();
   }
 }
 
@@ -412,7 +434,7 @@ function applyTheme(theme) {
 }
 
 async function submitMove(from, to, promotion, candidate, move) {
-  if (isSubmitting) return;
+  if (isSubmitting || !canPlayCurrentTurn()) return;
   isSubmitting = true;
   board.draggablePieces = false;
   board.setPosition(candidate.fen());
@@ -451,11 +473,17 @@ async function submitMove(from, to, promotion, candidate, move) {
     await loadGame({ quiet: true });
   } finally {
     isSubmitting = false;
-    board.draggablePieces = gameLoaded && !game.isGameOver();
+    board.draggablePieces = gameLoaded && !game.isGameOver() && canPlayCurrentTurn();
   }
 }
 
 function tryMove(from, to, promotion) {
+  if (!canPlayCurrentTurn()) {
+    boardHint.textContent = isChessOwner
+      ? 'Visitors play Black. Wait for their move.'
+      : 'White is reserved for the owner. You can play Black.';
+    return false;
+  }
   const candidate = new Chess(game.fen());
   let move;
   try {
@@ -475,6 +503,12 @@ function tryMove(from, to, promotion) {
 
 function handleSquareTap(square) {
   if (isSubmitting || isLoading || !gameLoaded || game.isGameOver()) return;
+  if (!canPlayCurrentTurn()) {
+    boardHint.textContent = isChessOwner
+      ? 'Visitors play Black. Wait for their move.'
+      : 'White is reserved for the owner. You can play Black.';
+    return;
+  }
   keyboardSquare = square;
   const piece = game.get(square);
   const canSelectPiece = piece && (gameMode === 'local' || piece.color === game.turn());
@@ -578,7 +612,7 @@ applyTheme(localStorage.getItem('portfolio-theme') || (window.matchMedia('(prefe
 board.addEventListener('drag-start', (event) => {
   const { piece } = event.detail;
   const expectedPrefix = game.turn() === 'w' ? 'w' : 'b';
-  if (isSubmitting || isLoading || !gameLoaded || game.isGameOver() || piece[0] !== expectedPrefix ||
+  if (isSubmitting || isLoading || !gameLoaded || game.isGameOver() || !canPlayCurrentTurn() || piece[0] !== expectedPrefix ||
       (gameMode === 'shared' && piece[0] !== game.turn())) {
     event.preventDefault();
   }
@@ -643,7 +677,12 @@ if (!client) {
     resetLocalButton.classList.remove('hidden');
   }
 } else {
-  loadGame();
+  loadChessAccess()
+    .catch((error) => {
+      accessLoaded = false;
+      console.error('Could not load chess access settings:', error);
+    })
+    .finally(() => loadGame());
   client
     .channel('community-chess-moves')
     .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'chess_moves' }, () => {

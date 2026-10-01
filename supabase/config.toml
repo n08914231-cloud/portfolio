@@ -2,3 +2,6 @@ project_id = "yrfsiojjutfefihrkwqz"
 
 [functions.chess-move]
 verify_jwt = false
+
+[functions.chess-owner-login]
+verify_jwt = false

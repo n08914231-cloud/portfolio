@@ -47,6 +47,33 @@ Deno.serve(async (request) => {
   const admin = createClient(supabaseUrl, serviceRoleKey, {
     auth: { autoRefreshToken: false, persistSession: false }
   });
+  const authorization = request.headers.get('authorization');
+  let userId: string | null = null;
+  if (authorization) {
+    const token = authorization.match(/^Bearer\s+(.+)$/i)?.[1];
+    if (!token) return jsonResponse({ error: 'Your sign-in session is invalid.' }, 401);
+    if (token !== request.headers.get('apikey') && token !== Deno.env.get('SUPABASE_ANON_KEY')) {
+      const { data: userData, error: userError } = await admin.auth.getUser(token);
+      if (userError || !userData.user) {
+        return jsonResponse({ error: 'Your sign-in session is invalid or has expired.' }, 401);
+      }
+      userId = userData.user.id;
+    }
+  }
+
+  const { data: access, error: accessError } = await admin
+    .from('chess_access')
+    .select('owner_user_id, owner_color')
+    .eq('singleton', true)
+    .maybeSingle();
+  if (accessError) {
+    console.error('Could not load chess access settings:', accessError);
+    return jsonResponse({ error: 'Chess access is not configured.' }, 500);
+  }
+  if (!access?.owner_user_id || access.owner_color !== 'white') {
+    return jsonResponse({ error: 'Chess owner access has not been configured yet.' }, 503);
+  }
+
   const { data: rows, error: readError } = await admin
     .from('chess_moves')
     .select('ply, from_square, to_square, promotion, san, fen, created_at')
@@ -95,6 +122,15 @@ Deno.serve(async (request) => {
   }
 
   if (game.isGameOver()) return jsonResponse({ error: 'This game is already over.' }, 409);
+  const isOwner = userId === access.owner_user_id;
+  const ownerToMove = (game.turn() === 'w' ? 'white' : 'black') === access.owner_color;
+  if (isOwner !== ownerToMove) {
+    return jsonResponse({
+      error: isOwner
+        ? 'It is the visitors’ turn. You can only move White.'
+        : 'It is the owner’s turn. Visitors can only move Black.'
+    }, 403);
+  }
 
   let move;
   try {
