@@ -1,0 +1,4 @@
+project_id = "yrfsiojjutfefihrkwqz"
+
+[functions.chess-move]
+verify_jwt = false
