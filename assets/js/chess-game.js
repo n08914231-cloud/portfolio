@@ -38,11 +38,13 @@ let isSubmitting = false;
 let isLoading = false;
 let gameLoaded = false;
 let selectedSquare = null;
-let lastDropAt = 0;
+let lastDropAt = -Infinity;
+let lastPointerTapAt = -Infinity;
 let lastMoveSquares = [];
 let legalTargetSquares = [];
 let autoResetInterval = null;
 let autoResetKey = '';
+const boardPointerStarts = new Map();
 
 const boardThemeSheet = new CSSStyleSheet();
 boardThemeSheet.replaceSync(`
@@ -52,7 +54,14 @@ boardThemeSheet.replaceSync(`
     --highlight-color: rgba(246, 246, 105, 0.78);
   }
   [data-square] {
+    cursor: pointer;
     transition: background-color 140ms ease, box-shadow 140ms ease;
+  }
+  [data-square]:has([part~="piece"]) {
+    cursor: grab;
+  }
+  [data-square]:has([part~="piece"]):hover {
+    box-shadow: inset 0 0 0 3px rgba(0, 242, 254, 0.42);
   }
   [data-square][data-last-move] {
     background-color: rgba(246, 246, 105, 0.78) !important;
@@ -67,17 +76,19 @@ boardThemeSheet.replaceSync(`
     z-index: 2;
     top: 50%;
     left: 50%;
-    width: 28%;
+    width: 32%;
     aspect-ratio: 1;
     border-radius: 50%;
-    background: rgba(31, 41, 25, 0.34);
+    background: rgba(24, 42, 20, 0.62);
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.72);
     pointer-events: none;
     transform: translate(-50%, -50%);
   }
   [data-square][data-legal-capture]::after {
-    width: 82%;
+    width: 84%;
     background: transparent;
-    border: 5px solid rgba(31, 41, 25, 0.34);
+    border: 6px solid rgba(24, 42, 20, 0.68);
+    box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.72);
   }
   [data-square][data-in-check] {
     background: radial-gradient(ellipse at center, rgba(255, 45, 45, 0.9) 0%, rgba(255, 45, 45, 0.62) 58%, transparent 82%) !important;
@@ -258,6 +269,7 @@ function updateBoardHighlights() {
     const partNames = square.getAttribute('part').split(/\s+/);
     square.style.backgroundColor = partNames.includes('white') ? '#eeeed2' : '#769656';
     square.toggleAttribute('data-last-move', lastMoveSquares.includes(square.dataset.square));
+    square.removeAttribute('data-selected');
     square.removeAttribute('data-legal-target');
     square.removeAttribute('data-legal-capture');
     square.removeAttribute('data-in-check');
@@ -332,9 +344,20 @@ async function loadGame({ quiet = false } = {}) {
     for (let index = 0; index < data.length; index += 1) {
       if (data[index].ply !== index + 1) throw new Error('The shared game history has a missing move.');
     }
+    const historyUnchanged = gameMode === 'shared' && gameLoaded &&
+      savedMoves.length === data.length &&
+      data.every((move, index) => {
+        const savedMove = savedMoves[index];
+        return move.ply === savedMove.ply &&
+          move.from_square === savedMove.from_square &&
+          move.to_square === savedMove.to_square &&
+          move.promotion === savedMove.promotion &&
+          move.san === savedMove.san &&
+          move.fen === savedMove.fen;
+      });
     gameMode = 'shared';
     gameLoaded = true;
-    renderPosition(data);
+    if (!historyUnchanged) renderPosition(data);
     showStatus('Shared game is live', 'live');
   } catch (error) {
     if (error.code === 'PGRST205') {
@@ -435,6 +458,25 @@ function tryMove(from, to, promotion) {
   return true;
 }
 
+function handleSquareTap(square) {
+  if (isSubmitting || isLoading || !gameLoaded || game.isGameOver()) return;
+  const piece = game.get(square);
+  const canSelectPiece = piece && (gameMode === 'local' || piece.color === game.turn());
+  if (!selectedSquare) {
+    if (canSelectPiece) selectSquare(square);
+    return;
+  }
+  if (square === selectedSquare) {
+    clearSelection();
+    return;
+  }
+  if (canSelectPiece) {
+    selectSquare(square);
+    return;
+  }
+  tryMove(selectedSquare, square, 'q');
+}
+
 themeToggle.addEventListener('click', () => {
   applyTheme(document.documentElement.classList.contains('dark') ? 'light' : 'dark');
 });
@@ -451,32 +493,40 @@ board.addEventListener('drag-start', (event) => {
 
 board.addEventListener('drop', (event) => {
   const { source, target, setAction } = event.detail;
+  if (source === target) return;
   lastDropAt = performance.now();
   if (!tryMove(source, target, 'q')) setAction('snapback');
 });
 
+board.shadowRoot.addEventListener('pointerdown', (event) => {
+  const square = event.composedPath().find((node) =>
+    node instanceof HTMLElement && typeof node.dataset.square === 'string'
+  )?.dataset.square;
+  if (square) {
+    boardPointerStarts.set(event.pointerId, {
+      square,
+      x: event.clientX,
+      y: event.clientY
+    });
+  }
+}, true);
+
+board.shadowRoot.addEventListener('pointerup', (event) => {
+  const start = boardPointerStarts.get(event.pointerId);
+  boardPointerStarts.delete(event.pointerId);
+  if (!start || Math.hypot(event.clientX - start.x, event.clientY - start.y) > 8) return;
+
+  lastPointerTapAt = performance.now();
+  handleSquareTap(start.square);
+}, true);
+
 board.addEventListener('click', (event) => {
-  if (performance.now() - lastDropAt < 350 || isSubmitting || isLoading || !gameLoaded || game.isGameOver()) return;
+  if (performance.now() - lastDropAt < 350 || performance.now() - lastPointerTapAt < 350) return;
   const square = event.composedPath().find((node) =>
     node instanceof HTMLElement && typeof node.dataset.square === 'string'
   )?.dataset.square;
   if (!square) return;
-
-  const piece = game.get(square);
-  const canSelectPiece = piece && (gameMode === 'local' || piece.color === game.turn());
-  if (!selectedSquare) {
-    if (canSelectPiece) selectSquare(square);
-    return;
-  }
-  if (square === selectedSquare) {
-    clearSelection();
-    return;
-  }
-  if (canSelectPiece) {
-    selectSquare(square);
-    return;
-  }
-  tryMove(selectedSquare, square, 'q');
+  handleSquareTap(square);
 });
 
 resetLocalButton.addEventListener('click', () => {
