@@ -38,9 +38,9 @@ Deno.serve(async (request) => {
     return jsonResponse({ error: 'Request body must contain a chess move or reset action.' }, 400);
   }
   if (body.action !== 'reset' &&
-      (typeof body.from !== 'string' || !/^[a-h][1-8]$/.test(body.from) ||
-       typeof body.to !== 'string' || !/^[a-h][1-8]$/.test(body.to) ||
-       (body.promotion !== undefined && !['q', 'r', 'b', 'n'].includes(String(body.promotion))))) {
+    (typeof body.from !== 'string' || !/^[a-h][1-8]$/.test(body.from) ||
+      typeof body.to !== 'string' || !/^[a-h][1-8]$/.test(body.to) ||
+      (body.promotion !== undefined && !['q', 'r', 'b', 'n'].includes(String(body.promotion))))) {
     return jsonResponse({ error: 'Move coordinates or promotion piece are invalid.' }, 400);
   }
 

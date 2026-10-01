@@ -47,6 +47,16 @@
       border-color: rgba(15, 23, 42, 0.08) !important;
     }
 
+    html.light header .brand-logo-mark,
+    html.light header .brand-wordmark,
+    html.light header .brand-wordmark span {
+      color: #0f172a !important;
+    }
+
+    html.light header .brand-logo-mark {
+      background-color: rgba(255, 255, 255, 0.04) !important;
+    }
+
     html.light .text-white,
     html.light .text-gray-300,
     html.light .text-gray-400,
@@ -517,22 +527,17 @@
 
 <body id="top"
   class="bg-[#090a0d] text-[#E2E8F0] antialiased selection:bg-[#00F2FE]/20 selection:text-[#00F2FE] min-h-screen flex flex-col font-sans">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
   <!-- TOP NAVIGATION HEADER -->
   <header
     class="fixed top-0 left-0 w-full z-50 bg-[#090a0d]/75 backdrop-blur-2xl border-b border-white/[0.06] transition-all">
     <div class="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 h-20 flex items-center justify-between">
       <!-- Brand Logo -->
-      <a class="flex items-center gap-3.5 group" href="#top">
-        <div
-          class="h-10 w-10 rounded-2xl bg-gradient-to-b from-white/15 to-white/5 p-[1px] transition-all duration-300 group-hover:scale-105 shadow-lg shadow-black/40">
-          <div
-            class="h-full w-full bg-[#111317] rounded-[15px] flex items-center justify-center font-mono font-medium text-xs text-[#00F2FE]">
-            &lt;/&gt;
-          </div>
-        </div>
-        <div class="flex items-center text-lg font-semibold font-display tracking-tight text-white">
-          noah<span class="text-[#00F2FE] font-bold">.dev</span>
-        </div>
+      <a class="flex items-center gap-3 text-white" href="#top" aria-label="noah.dev home">
+        <span
+          class="brand-logo-mark flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 bg-white/[0.04] font-mono text-xs font-semibold text-[#00f2fe]">&lt;/&gt;</span>
+        <span class="brand-wordmark text-base font-semibold">noah<span
+            class="font-mono text-xs text-[#00f2fe]">.dev</span></span>
       </a>
       <!-- Center Pill Navigation -->
       <nav id="primary-navigation" aria-label="Primary navigation"
@@ -590,7 +595,7 @@
     </div>
   </header>
   <!-- MAIN WRAPPER -->
-  <main class="w-full pt-20 flex-grow relative overflow-hidden">
+  <main class="w-full pt-20 flex-grow relative overflow-hidden" id="main-content">
     <!-- Ambient Backdrop Glows (Apple Subtle Ambient) -->
     <div
       class="absolute top-16 left-1/2 -translate-x-1/2 w-[900px] h-[450px] bg-gradient-to-b from-[#00F2FE]/10 via-[#7928CA]/10 to-transparent blur-[140px] rounded-full pointer-events-none -z-10">
@@ -617,7 +622,8 @@
       </div>
       <div class="hero-visual" role="img"
         aria-label="Macro photograph of a circuit board with chips and illuminated traces">
-        <img alt="" fetchpriority="high" src="assets/images/hero-circuit-board.jpg" />
+        <img alt="" decoding="async" fetchpriority="high" height="1200" src="assets/images/hero-circuit-board.jpg"
+          width="1800" />
         <span class="hero-visual-scan" aria-hidden="true"></span>
         <div class="hero-visual-caption" aria-hidden="true"><span class="hero-visual-dot"></span><span>Engineering / In
             Motion</span></div>
@@ -693,7 +699,8 @@
           <a class="group relative block aspect-[4/3] overflow-hidden rounded-lg border border-white/10 bg-[#10151b] md:col-start-2 md:row-start-1 md:row-span-2"
             href="mini-game.html" aria-label="Open Arcade Highscore mini-game">
             <img class="h-full w-full object-cover" src="assets/images/arcade-gameplay.gif"
-              alt="Gameplay aus dem Arcade Highscore Runner" loading="lazy" />
+              alt="Gameplay aus dem Arcade Highscore Runner" decoding="async" height="1080" loading="lazy"
+              width="1440" />
             <span
               class="absolute inset-0 flex items-end bg-gradient-to-t from-black/75 via-transparent to-transparent p-4 font-mono text-[10px] uppercase tracking-wider text-white">Arcade
               Highscore <span class="ml-auto text-[#00F2FE]">Open game ↗</span></span>
@@ -723,7 +730,8 @@
           <a class="group relative block aspect-[4/3] overflow-hidden rounded-lg border border-white/10 bg-[#10151b]"
             href="chess.html" aria-label="Open Community Chess">
             <img class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
-                src="assets/images/community-chess.png" alt="Screenshot of the Community Chess game" loading="lazy" />
+                src="assets/images/community-chess.png" alt="Screenshot of the Community Chess game" decoding="async"
+                height="1050" loading="lazy" width="1440" />
               <span
                 class="absolute inset-0 flex items-end bg-gradient-to-t from-black/75 via-transparent to-transparent p-4 font-mono text-[10px] uppercase tracking-wider text-white">Community
                 Chess <span class="ml-auto text-[#00F2FE]">Open game ↗</span></span>
