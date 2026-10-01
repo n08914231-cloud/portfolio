@@ -296,7 +296,37 @@ const HighscoreManager = {
       body.appendChild(row);
     });
   }
-};`
+};`,
+      chessMoves: `// Show only rule-checked destinations for the selected piece
+function selectSquare(square) {
+  const piece = game.get(square);
+  if (!piece || piece.color !== game.turn()) return;
+
+  selectedSquare = square;
+  legalTargetSquares = game.moves({ square, verbose: true }).map((move) => ({
+    square: move.to,
+    capture: Boolean(move.captured)
+  }));
+  updateBoardHighlights();
+}
+
+function updateBoardHighlights() {
+  const squares = board.shadowRoot.querySelectorAll('[data-square]');
+  for (const square of squares) {
+    square.removeAttribute('data-legal-target');
+    square.removeAttribute('data-legal-capture');
+  }
+
+  for (const target of legalTargetSquares) {
+    const destination = board.shadowRoot.querySelector(
+      '[data-square="' + target.square + '"]'
+    );
+    destination?.setAttribute(
+      target.capture ? 'data-legal-capture' : 'data-legal-target',
+      ''
+    );
+  }
+}`
     };
 
     let currentKey = 'gameLoop';
@@ -315,15 +345,15 @@ const HighscoreManager = {
     renderSnippet(currentKey);
 
     function switchSnippet(key) {
+      if (!Object.hasOwn(snippets, key)) return;
       currentKey = key;
-      const tabs = ['gameLoop', 'collisions', 'highscore'];
-      
-      tabs.forEach(t => {
-        const btn = document.getElementById(`tab-${t}`);
-        if (t === key) {
-          btn.className = "px-4 py-1.5 rounded-lg text-xs font-mono font-medium text-[#00F2FE] bg-white/[0.08] border border-white/[0.08] transition-all";
+      document.querySelectorAll('[data-snippet]').forEach((button) => {
+        const isActive = button.dataset.snippet === key;
+        button.setAttribute('aria-pressed', String(isActive));
+        if (isActive) {
+          button.className = "shrink-0 whitespace-nowrap px-4 py-1.5 rounded-lg text-xs font-mono font-medium text-[#00F2FE] bg-white/[0.08] border border-white/[0.08] transition-all";
         } else {
-          btn.className = "px-4 py-1.5 rounded-lg text-xs font-mono font-medium text-gray-400 hover:text-white transition-all";
+          button.className = "shrink-0 whitespace-nowrap px-4 py-1.5 rounded-lg text-xs font-mono font-medium text-gray-400 hover:text-white transition-all";
         }
       });
 
