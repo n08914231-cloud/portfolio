@@ -3,8 +3,15 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Play a shared online chess game on noah.dev. See legal moves, follow the live move history, and play either side." />
   <meta name="theme-color" content="#090a0d" />
   <title>Community Chess | noah.dev</title>
+  <link rel="preconnect" href="https://cdn.tailwindcss.com" />
+  <link rel="preconnect" href="https://unpkg.com" crossorigin />
+  <link rel="preconnect" href="https://esm.sh" crossorigin />
+  <link rel="preconnect" href="https://yrfsiojjutfefihrkwqz.supabase.co" crossorigin />
+  <link rel="stylesheet" href="assets/css/site.css" />
+  <link rel="preload" href="assets/fonts/inter-latin-variable.woff2" as="font" type="font/woff2" crossorigin />
   <link href="assets/fonts/fonts.css" rel="stylesheet" />
   <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
   <script src="assets/js/tailwind-index.js"></script>
@@ -69,8 +76,13 @@
     chess-board {
       display: block;
       width: min(100%, 520px);
+      max-width: 100%;
       margin-inline: auto;
       touch-action: manipulation;
+      border-radius: 4px;
+    }
+    chess-board:focus-visible {
+      outline: none;
     }
     .chess-control {
       min-height: 42px;
@@ -109,6 +121,16 @@
     }
     @media (max-width: 640px) {
       chess-board { width: min(100%, 420px); }
+      .chess-panel { border-radius: 14px; }
+      .move-list { max-height: 240px; }
+    }
+    @media (max-width: 380px) {
+      header > div { gap: 0.5rem; padding-inline: 0.75rem; }
+      header nav { gap: 0; }
+      header nav a { padding-inline: 0.55rem; font-size: 0.68rem; }
+      header nav a[href="mini-game.html"] { display: none; }
+      main { padding-inline: 0.5rem !important; }
+      .chess-panel { padding: 0.625rem; }
     }
     @media (prefers-reduced-motion: reduce) {
       .move-list { scroll-behavior: auto; }
@@ -121,6 +143,8 @@
   </style>
 </head>
 <body class="antialiased">
+  <a class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-20 focus:z-50 focus:rounded-lg focus:bg-[#00f2fe] focus:px-4 focus:py-3 focus:text-sm focus:font-semibold focus:text-[#090a0d]"
+    href="#chess-main">Skip to the chess game</a>
   <header class="fixed inset-x-0 top-0 z-20 border-b border-white/[0.06] bg-[#090a0d]/80 backdrop-blur-2xl">
     <div class="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-5 sm:px-8">
       <a class="flex items-center gap-3 text-white" href="index.html" aria-label="noah.dev home">
@@ -138,7 +162,7 @@
     </div>
   </header>
 
-  <main class="mx-auto w-full max-w-7xl px-4 pb-12 pt-28 sm:px-8 sm:pt-32">
+  <main class="mx-auto w-full max-w-7xl px-3 pb-8 pt-28 sm:px-8 sm:pb-12 sm:pt-32" id="chess-main">
     <section class="mb-6 flex flex-col justify-between gap-4 sm:mb-8 sm:flex-row sm:items-end">
       <div>
         <p class="mb-2 font-mono text-[10px] font-medium uppercase tracking-[0.18em] text-[#00f2fe]">Community Game / 01</p>
@@ -152,7 +176,7 @@
     </section>
 
     <section class="grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_320px]">
-      <div class="chess-panel p-4 sm:p-6">
+      <div class="chess-panel min-w-0 p-3 sm:p-6">
         <div class="mb-4 flex items-center justify-between gap-3">
           <div>
             <p class="font-mono text-[10px] uppercase tracking-[0.16em] text-gray-400" id="chess-turn-caption">White to move</p>
@@ -163,9 +187,13 @@
             <span class="rounded-full border border-white/10 px-3 py-1 font-mono text-[10px] text-gray-400" id="chess-move-count">0 half-moves</span>
           </div>
         </div>
-        <chess-board id="chess-board" position="start"></chess-board>
+        <chess-board id="chess-board" position="start" role="group" tabindex="0"
+          aria-label="Chess board" aria-describedby="chess-keyboard-help"
+          aria-keyshortcuts="ArrowUp ArrowDown ArrowLeft ArrowRight Enter Space Escape"></chess-board>
         <div class="mt-4 hidden rounded-xl border border-emerald-400/30 bg-emerald-400/10 px-4 py-3 text-center text-sm font-semibold text-emerald-300" id="chess-result" role="status" aria-live="assertive"></div>
         <p class="mt-4 text-center text-xs leading-relaxed text-gray-400" id="chess-board-hint">Loading game…</p>
+        <p class="sr-only" id="chess-keyboard-help">Focus the board, use arrow keys to choose a square, press Enter or Space to select a piece or move, and Escape to clear your selection.</p>
+        <p class="sr-only" id="chess-board-announcement" aria-live="polite" aria-atomic="true"></p>
       </div>
 
       <aside>

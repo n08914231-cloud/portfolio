@@ -2,8 +2,12 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="description" content="Play Pixel Protocol 198X, a retro arcade runner built with Three.js." />
+  <meta name="theme-color" content="#2b5c8f" />
   <title>PIXEL PROTOCOL 198X - Retro Arcade Runner</title>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin />
+  <link rel="stylesheet" href="assets/css/site.css" />
   <link rel="stylesheet" href="assets/fonts/fonts.css">
   <style>
     * {
@@ -213,6 +217,8 @@
       box-shadow: 3px 3px 0px #000;
       cursor: pointer;
       touch-action: manipulation;
+      font-family: inherit;
+      appearance: none;
     }
     .t-btn:active {
       transform: translate(2px, 2px);
@@ -276,6 +282,8 @@
       flex-direction: column;
       justify-content: center;
       align-items: center;
+      overflow-y: auto;
+      overscroll-behavior: contain;
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.3s ease;
@@ -457,18 +465,18 @@
   <!-- Mobile Touch Controls -->
   <div id="touch-controls">
     <div class="touch-btn-group">
-      <div class="t-btn" id="t-btn-left">◄</div>
-      <div class="t-btn" id="t-btn-right">►</div>
+      <button class="t-btn" id="t-btn-left" type="button" aria-label="Move left">◄</button>
+      <button class="t-btn" id="t-btn-right" type="button" aria-label="Move right">►</button>
     </div>
     <div class="t-action-group">
-      <div class="t-btn t-btn-jump" id="t-btn-jump">
+      <button class="t-btn t-btn-jump" id="t-btn-jump" type="button" aria-label="Jump">
         <span>▲</span>
         <span>JUMP</span>
-      </div>
-      <div class="t-btn t-btn-slide" id="t-btn-slide">
+      </button>
+      <button class="t-btn t-btn-slide" id="t-btn-slide" type="button" aria-label="Slide">
         <span>▼</span>
         <span>SLIDE</span>
-      </div>
+      </button>
     </div>
   </div>
 
@@ -802,7 +810,7 @@
           const scorePad = String(item.score).padStart(6, '0');
           [
             `#${index + 1}`,
-            item.player_name || 'PLAYER',
+            String(item.player_name || 'PLAYER'),
             scorePad,
             item.date || new Date(item.created_at).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: '2-digit' })
           ].forEach(value => {
@@ -879,7 +887,7 @@
     const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 800);
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, window.innerWidth < 768 ? 1.5 : 2));
     container.appendChild(renderer.domElement);
 
     let baseCamY = 4.4;
@@ -904,6 +912,7 @@
       camera.position.set(0, baseCamY, baseCamZ);
       camera.lookAt(0, 1.6, -14);
       camera.updateProjectionMatrix();
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, w < 768 ? 1.5 : 2));
       renderer.setSize(w, h);
     }
     window.addEventListener('resize', handleResize);
@@ -1337,9 +1346,23 @@
        ZONEN-SYSTEM (ALLE 400 METER)
        ========================================================================= */
     let bannerTimeout = null;
+    let invalidZoneLogged = false;
 
     function checkZoneTransition(dist) {
-      const zoneIdx = Math.floor(dist / ZONE_LENGTH) % ZONES.length;
+      if (!Number.isFinite(dist) || ZONES.length === 0) {
+        if (!invalidZoneLogged) {
+          console.error('Arcade zone transition received an invalid distance or empty zone list.', {
+            distance: dist,
+            zoneCount: ZONES.length
+          });
+          invalidZoneLogged = true;
+        }
+        return;
+      }
+
+      invalidZoneLogged = false;
+      const zoneNumber = Math.floor(dist / ZONE_LENGTH);
+      const zoneIdx = ((zoneNumber % ZONES.length) + ZONES.length) % ZONES.length;
 
       if (zoneIdx !== currentZoneIdx) {
         const oldZone = currentZoneIdx;
@@ -1368,6 +1391,7 @@
         scene.background.setHex(currentZone.skyColor);
         scene.fog.color.setHex(currentZone.fogColor);
         groundMat.color.setHex(currentZone.groundColor);
+        trackMat.map?.dispose();
         trackMat.map = createArcadeTrackTexture(currentZone.trackColor1, currentZone.trackColor2);
         curbMat.color.setHex(currentZone.pillarColor);
       }
@@ -1624,8 +1648,12 @@
        ========================================================================= */
     let lastTime = performance.now();
 
+    let animationFrameId = null;
+
     function animate(now) {
-      requestAnimationFrame(animate);
+      animationFrameId = null;
+      if (document.hidden) return;
+      animationFrameId = requestAnimationFrame(animate);
 
       const rawDelta = Math.min((now - lastTime) / 1000, 0.1);
       lastTime = now;
@@ -1767,9 +1795,19 @@
       renderer.render(scene, camera);
     }
 
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        if (animationFrameId !== null) cancelAnimationFrame(animationFrameId);
+        animationFrameId = null;
+      } else if (animationFrameId === null) {
+        lastTime = performance.now();
+        animationFrameId = requestAnimationFrame(animate);
+      }
+    });
+
     checkZoneTransition(0);
     initTrackObjects();
-    requestAnimationFrame(animate);
+    animationFrameId = requestAnimationFrame(animate);
   </script>
 </body>
 </html>

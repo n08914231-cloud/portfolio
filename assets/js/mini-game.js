@@ -47,12 +47,17 @@ function renderLeaderboard(rows) {
 
   rows.slice(0, 10).forEach((entry, index) => {
     const row = document.createElement('tr');
-    row.innerHTML = `
-      <td class="text-gray-400">#${index + 1}</td>
-      <td>${(entry.player_name || 'PLAYER').toUpperCase()}</td>
-      <td>${String(entry.score ?? 0).padStart(6, '0')}</td>
-      <td>${formatDate(entry.created_at || entry.date)}</td>
-    `;
+    [
+      { value: `#${index + 1}`, className: 'text-gray-400' },
+      { value: String(entry.player_name || 'PLAYER').toUpperCase() },
+      { value: String(entry.score ?? 0).padStart(6, '0') },
+      { value: formatDate(entry.created_at || entry.date) }
+    ].forEach(({ value, className }) => {
+      const cell = document.createElement('td');
+      if (className) cell.className = className;
+      cell.textContent = value;
+      row.appendChild(cell);
+    });
     leaderboardBody.appendChild(row);
   });
 }

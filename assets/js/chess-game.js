@@ -20,6 +20,7 @@ const moveCount = document.getElementById('chess-move-count');
 const moveList = document.getElementById('chess-move-list');
 const resultBanner = document.getElementById('chess-result');
 const boardHint = document.getElementById('chess-board-hint');
+const boardAnnouncement = document.getElementById('chess-board-announcement');
 const themeToggle = document.getElementById('chess-theme-toggle');
 const resetLocalButton = document.getElementById('chess-reset-local');
 const localGameStorageKey = 'noah-dev-chess-local-v1';
@@ -42,6 +43,7 @@ let lastDropAt = -Infinity;
 let lastPointerTapAt = -Infinity;
 let lastMoveSquares = [];
 let legalTargetSquares = [];
+let keyboardSquare = null;
 let autoResetInterval = null;
 let autoResetKey = '';
 const boardPointerStarts = new Map();
@@ -62,6 +64,12 @@ boardThemeSheet.replaceSync(`
   }
   [data-square]:has([part~="piece"]):hover {
     box-shadow: inset 0 0 0 3px rgba(0, 242, 254, 0.42);
+  }
+  [data-square][data-keyboard-focus] {
+    z-index: 3;
+    outline: 4px solid #00f2fe;
+    outline-offset: -4px;
+    background-image: linear-gradient(rgba(0, 242, 254, 0.24), rgba(0, 242, 254, 0.24));
   }
   [data-square][data-last-move] {
     background-color: rgba(246, 246, 105, 0.78) !important;
@@ -110,6 +118,7 @@ function renderMoves(moves, winningPly = -1) {
     empty.className = 'col-span-3 text-gray-500';
     empty.textContent = 'No moves yet — make the first move as White.';
     moveList.append(empty);
+    moveList.scrollTop = 0;
     return;
   }
 
@@ -127,6 +136,7 @@ function renderMoves(moves, winningPly = -1) {
     if (index + 1 === winningPly) black.classList.add('chess-winning-move');
     moveList.append(number, white, black);
   }
+  moveList.scrollTop = moveList.scrollHeight;
 }
 
 function renderPosition(moves) {
@@ -185,13 +195,13 @@ function renderPosition(moves) {
   } else if (turn === 'w') {
     turnLabel.textContent = 'White to move';
     boardHint.textContent = gameMode === 'local'
-      ? 'Local demo: move either color in turn. Click or drag a piece to move.'
-      : 'White is to move. Anyone can move: select a piece and destination, or drag it.';
+      ? 'Local demo: move either color in turn. Click, drag, or focus the board and use arrow keys + Enter.'
+      : 'White is to move. Click, drag, or focus the board and use arrow keys + Enter.';
   } else {
     turnLabel.textContent = 'Black to move';
     boardHint.textContent = gameMode === 'local'
-      ? 'Local demo: move either color in turn. Click or drag a piece to move.'
-      : 'Black is to move. Anyone can move: select a piece and destination, or drag it.';
+      ? 'Local demo: move either color in turn. Click, drag, or focus the board and use arrow keys + Enter.'
+      : 'Black is to move. Click, drag, or focus the board and use arrow keys + Enter.';
   }
   savedMoves = moves;
   renderMoves(savedMoves, gameOver && game.isCheckmate() && terminalMove ? savedMoves.length - 1 : -1);
@@ -270,6 +280,7 @@ function updateBoardHighlights() {
     square.style.backgroundColor = partNames.includes('white') ? '#eeeed2' : '#769656';
     square.toggleAttribute('data-last-move', lastMoveSquares.includes(square.dataset.square));
     square.removeAttribute('data-selected');
+    square.toggleAttribute('data-keyboard-focus', board.matches(':focus') && keyboardSquare === square.dataset.square);
     square.removeAttribute('data-legal-target');
     square.removeAttribute('data-legal-capture');
     square.removeAttribute('data-in-check');
@@ -304,17 +315,21 @@ function clearSelection() {
 }
 
 function selectSquare(square) {
-  selectedSquare = null;
-  legalTargetSquares = [];
-  const selectedPiece = game.get(square);
-  if (!selectedPiece) return;
+  const availableMoves = game.moves({ square, verbose: true });
+  if (availableMoves.length === 0) {
+    clearSelection();
+    boardHint.textContent = 'That piece has no legal moves.';
+    boardAnnouncement.textContent = `${squareDescription(square)} has no legal moves.`;
+    return;
+  }
   selectedSquare = square;
-  legalTargetSquares = game.moves({ square, verbose: true }).map((move) => ({
+  legalTargetSquares = availableMoves.map((move) => ({
     square: move.to,
     capture: Boolean(move.captured)
   }));
   updateBoardHighlights();
   boardHint.textContent = `Selected ${square}. Choose a destination square.`;
+  announceSquare(square);
 }
 
 function loadLocalGame() {
@@ -460,6 +475,7 @@ function tryMove(from, to, promotion) {
 
 function handleSquareTap(square) {
   if (isSubmitting || isLoading || !gameLoaded || game.isGameOver()) return;
+  keyboardSquare = square;
   const piece = game.get(square);
   const canSelectPiece = piece && (gameMode === 'local' || piece.color === game.turn());
   if (!selectedSquare) {
@@ -476,6 +492,83 @@ function handleSquareTap(square) {
   }
   tryMove(selectedSquare, square, 'q');
 }
+
+function squareDescription(square) {
+  const piece = game.get(square);
+  if (!piece) return `${square}, empty`;
+  const names = { p: 'pawn', n: 'knight', b: 'bishop', r: 'rook', q: 'queen', k: 'king' };
+  return `${square}, ${piece.color === 'w' ? 'white' : 'black'} ${names[piece.type]}`;
+}
+
+function announceSquare(square) {
+  const target = legalTargetSquares.find((legalMove) => legalMove.square === square);
+  const announcement = squareDescription(square);
+  if (target) {
+    boardAnnouncement.textContent = `${announcement}, legal ${target.capture ? 'capture' : 'move'} destination.`;
+  } else if (square === selectedSquare) {
+    const destinations = legalTargetSquares.map((legalMove) => legalMove.square).join(', ');
+    boardAnnouncement.textContent = destinations
+      ? `${announcement} selected. Legal moves: ${destinations}.`
+      : `${announcement} selected. No legal moves.`;
+  } else {
+    boardAnnouncement.textContent = `${announcement}${selectedSquare ? ', not a legal destination.' : '.'}`;
+  }
+}
+
+function moveKeyboardFocus(fileOffset, rankOffset) {
+  ensureKeyboardSquare();
+  const file = keyboardSquare.charCodeAt(0) - 97;
+  const rank = Number(keyboardSquare[1]);
+  const nextFile = Math.max(0, Math.min(7, file + fileOffset));
+  const nextRank = Math.max(1, Math.min(8, rank + rankOffset));
+  keyboardSquare = `${String.fromCharCode(97 + nextFile)}${nextRank}`;
+  updateBoardHighlights();
+  announceSquare(keyboardSquare);
+}
+
+function ensureKeyboardSquare() {
+  if (keyboardSquare) return;
+  const firstMove = gameLoaded ? game.moves({ verbose: true })[0] : null;
+  keyboardSquare = firstMove?.from || 'e2';
+}
+
+board.addEventListener('focus', () => {
+  window.requestAnimationFrame(() => {
+    ensureKeyboardSquare();
+    updateBoardHighlights();
+    announceSquare(keyboardSquare);
+  });
+});
+
+board.addEventListener('focusin', () => {
+  ensureKeyboardSquare();
+  updateBoardHighlights();
+  announceSquare(keyboardSquare);
+});
+
+board.addEventListener('blur', updateBoardHighlights);
+
+board.addEventListener('keydown', (event) => {
+  if (!keyboardSquare) {
+    ensureKeyboardSquare();
+    updateBoardHighlights();
+  }
+  if (event.key === 'ArrowUp' || event.key === 'ArrowDown' ||
+      event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+    event.preventDefault();
+    moveKeyboardFocus(
+      event.key === 'ArrowRight' ? 1 : event.key === 'ArrowLeft' ? -1 : 0,
+      event.key === 'ArrowUp' ? 1 : event.key === 'ArrowDown' ? -1 : 0
+    );
+  } else if (event.key === 'Enter' || event.key === ' ' || event.key === 'Spacebar') {
+    event.preventDefault();
+    if (keyboardSquare) handleSquareTap(keyboardSquare);
+  } else if (event.key === 'Escape') {
+    event.preventDefault();
+    clearSelection();
+    boardAnnouncement.textContent = 'Piece selection cleared.';
+  }
+});
 
 themeToggle.addEventListener('click', () => {
   applyTheme(document.documentElement.classList.contains('dark') ? 'light' : 'dark');
