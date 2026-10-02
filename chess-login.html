@@ -76,6 +76,10 @@
         <span class="text-base font-semibold">noah<span class="font-mono text-xs text-[#00f2fe]">.dev</span></span>
       </a>
       <div class="flex items-center gap-2">
+        <div id="language-switch" class="flex items-center rounded-lg border border-white/[0.1] bg-white/[0.04] p-0.5" role="group" aria-label="Sprache auswählen">
+          <button class="rounded-md px-2 py-1 font-mono text-[10px] font-semibold text-gray-400 transition-colors" type="button" data-language="en" aria-pressed="true">EN</button>
+          <button class="rounded-md px-2 py-1 font-mono text-[10px] font-semibold text-gray-400 transition-colors" type="button" data-language="de" aria-pressed="false">DE</button>
+        </div>
         <a class="rounded-full border border-white/[0.1] bg-white/[0.04] px-3 py-2 text-xs text-gray-300 transition-colors hover:border-[#00f2fe]/40 hover:text-white"
           href="chess.html">Community Chess</a>
         <button aria-label="Toggle theme"
@@ -127,6 +131,7 @@
     </section>
   </main>
   <script src="assets/js/supabase-config.js"></script>
+  <script src="assets/js/site-language.js"></script>
   <script src="assets/js/chess-login.js" type="module"></script>
 </body>
 </html>

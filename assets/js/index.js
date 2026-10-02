@@ -2,8 +2,10 @@ let currentLanguage = localStorage.getItem('portfolio-language') || 'en';
 
 const snippets = {
       gameLoop: `// Main Three.js runner loop
-let lastTime = performance.now();
-
+      if (isHomepage) {
+        document.title = isGerman ? 'noah.dev | Entwicklerportfolio' : 'noah.dev | Developer Portfolio';
+        if (metaDescription) metaDescription.content = isGerman ? germanDescription : englishDescription;
+      }
 function animate(now) {
   requestAnimationFrame(animate);
   const rawDelta = Math.min((now - lastTime) / 1000, 0.1);
@@ -604,7 +606,11 @@ function updateBoardHighlights() {
       Object.entries(translations).map(([english, german]) => [german, english])
     );
     const languageKey = 'portfolio-language';
-    const languageSwitch = document.getElementById('language-switch');
+    const isHomepage = document.body.id === 'top' &&
+      (window.location.pathname === '/' || window.location.pathname.endsWith('/index.html'));
+    const languageSwitch = isHomepage
+      ? document.getElementById('language-switch')
+      : null;
     const themeToggleButton = document.getElementById('theme-toggle');
     const metaDescription = document.querySelector('meta[name="description"]');
     const englishDescription = metaDescription?.content || '';
@@ -664,12 +670,14 @@ function updateBoardHighlights() {
       window.dispatchEvent(new Event('resize'));
     }
 
-    languageSwitch?.addEventListener('click', (event) => {
-      const button = event.target.closest('[data-language]');
-      if (!button) return;
-      const language = button.dataset.language;
-      localStorage.setItem(languageKey, language);
-      applyLanguage(language);
-    });
+    if (isHomepage) {
+      languageSwitch?.addEventListener('click', (event) => {
+        const button = event.target.closest('[data-language]');
+        if (!button) return;
+        const language = button.dataset.language;
+        localStorage.setItem(languageKey, language);
+        applyLanguage(language);
+      });
 
-    applyLanguage(localStorage.getItem(languageKey) || 'en');
+      applyLanguage(localStorage.getItem(languageKey) || 'en');
+    }
