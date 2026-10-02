@@ -60,6 +60,15 @@ boardThemeSheet.replaceSync(`
     --light-color: #eeeed2;
     --dark-color: #769656;
     --highlight-color: rgba(246, 246, 105, 0.78);
+    --keyboard-focus-color: #00f2fe;
+    --last-move-background: rgba(246, 246, 105, 0.78);
+    --selected-square-background: rgba(246, 246, 105, 0.9);
+  }
+  [data-square][part~="white"] {
+    background-color: var(--light-color) !important;
+  }
+  [data-square][part~="black"] {
+    background-color: var(--dark-color) !important;
   }
   [data-square] {
     cursor: pointer;
@@ -73,15 +82,15 @@ boardThemeSheet.replaceSync(`
   }
   [data-square][data-keyboard-focus] {
     z-index: 3;
-    outline: 4px solid #00f2fe;
+    outline: 4px solid var(--keyboard-focus-color);
     outline-offset: -4px;
     background-image: linear-gradient(rgba(0, 242, 254, 0.24), rgba(0, 242, 254, 0.24));
   }
   [data-square][data-last-move] {
-    background-color: rgba(246, 246, 105, 0.78) !important;
+    background-color: var(--last-move-background) !important;
   }
   [data-square][data-selected] {
-    background-color: rgba(246, 246, 105, 0.9) !important;
+    background-color: var(--selected-square-background) !important;
     box-shadow: inset 0 0 0 3px rgba(38, 72, 44, 0.48);
   }
   [data-square][data-legal-target]::after {
@@ -322,9 +331,23 @@ function scheduleAutoReset(moves) {
 
 function updateBoardHighlights() {
   const squares = board.shadowRoot.querySelectorAll('[data-square]');
+  const isLightTheme = document.documentElement.classList.contains('light');
+  board.style.setProperty('--light-color', '#eeeed2');
+  board.style.setProperty('--dark-color', isLightTheme ? '#526d3d' : '#769656');
   for (const square of squares) {
     const partNames = square.getAttribute('part').split(/\s+/);
-    square.style.backgroundColor = partNames.includes('white') ? '#eeeed2' : '#769656';
+    const isLightSquare = partNames.includes('white');
+    square.style.setProperty(
+      'background-color',
+      isLightSquare ? '#eeeed2' : isLightTheme ? '#526d3d' : '#769656',
+      'important'
+    );
+    for (const notation of square.querySelectorAll('[part~="notation"]')) {
+      notation.style.color = isLightTheme
+        ? isLightSquare ? '#3f532e' : '#f8faf0'
+        : '';
+      notation.style.fontWeight = isLightTheme ? '600' : '';
+    }
     square.toggleAttribute('data-last-move', lastMoveSquares.includes(square.dataset.square));
     square.removeAttribute('data-selected');
     square.toggleAttribute('data-keyboard-focus', board.matches(':focus') && keyboardSquare === square.dataset.square);
@@ -476,6 +499,7 @@ function applyTheme(theme) {
   themeToggle.setAttribute('aria-label', isDark ? 'Switch to light mode' : 'Switch to dark mode');
   themeToggle.title = isDark ? 'Switch to light mode' : 'Switch to dark mode';
   themeToggle.querySelector('.material-symbols-outlined').textContent = isDark ? 'dark_mode' : 'light_mode';
+  updateBoardHighlights();
 }
 
 async function submitMove(from, to, promotion, candidate, move) {
