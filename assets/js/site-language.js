@@ -83,6 +83,9 @@
     'SCORE': 'PUNKTE',
     'DATE': 'DATUM',
     'No records yet': 'Noch keine Einträge',
+    'Current leaderboard': 'Aktuelle Bestenliste',
+    'Live leaderboard': 'Live-Bestenliste',
+    'Local leaderboard': 'Lokale Bestenliste',
     'Local': 'Lokal',
     'Live': 'Live',
     'Start fullscreen': 'Vollbild starten',
@@ -174,7 +177,21 @@
   const germanToEnglish = new Map([...englishToGerman].map(([english, german]) => [german, english]));
   const languageButtons = document.querySelectorAll('[data-language]');
   const toggle = document.querySelector('#language-switch');
-  let currentLanguage = localStorage.getItem(storageKey) || 'en';
+  const detectBrowserLanguage = () => {
+    const navigatorLanguage = (navigator.language || '').toLowerCase();
+    return navigatorLanguage.startsWith('de') ? 'de' : 'en';
+  };
+  const savedLanguage = localStorage.getItem(storageKey);
+  let currentLanguage = savedLanguage && ['en', 'de'].includes(savedLanguage)
+    ? savedLanguage
+    : 'de';
+
+  if (!savedLanguage) localStorage.setItem(storageKey, currentLanguage);
+
+  const autoOption = document.querySelector('[data-language="auto"]');
+  if (autoOption) {
+    autoOption.textContent = 'AUTO';
+  }
 
   function translateText(value, language) {
     const map = language === 'de' ? englishToGerman : germanToEnglish;

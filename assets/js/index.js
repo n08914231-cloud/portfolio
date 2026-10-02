@@ -679,5 +679,5 @@ function updateBoardHighlights() {
         applyLanguage(language);
       });
 
-      applyLanguage(localStorage.getItem(languageKey) || 'en');
+      applyLanguage(localStorage.getItem(languageKey) || 'de');
     }
