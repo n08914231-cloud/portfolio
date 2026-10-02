@@ -24,6 +24,10 @@ const boardAnnouncement = document.getElementById('chess-board-announcement');
 const themeToggle = document.getElementById('chess-theme-toggle');
 const resetLocalButton = document.getElementById('chess-reset-local');
 const localGameStorageKey = 'noah-dev-chess-local-v1';
+const localWinsStorageKey = 'noah-dev-chess-wins-v1';
+const whiteWinsLabel = document.getElementById('chess-wins-white');
+const blackWinsLabel = document.getElementById('chess-wins-black');
+const winsSource = document.getElementById('chess-wins-source');
 const resultDisplayMs = 10000;
 
 await customElements.whenDefined('chess-board');
@@ -111,6 +115,43 @@ function showStatus(message, state = 'neutral') {
   statusDot.classList.toggle('bg-emerald-400', state === 'live');
   statusDot.classList.toggle('bg-rose-400', state === 'error');
   statusDot.classList.toggle('bg-gray-500', state === 'neutral');
+}
+
+function renderWinCounts(whiteWins, blackWins, source) {
+  whiteWinsLabel.textContent = String(whiteWins);
+  blackWinsLabel.textContent = String(blackWins);
+  winsSource.textContent = source;
+}
+
+function readLocalWinCounts() {
+  const rawWins = localStorage.getItem(localWinsStorageKey);
+  const wins = rawWins ? JSON.parse(rawWins) : { white: 0, black: 0 };
+  if (!wins || !Number.isInteger(wins.white) || !Number.isInteger(wins.black) || wins.white < 0 || wins.black < 0) {
+    throw new Error('The saved local chess win counts are invalid.');
+  }
+  return wins;
+}
+
+function loadLocalWinCounts() {
+  const wins = readLocalWinCounts();
+  renderWinCounts(wins.white, wins.black, 'LOCAL');
+}
+
+function recordLocalWin(color) {
+  const wins = readLocalWinCounts();
+  wins[color] += 1;
+  localStorage.setItem(localWinsStorageKey, JSON.stringify(wins));
+  renderWinCounts(wins.white, wins.black, 'LOCAL');
+}
+
+async function loadSharedWinCounts() {
+  const { data, error } = await client
+    .from('chess_wins')
+    .select('white_wins, black_wins')
+    .eq('singleton', true)
+    .maybeSingle();
+  if (error) throw error;
+  renderWinCounts(data?.white_wins ?? 0, data?.black_wins ?? 0, 'SHARED');
 }
 
 function renderMoves(moves, winningPly = -1) {
@@ -361,6 +402,7 @@ function loadLocalGame() {
     if (!Array.isArray(localMoves)) throw new Error('The saved local chess game is invalid.');
   }
   renderPosition(localMoves);
+  loadLocalWinCounts();
   showStatus('Local demo — only this browser', 'neutral');
 }
 
@@ -391,6 +433,9 @@ async function loadGame({ quiet = false } = {}) {
     gameMode = 'shared';
     gameLoaded = true;
     if (!historyUnchanged) renderPosition(data);
+    loadSharedWinCounts().catch((statsError) => {
+      console.error('Could not load chess win counts:', statsError);
+    });
     if (accessLoaded) {
       showStatus(isChessOwner ? 'Signed in — you play White' : 'Shared game — visitors play Black', 'live');
     } else {
@@ -450,6 +495,7 @@ async function submitMove(from, to, promotion, candidate, move) {
         created_at: new Date().toISOString()
       }];
       localStorage.setItem(localGameStorageKey, JSON.stringify(nextMoves));
+      if (candidate.isCheckmate()) recordLocalWin(candidate.turn() === 'w' ? 'black' : 'white');
       renderPosition(nextMoves);
       showStatus('Local demo — only this browser', 'neutral');
       return;
@@ -687,6 +733,9 @@ if (!client) {
     .channel('community-chess-moves')
     .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'chess_moves' }, () => {
       loadGame({ quiet: true });
+    })
+    .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'chess_wins' }, () => {
+      loadSharedWinCounts().catch((error) => console.error('Could not load chess win counts:', error));
     })
     .subscribe((subscriptionStatus) => {
       if (subscriptionStatus === 'CHANNEL_ERROR' || subscriptionStatus === 'TIMED_OUT') {

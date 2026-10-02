@@ -150,7 +150,8 @@ Deno.serve(async (request) => {
     p_to_square: move.to,
     p_promotion: move.promotion || null,
     p_san: move.san,
-    p_fen: game.fen()
+    p_fen: game.fen(),
+    p_winner_color: game.isCheckmate() ? (game.turn() === 'w' ? 'black' : 'white') : null
   });
   if (insertError) {
     if (insertError.code === '23505' || insertError.code === 'P0001') {

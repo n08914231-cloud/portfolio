@@ -1,17 +1,17 @@
 # Community chess setup
 
-1. Run the latest `chess_game.sql` in the Supabase SQL Editor. It creates a publicly readable move history; direct browser writes are disabled. It also enables Supabase Realtime and creates the secure move-save/reset functions. If you ran an earlier version, run the whole updated script again so it adds these functions.
-2. Install and sign in to the Supabase CLI, then link this repository to the existing project:
+1. Run the latest `chess_game.sql` in the Supabase SQL Editor. It creates publicly readable move history and win totals; direct browser writes are disabled. It also enables Supabase Realtime and creates the secure move-save/reset functions. Existing win totals are preserved when you rerun the script.
+2. Sign in to Supabase and link this repository to the existing project with `npx` (no global CLI installation required):
 
    ```sh
-   supabase login
-   supabase link --project-ref yrfsiojjutfefihrkwqz
+   npx supabase login
+   npx supabase link --project-ref yrfsiojjutfefihrkwqz
    ```
 
 3. Deploy the Edge Function:
 
    ```sh
-   supabase functions deploy chess-move
+   npx supabase functions deploy chess-move
    ```
 
    Supabase provides its URL and service-role key to Edge Functions as environment variables. Keep the service-role key out of website files and source control.

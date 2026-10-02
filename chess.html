@@ -213,6 +213,22 @@
       </div>
 
       <aside>
+        <section class="chess-panel mb-5 p-5" aria-labelledby="chess-wins-heading">
+          <div class="mb-3 flex items-center justify-between">
+            <h2 class="text-sm font-semibold text-white" id="chess-wins-heading">Wins</h2>
+            <span class="font-mono text-[10px] text-gray-500" id="chess-wins-source">SHARED</span>
+          </div>
+          <dl class="grid grid-cols-2 gap-3">
+            <div class="rounded-lg border border-white/[0.08] bg-black/10 px-3 py-2">
+              <dt class="text-xs text-gray-400">White</dt>
+              <dd class="mt-1 font-mono text-xl font-semibold text-white" id="chess-wins-white">0</dd>
+            </div>
+            <div class="rounded-lg border border-white/[0.08] bg-black/10 px-3 py-2">
+              <dt class="text-xs text-gray-400">Black</dt>
+              <dd class="mt-1 font-mono text-xl font-semibold text-white" id="chess-wins-black">0</dd>
+            </div>
+          </dl>
+        </section>
         <section class="chess-panel p-5">
           <div class="mb-3 flex items-center justify-between">
             <h2 class="text-sm font-semibold text-white">Move history</h2>
