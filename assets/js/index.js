@@ -1,3 +1,5 @@
+let currentLanguage = localStorage.getItem('portfolio-language') || 'en';
+
 const snippets = {
       gameLoop: `// Main Three.js runner loop
 let lastTime = performance.now();
@@ -364,9 +366,9 @@ function updateBoardHighlights() {
       const textToCopy = snippets[currentKey];
       navigator.clipboard.writeText(textToCopy).then(() => {
         const copyText = document.getElementById('copy-text');
-        copyText.textContent = 'Copied!';
+        copyText.textContent = currentLanguage === 'de' ? 'Kopiert!' : 'Copied!';
         setTimeout(() => {
-          copyText.textContent = 'Copy';
+          copyText.textContent = currentLanguage === 'de' ? 'Kopieren' : 'Copy';
         }, 2000);
       });
     }
@@ -385,8 +387,11 @@ function updateBoardHighlights() {
         if (icon) {
           icon.textContent = isDark ? 'dark_mode' : 'light_mode';
         }
-        themeToggle.setAttribute('aria-label', isDark ? 'Switch to light mode' : 'Switch to dark mode');
-        themeToggle.title = isDark ? 'Switch to light mode' : 'Switch to dark mode';
+        const themeLabel = currentLanguage === 'de'
+          ? `Zum ${isDark ? 'hellen' : 'dunklen'} Design wechseln`
+          : `Switch to ${isDark ? 'light' : 'dark'} mode`;
+        themeToggle.setAttribute('aria-label', themeLabel);
+        themeToggle.title = themeLabel;
       }
     }
 
@@ -538,3 +543,133 @@ function updateBoardHighlights() {
     if (impressumEmailDisplay) {
       impressumEmailDisplay.textContent = fullEmail;
     }
+
+    const translations = {
+      'Skip to main content': 'Zum Hauptinhalt',
+      'Primary navigation': 'Hauptnavigation',
+      'Choose language': 'Sprache auswählen',
+      'Overview': 'Übersicht',
+      'Work & Architecture': 'Projekte & Aufbau',
+      'Lab / Snippets': 'Code-Labor / Beispiele',
+      'Contact': 'Kontakt',
+      'Learning by building': 'Lernen durch Entwickeln',
+      'Learning web development through small projects': 'Webentwicklung lernen mit kleinen Projekten',
+      'Engineering / In Motion': 'Technik in Bewegung',
+      'Learning to build useful web experiences, from': 'Ich lerne, nützliche Web-Erlebnisse zu bauen – vom',
+      'pixel to production': 'Pixel bis zum fertigen Produkt',
+      'I’m learning web development by building small projects. Right now, I’m exploring JavaScript, responsive interfaces, and connecting web pages to data.': 'Ich lerne Webentwicklung, indem ich kleine Projekte baue. Zurzeit beschäftige ich mich mit JavaScript, responsiven Oberflächen und der Verbindung von Webseiten mit Daten.',
+      'Explore Projects': 'Projekte ansehen',
+      '// 01. Projects': '// 01. Projekte',
+      'Projects I’m building': 'Projekte, an denen ich arbeite',
+      'Selected Projects': 'Ausgewählte Projekte',
+      'Browser Game': 'Browserspiel',
+      'A browser arcade game with a score submission flow and a leaderboard backed by Supabase. This project is where I’m learning to connect a game interface to a database.': 'Ein Arcade-Spiel im Browser mit Punkteübermittlung und einer Bestenliste auf Basis von Supabase. Bei diesem Projekt lerne ich, eine Spieloberfläche mit einer Datenbank zu verbinden.',
+      'Play Mini-Game': 'Mini-Spiel starten',
+      'Open game ↗': 'Spiel öffnen ↗',
+      'Online Chess': 'Online-Schach',
+      'A shared online chess game where everyone can play the side whose turn it is. Legal moves are highlighted, and Supabase keeps the board in sync for all players.': 'Ein gemeinsames Online-Schachspiel, bei dem alle die gerade am Zug befindliche Farbe spielen können. Gültige Züge werden hervorgehoben und Supabase hält das Brett für alle auf dem gleichen Stand.',
+      'Play Chess': 'Schach spielen',
+      'About': 'Über mich',
+      'I’m Noah. I’m learning web development by making small projects and improving them as I go.': 'Ich bin Noah und lerne Webentwicklung, indem ich kleine Projekte baue und sie Schritt für Schritt verbessere.',
+      'What I’m learning': 'Was ich lerne',
+      'Building pages with HTML, CSS, and JavaScript, then using Supabase to save and display game scores.': 'Webseiten mit HTML, CSS und JavaScript erstellen und mit Supabase Spielstände speichern und anzeigen.',
+      '// USED IN THIS SITE': '// AUF DIESER SEITE GENUTZT',
+      '// 02. Code Experiments': '// 02. Code-Experimente',
+      'Code experiments': 'Code-Experimente',
+      'Interactive Source': 'Interaktiver Quellcode',
+      'Copy': 'Kopieren',
+      'Copied!': 'Kopiert!',
+      '// 03. Connection Pipeline': '// 03. Kontakt',
+      'Let’s Connect': 'Kontakt aufnehmen',
+      "Let's Connect": 'Kontakt aufnehmen',
+      "Let's build something remarkable together.": 'Lass uns gemeinsam etwas Besonderes schaffen.',
+      'For opportunities, collaborations, or questions, reach me directly by email.': 'Für Anfragen, Kooperationen oder Fragen erreichst du mich direkt per E-Mail.',
+      'Building and learning': 'Am Bauen und Lernen',
+      'Crafted with Tailwind CSS & Apple-inspired aesthetics': 'Mit Tailwind CSS und Apple-inspiriertem Design gestaltet',
+      'All rights reserved.': 'Alle Rechte vorbehalten.',
+      'Interactive Lab': 'Interaktives Labor',
+      ' Noah. All rights reserved.': ' Noah. Alle Rechte vorbehalten.',
+      'Chess Sign In': 'Schach-Login',
+      "Noah's GitHub Profile": 'Noahs GitHub-Profil',
+      "Open Noah's GitHub profile": 'Noahs GitHub-Profil auf GitHub öffnen',
+      'Toggle Theme': 'Theme wechseln',
+      'Macro photograph of a circuit board with chips and illuminated traces': 'Makroaufnahme einer Platine mit Chips und leuchtenden Leiterbahnen',
+      'Play the mini-game': 'Mini-Spiel starten',
+      'Open Arcade Highscore mini-game': 'Arcade-Highscore-Mini-Spiel öffnen',
+      'Play Community Chess': 'Community-Schach spielen',
+      'Open Community Chess': 'Community-Schach öffnen',
+      'E-Mail senden': 'E-Mail senden'
+    };
+    const englishTranslations = Object.fromEntries(
+      Object.entries(translations).map(([english, german]) => [german, english])
+    );
+    const languageKey = 'portfolio-language';
+    const languageSwitch = document.getElementById('language-switch');
+    const themeToggleButton = document.getElementById('theme-toggle');
+    const metaDescription = document.querySelector('meta[name="description"]');
+    const englishDescription = metaDescription?.content || '';
+    const germanDescription = 'Entdecke Noahs Webentwicklungsprojekte: ein Online-Schachspiel, ein Arcade-Spiel im Browser und interaktive Code-Experimente.';
+
+    function translateValue(value, language) {
+      const normalized = value.trim().replace(/\s+/g, ' ');
+      const translated = language === 'de'
+        ? translations[normalized]
+        : englishTranslations[normalized];
+      if (!translated) return value;
+      const leadingWhitespace = value.match(/^\s*/)?.[0] || '';
+      const trailingWhitespace = value.match(/\s*$/)?.[0] || '';
+      return `${leadingWhitespace}${translated}${trailingWhitespace}`;
+    }
+
+    function applyLanguage(language) {
+      const isGerman = language === 'de';
+      currentLanguage = language;
+      const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+      let textNode;
+      while ((textNode = walker.nextNode())) {
+        if (textNode.parentElement?.closest('script, style, pre, code, #language-switch, .material-symbols-outlined')) continue;
+        const translatedText = translateValue(textNode.nodeValue, language);
+        textNode.nodeValue = textNode.parentElement?.parentElement?.tagName === 'H1' &&
+          textNode.parentElement.tagName === 'SPAN'
+          ? translatedText.trimEnd()
+          : translatedText;
+      }
+
+      document.querySelectorAll('[aria-label], [title], [alt]').forEach((element) => {
+        for (const attribute of ['aria-label', 'title', 'alt']) {
+          const value = element.getAttribute(attribute);
+          if (value) element.setAttribute(attribute, translateValue(value, language));
+        }
+      });
+
+      document.documentElement.lang = language;
+      document.title = isGerman ? 'noah.dev | Entwicklerportfolio' : 'noah.dev | Developer Portfolio';
+      if (metaDescription) metaDescription.content = isGerman ? germanDescription : englishDescription;
+      languageSwitch?.querySelectorAll('[data-language]').forEach((button) => {
+        const active = button.dataset.language === language;
+        button.setAttribute('aria-pressed', String(active));
+        button.classList.toggle('bg-white/[0.12]', active);
+        button.classList.toggle('text-white', active);
+        button.classList.toggle('text-gray-400', !active);
+      });
+
+      if (themeToggleButton) {
+        const isDark = document.documentElement.classList.contains('dark');
+        const label = isGerman
+          ? `Zum ${isDark ? 'hellen' : 'dunklen'} Design wechseln`
+          : `Switch to ${isDark ? 'light' : 'dark'} mode`;
+        themeToggleButton.setAttribute('aria-label', label);
+        themeToggleButton.title = label;
+      }
+      window.dispatchEvent(new Event('resize'));
+    }
+
+    languageSwitch?.addEventListener('click', (event) => {
+      const button = event.target.closest('[data-language]');
+      if (!button) return;
+      const language = button.dataset.language;
+      localStorage.setItem(languageKey, language);
+      applyLanguage(language);
+    });
+
+    applyLanguage(localStorage.getItem(languageKey) || 'en');
